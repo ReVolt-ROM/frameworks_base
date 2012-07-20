@@ -5919,6 +5919,20 @@ public final class Settings {
          * @hide
          */
         public static final String SELINUX_STATUS = "selinux_status";
+        
+        /**
+         * Setting to enable volume options.
+         *
+         * @hide
+         */
+        public static final String ENABLE_VOLUME_OPTIONS = "enable_volume_options";
+
+        /**
+         * Setting to Link Ringtone and Notification.
+         *
+         * @hide
+         */
+        public static final String VOLUME_LINK_NOTIFICATION = "volume_link_notification";
 
         /**
          * Developer setting to force RTL layout.

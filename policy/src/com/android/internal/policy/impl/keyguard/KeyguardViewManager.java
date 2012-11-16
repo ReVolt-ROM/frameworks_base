@@ -1,33 +1,37 @@
 /*
- * Copyright (C) 2007 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright (C) 2007 The Android Open Source Project
+* Copyright (C) 2012 ParanoidAndroid Project
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package com.android.internal.policy.impl.keyguard;
 
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.appwidget.AppWidgetManager;
+import android.database.ContentObserver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.media.AudioManager;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.os.SystemClock;
@@ -49,11 +53,11 @@ import com.android.internal.R;
 import com.android.internal.widget.LockPatternUtils;
 
 /**
- * Manages creating, showing, hiding and resetting the keyguard.  Calls back
- * via {@link KeyguardViewMediator.ViewMediatorCallback} to poke
- * the wake lock and report that the keyguard is done, which is in turn,
- * reported to this class by the current {@link KeyguardViewBase}.
- */
+* Manages creating, showing, hiding and resetting the keyguard. Calls back
+* via {@link KeyguardViewMediator.ViewMediatorCallback} to poke
+* the wake lock and report that the keyguard is done, which is in turn,
+* reported to this class by the current {@link KeyguardViewBase}.
+*/
 public class KeyguardViewManager {
     private final static boolean DEBUG = KeyguardViewMediator.DEBUG;
     private static String TAG = "KeyguardViewManager";
@@ -75,16 +79,36 @@ public class KeyguardViewManager {
     private boolean mScreenOn = false;
     private LockPatternUtils mLockPatternUtils;
 
+    private boolean mUnlockKeyDown = false;
+
     public interface ShowListener {
         void onShown(IBinder windowToken);
     };
 
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.LOCKSCREEN_SEE_THROUGH), false, this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            setKeyguardParams();
+            mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
+        }
+    }
+
     /**
-     * @param context Used to create views.
-     * @param viewManager Keyguard will be attached to this.
-     * @param callback Used to notify of changes.
-     * @param lockPatternUtils
-     */
+* @param context Used to create views.
+* @param viewManager Keyguard will be attached to this.
+* @param callback Used to notify of changes.
+* @param lockPatternUtils
+*/
     public KeyguardViewManager(Context context, ViewManager viewManager,
             KeyguardViewMediator.ViewMediatorCallback callback,
             LockPatternUtils lockPatternUtils) {
@@ -92,12 +116,15 @@ public class KeyguardViewManager {
         mViewManager = viewManager;
         mViewMediatorCallback = callback;
         mLockPatternUtils = lockPatternUtils;
+
+        SettingsObserver observer = new SettingsObserver(new Handler());
+        observer.observe();
     }
 
     /**
-     * Show the keyguard.  Will handle creating and attaching to the view manager
-     * lazily.
-     */
+* Show the keyguard. Will handle creating and attaching to the view manager
+* lazily.
+*/
     public synchronized void show(Bundle options) {
         if (DEBUG) Log.d(TAG, "show(); mKeyguardView==" + mKeyguardView);
 
@@ -118,6 +145,41 @@ public class KeyguardViewManager {
         mKeyguardHost.setVisibility(View.VISIBLE);
         mKeyguardView.show();
         mKeyguardView.requestFocus();
+    }
+
+    public void setKeyguardParams() {
+        final boolean isActivity = (mContext instanceof Activity); // for test activity
+        boolean allowSeeThrough = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_SEE_THROUGH, 0) != 0;
+
+        int flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
+                | WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
+                | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+
+        if (!allowSeeThrough) {
+            flags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
+        }
+        if (!mNeedsInput) {
+            flags |= WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
+        }
+
+        final int stretch = ViewGroup.LayoutParams.MATCH_PARENT;
+        final int type = isActivity ? WindowManager.LayoutParams.TYPE_APPLICATION
+                : WindowManager.LayoutParams.TYPE_KEYGUARD;
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+                stretch, stretch, type, flags, PixelFormat.TRANSLUCENT);
+        lp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
+        lp.windowAnimations = com.android.internal.R.style.Animation_LockScreen;
+        lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+        lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_FORCE_HARDWARE_ACCELERATED;
+        lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_SET_NEEDS_MENU_KEY;
+        if (isActivity) {
+            lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_SHOW_FOR_ALL_USERS;
+        }
+        lp.inputFeatures |= WindowManager.LayoutParams.INPUT_FEATURE_DISABLE_USER_ACTIVITY;
+        lp.setTitle(isActivity ? "KeyguardMock" : "Keyguard");
+        mWindowLayoutParams = lp;
     }
 
     private boolean shouldEnableScreenRotation() {
@@ -160,49 +222,16 @@ public class KeyguardViewManager {
 
         @Override
         public boolean dispatchKeyEvent(KeyEvent event) {
-
-            if (event.getAction() == KeyEvent.ACTION_DOWN && mKeyguardView != null) {
+            if (mKeyguardView != null) {
                 int keyCode = event.getKeyCode();
-                String action = null;
-                switch (keyCode) {
-                    case KeyEvent.KEYCODE_BACK:
-                        if (mKeyguardView.handleBackKey()) {
-                            return true;
-                        }
-                        if (event.isLongPress()) {
-                            action = Settings.System.LOCKSCREEN_LONG_BACK_ACTION;
-                        }
-                        break;
-                    case KeyEvent.KEYCODE_HOME:
-                        if (mKeyguardView.handleHomeKey()) {
-                            return true;
-                        }
-                        if (event.isLongPress()) {
-                            action = Settings.System.LOCKSCREEN_LONG_HOME_ACTION;
-                        }
-                        break;
-                    case KeyEvent.KEYCODE_MENU:
-                        if (mKeyguardView.handleMenuKey()) {
-                            return true;
-                        }
-                        if (event.isLongPress()) {
-                            action = Settings.System.LOCKSCREEN_LONG_MENU_ACTION;
-                        }
-                        break;
-                }
+                int action = event.getAction();
 
-                if (action != null) {
-                    String uri = Settings.System.getString(mContext.getContentResolver(), action);
-                    if (uri != null && runAction(mContext, uri) != ACTION_RESULT_NOTRUN) {
-                        long[] pattern = getLongPressVibePattern(mContext);
-                        if (pattern != null) {
-                            Vibrator v = (Vibrator) mContext.getSystemService(mContext.VIBRATOR_SERVICE);
-                            if (pattern.length == 1) {
-                                v.vibrate(pattern[0]);
-                            } else {
-                                v.vibrate(pattern, -1);
-                            }
-                        }
+                if (action == KeyEvent.ACTION_DOWN) {
+                    if (handleKeyDown(keyCode, event)) {
+                        return true;
+                    }
+                } else if (action == KeyEvent.ACTION_UP) {
+                    if (handleKeyUp(keyCode, event)) {
                         return true;
                     }
                 }
@@ -211,28 +240,84 @@ public class KeyguardViewManager {
         }
     }
 
-    private static final int ACTION_RESULT_RUN = 0;
-    private static final int ACTION_RESULT_NOTRUN = 1;
+    public boolean handleKeyDown(int keyCode, KeyEvent event) {
+        if (event.getRepeatCount() == 0) {
+            mUnlockKeyDown = true;
+        }
+        if (event.isLongPress()) {
+            String action = null;
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    action = Settings.System.LOCKSCREEN_LONG_BACK_ACTION;
+                    break;
+                case KeyEvent.KEYCODE_HOME:
+                    action = Settings.System.LOCKSCREEN_LONG_HOME_ACTION;
+                    break;
+                case KeyEvent.KEYCODE_MENU:
+                    action = Settings.System.LOCKSCREEN_LONG_MENU_ACTION;
+                    break;
+            }
 
-    private static int runAction(Context context, String uri) {
+            if (action != null) {
+                mUnlockKeyDown = false;
+                String uri = Settings.System.getString(mContext.getContentResolver(), action);
+                if (uri != null && runAction(mContext, uri)) {
+                    long[] pattern = getLongPressVibePattern(mContext);
+                    if (pattern != null) {
+                        Vibrator v = (Vibrator) mContext.getSystemService(mContext.VIBRATOR_SERVICE);
+                        if (pattern.length == 1) {
+                            v.vibrate(pattern[0]);
+                        } else {
+                            v.vibrate(pattern, -1);
+                        }
+                    }
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean handleKeyUp(int keyCode, KeyEvent event) {
+        if (mUnlockKeyDown) {
+            mUnlockKeyDown = false;
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_BACK:
+                    if (mKeyguardView.handleBackKey()) {
+                        return true;
+                    }
+                case KeyEvent.KEYCODE_HOME:
+                    if (mKeyguardView.handleHomeKey()) {
+                        return true;
+                    }
+                case KeyEvent.KEYCODE_MENU:
+                    if (mKeyguardView.handleMenuKey()) {
+                        return true;
+                    }
+            }
+        }
+        return false;
+    }
+
+    private static boolean runAction(Context context, String uri) {
         if ("FLASHLIGHT".equals(uri)) {
-            context.sendBroadcast(new Intent("com.aokp.torch.INTENT_TORCH_TOGGLE"));
-            return ACTION_RESULT_RUN;
+            context.sendBroadcast(new Intent("net.cactii.flash2.TOGGLE_FLASHLIGHT"));
+            return true;
         } else if ("NEXT".equals(uri)) {
             sendMediaButtonEvent(context, KeyEvent.KEYCODE_MEDIA_NEXT);
-            return ACTION_RESULT_RUN;
+            return true;
         } else if ("PREVIOUS".equals(uri)) {
             sendMediaButtonEvent(context, KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-            return ACTION_RESULT_RUN;
+            return true;
         } else if ("PLAYPAUSE".equals(uri)) {
             sendMediaButtonEvent(context, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-            return ACTION_RESULT_RUN;
+            return true;
         } else if ("SOUND".equals(uri)) {
             toggleSilentMode(context);
-            return ACTION_RESULT_RUN;
+            return true;
         }
 
-        return ACTION_RESULT_NOTRUN;
+        return false;
     }
 
     private static void sendMediaButtonEvent(Context context, int code) {
@@ -286,8 +371,6 @@ public class KeyguardViewManager {
 
     private void maybeCreateKeyguardLocked(boolean enableScreenRotation, boolean force,
             Bundle options) {
-        final boolean isActivity = (mContext instanceof Activity); // for test activity
-
         if (mKeyguardHost != null) {
             mKeyguardHost.saveHierarchyState(mStateContainer);
         }
@@ -297,38 +380,8 @@ public class KeyguardViewManager {
 
             mKeyguardHost = new ViewManagerHost(mContext);
 
-            int flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
-                    | WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
-                    | WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
-
-            if (!mNeedsInput) {
-                flags |= WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM;
-            }
-            if (ActivityManager.isHighEndGfx()) {
-                flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-            }
-
-            final int stretch = ViewGroup.LayoutParams.MATCH_PARENT;
-            final int type = isActivity ? WindowManager.LayoutParams.TYPE_APPLICATION
-                    : WindowManager.LayoutParams.TYPE_KEYGUARD;
-            WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                    stretch, stretch, type, flags, PixelFormat.TRANSLUCENT);
-            lp.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE;
-            lp.windowAnimations = com.android.internal.R.style.Animation_LockScreen;
-            if (ActivityManager.isHighEndGfx()) {
-                lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
-                lp.privateFlags |=
-                        WindowManager.LayoutParams.PRIVATE_FLAG_FORCE_HARDWARE_ACCELERATED;
-            }
-            lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_SET_NEEDS_MENU_KEY;
-            if (isActivity) {
-                lp.privateFlags |= WindowManager.LayoutParams.PRIVATE_FLAG_SHOW_FOR_ALL_USERS;
-            }
-            lp.inputFeatures |= WindowManager.LayoutParams.INPUT_FEATURE_DISABLE_USER_ACTIVITY;
-            lp.setTitle(isActivity ? "KeyguardMock" : "Keyguard");
-            mWindowLayoutParams = lp;
-            mViewManager.addView(mKeyguardHost, lp);
+            setKeyguardParams();
+            mViewManager.addView(mKeyguardHost, mWindowLayoutParams);
         }
 
         if (force || mKeyguardView == null) {
@@ -428,8 +481,8 @@ public class KeyguardViewManager {
     }
 
     /**
-     * Reset the state of the view.
-     */
+* Reset the state of the view.
+*/
     public synchronized void reset(Bundle options) {
         if (DEBUG) Log.d(TAG, "reset()");
         // User might have switched, check if we need to go back to keyguard
@@ -457,7 +510,7 @@ public class KeyguardViewManager {
             if (showListener != null) {
                 if (mKeyguardHost.getVisibility() == View.VISIBLE) {
                     // Keyguard may be in the process of being shown, but not yet
-                    // updated with the window manager...  give it a chance to do so.
+                    // updated with the window manager... give it a chance to do so.
                     mKeyguardHost.post(new Runnable() {
                         @Override
                         public void run() {
@@ -484,16 +537,16 @@ public class KeyguardViewManager {
     }
 
     /**
-     * A key has woken the device.  We use this to potentially adjust the state
-     * of the lock screen based on the key.
-     *
-     * The 'Tq' suffix is per the documentation in {@link android.view.WindowManagerPolicy}.
-     * Be sure not to take any action that takes a long time; any significant
-     * action should be posted to a handler.
-     *
-     * @param keyCode The wake key.  May be {@link KeyEvent#KEYCODE_UNKNOWN} if waking
-     * for a reason other than a key press.
-     */
+* A key has woken the device. We use this to potentially adjust the state
+* of the lock screen based on the key.
+*
+* The 'Tq' suffix is per the documentation in {@link android.view.WindowManagerPolicy}.
+* Be sure not to take any action that takes a long time; any significant
+* action should be posted to a handler.
+*
+* @param keyCode The wake key. May be {@link KeyEvent#KEYCODE_UNKNOWN} if waking
+* for a reason other than a key press.
+*/
     public boolean wakeWhenReadyTq(int keyCode) {
         if (DEBUG) Log.d(TAG, "wakeWhenReady(" + keyCode + ")");
         if (mKeyguardView != null) {
@@ -505,8 +558,8 @@ public class KeyguardViewManager {
     }
 
     /**
-     * Hides the keyguard view
-     */
+* Hides the keyguard view
+*/
     public synchronized void hide() {
         if (DEBUG) Log.d(TAG, "hide()");
 
@@ -537,8 +590,8 @@ public class KeyguardViewManager {
     }
 
     /**
-     * Dismisses the keyguard by going to the next screen or making it gone.
-     */
+* Dismisses the keyguard by going to the next screen or making it gone.
+*/
     public synchronized void dismiss() {
         if (mScreenOn) {
             mKeyguardView.dismiss();
@@ -546,8 +599,8 @@ public class KeyguardViewManager {
     }
 
     /**
-     * @return Whether the keyguard is showing
-     */
+* @return Whether the keyguard is showing
+*/
     public synchronized boolean isShowing() {
         return (mKeyguardHost != null && mKeyguardHost.getVisibility() == View.VISIBLE);
     }

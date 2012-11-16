@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
+ * Copyright (C) 2012 ParanoidAndroid Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -3312,6 +3313,28 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_VIBRATE_ENABLED = "lockscreen.vibrate_enabled";
+
+        /**
+         * Show the pending notification counts as overlays on the status bar
+         * @hide
+         */
+        public static final String SYSTEM_PROFILES_ENABLED = "system_profiles_enabled";
+
+        /**
+         * Low battery warning dialog and sound
+         * 0 = off
+         * 1 = dialog only
+         * 2 = sound only
+         * 3 = dialog and sound
+         * @hide
+         */
+        public static final String POWER_UI_LOW_BATTERY_WARNING_POLICY = "power_ui_low_battery_warning_policy";
+
+        /**	
+         * Allows to show the background activity back the lockscreen
+         * @hide
+         */
+        public static final String LOCKSCREEN_SEE_THROUGH = "lockscreen_see_through";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings

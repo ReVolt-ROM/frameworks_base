@@ -2559,6 +2559,12 @@ public final class Settings {
                 "navring_4",
         };
 
+         /**
+         * Statusbar State
+         * @hide
+         */
+        public static final String EXPANDED_DESKTOP_STATE = "expanded_desktop_state";
+
         /**
          * Custom navring long press actions
          *
@@ -3103,6 +3109,13 @@ public final class Settings {
 
         /**
          * Whether the hints for the left and right widgets are shown when the screen is turned on
+         * Whether power menu expanded desktop is enabled
+         * @hide
+         */
+        public static final String POWER_MENU_EXPANDED_DESKTOP_ENABLED = "power_menu_expanded_desktop_enabled";
+
+        /**
+         * Setting to allow Unlimited Widgets
          * @hide
          */
         public static final String LOCKSCREEN_HIDE_INITIAL_PAGE_HINTS = "lockscreen_hide_initial_page_hints";

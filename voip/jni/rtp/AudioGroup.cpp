@@ -948,11 +948,6 @@ int add(JNIEnv *env, jobject thiz, jint mode,
         jniThrowNullPointerException(env, "codecSpec");
         return 0;
     }
-    const char *codecSpec = env->GetStringUTFChars(jCodecSpec, NULL);
-    if (!codecSpec) {
-        // Exception already thrown.
-        return 0;
-    }
     socket = dup(socket);
     if (socket == -1) {
         jniThrowException(env, "java/lang/IllegalStateException",
@@ -960,6 +955,11 @@ int add(JNIEnv *env, jobject thiz, jint mode,
         return 0;
     }
 
+    const char *codecSpec = env->GetStringUTFChars(jCodecSpec, NULL);
+    if (!codecSpec) {
+        // Exception already thrown.
+        return 0;
+    }
     // Create audio codec.
     int codecType = -1;
     char codecName[16];

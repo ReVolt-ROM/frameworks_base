@@ -116,6 +116,8 @@ public abstract class KeyguardAbsKeyInputView extends LinearLayout
 
         mQuickUnlock = Settings.System.getBoolean(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_QUICK_UNLOCK_CONTROL, false);
+        mQuickUnlock = (Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.LOCKSCREEN_QUICK_UNLOCK_CONTROL, 0) == 1);
 
         mPasswordEntry.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -128,11 +130,12 @@ public abstract class KeyguardAbsKeyInputView extends LinearLayout
                 if (mCallback != null) {
                     mCallback.userActivity(0);
                 }
-                if (mQuickUnlock && getQuickUnlockAllowed()) {
-                    if (s.length() > MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT &&
-                            mLockPatternUtils.checkPassword(s.toString())) {
-                        mCallback.dismiss(true);
+                if (mQuickUnlock) {
+                    String entry = mPasswordEntry.getText().toString();
+                    if (entry.length() > MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT &&
+                            mLockPatternUtils.checkPassword(entry)) {
                         mCallback.reportSuccessfulUnlockAttempt();
+                        mCallback.dismiss(true);
                     }
                 }
             }

@@ -1987,6 +1987,11 @@ public class Camera {
          */
         public static final String SCENE_MODE_ASD = "asd";
 
+        /** @hide
+         * Scene mode is off.
+         */
+        public static final String SCENE_MODE_ASD = "asd";
+
         /**
          * Scene mode is off.
          */

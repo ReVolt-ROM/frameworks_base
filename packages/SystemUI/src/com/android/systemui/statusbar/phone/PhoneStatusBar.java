@@ -1579,6 +1579,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
         final boolean halfWayDone = mScrollView.getVisibility() == View.VISIBLE;
         final int zeroOutDelays = halfWayDone ? 0 : 1;
 
+        if (!halfWayDone) {
+            mScrollView.setScaleX(0f);
+            mFlipSettingsView.setScaleX(1f);
+        }
+
         mScrollView.setVisibility(View.VISIBLE);
         mScrollViewAnim = start(
             startDelay(FLIP_DURATION_OUT * zeroOutDelays,
@@ -1662,30 +1667,30 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
         }
     }
 
-    public void partialFlip(float percent) {
+    public void partialFlip(float progress) {
         if (mFlipSettingsViewAnim != null) mFlipSettingsViewAnim.cancel();
         if (mScrollViewAnim != null) mScrollViewAnim.cancel();
         if (mSettingsButtonAnim != null) mSettingsButtonAnim.cancel();
         if (mNotificationButtonAnim != null) mNotificationButtonAnim.cancel();
         if (mClearButtonAnim != null) mClearButtonAnim.cancel();
 
-        percent = Math.min(Math.max(percent, -1f), 1f);
-        if (percent < 0f) { // notifications side
+        progress = Math.min(Math.max(progress, -1f), 1f);
+        if (progress < 0f) { // notifications side
             mFlipSettingsView.setScaleX(0f);
             mFlipSettingsView.setVisibility(View.GONE);
             mSettingsButton.setVisibility(View.VISIBLE);
-            mSettingsButton.setAlpha(-percent);
+            mSettingsButton.setAlpha(-progress);
             mScrollView.setVisibility(View.VISIBLE);
-            mScrollView.setScaleX(-percent);
+            mScrollView.setScaleX(-progress);
             mNotificationButton.setVisibility(View.GONE);
         } else { // settings side
-            mFlipSettingsView.setScaleX(percent);
+            mFlipSettingsView.setScaleX(progress);
             mFlipSettingsView.setVisibility(View.VISIBLE);
             mSettingsButton.setVisibility(View.GONE);
             mScrollView.setVisibility(View.GONE);
             mScrollView.setScaleX(0f);
             mNotificationButton.setVisibility(View.VISIBLE);
-            mNotificationButton.setAlpha(percent);
+            mNotificationButton.setAlpha(progress);
         }
         mClearButton.setVisibility(View.GONE);
     }
@@ -1706,6 +1711,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
 
         final boolean halfWayDone = mFlipSettingsView.getVisibility() == View.VISIBLE;
         final int zeroOutDelays = halfWayDone ? 0 : 1;
+
+        if (!halfWayDone) {
+            mFlipSettingsView.setScaleX(0f);
+            mScrollView.setScaleX(1f);
+        }
 
         mFlipSettingsView.setVisibility(View.VISIBLE);
         mFlipSettingsViewAnim = start(

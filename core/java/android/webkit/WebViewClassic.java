@@ -4473,6 +4473,10 @@ public final class WebViewClassic implements WebViewProvider, WebViewProvider.Sc
         if (mWebViewCore != null && !mBlockWebkitViewMessages) {
             mWebViewCore.sendMessage(EventHub.CLEAR_CONTENT);
         }
+
+        if (mHTML5VideoViewProxy != null) {
+            mHTML5VideoViewProxy.setMediaControllerHidden();
+        }
     }
 
     /**

@@ -230,9 +230,10 @@
     <!--  Radius of NavRing in Tablet Mode Landscape -->
     <dimen name="navring_radius_tablet_portrait">300dp</dimen>
 
-
+<<<<<<< HEAD
     <!-- Constant for hidden navbar drag handle -->
     <dimen name="drag_handle_height">10dp</dimen>
+=======
     <!-- Height of the quick navigation bar trigger -->
     <dimen name="quick_nav_trigger_height">10dp</dimen>
 
@@ -248,5 +249,6 @@
     <dimen name="qc_thumb_width">150dp</dimen>
     <dimen name="qc_thumb_height">100dp</dimen>
     <dimen name="qc_item_size">40dp</dimen>
+>>>>>>> 4dd817a... Per app color on quick navbar
 
 </resources>

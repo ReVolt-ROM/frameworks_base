@@ -1549,6 +1549,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_NONE);
     }
 
+    @Override
     public void animateCollapsePanels(int flags) {
         if (SPEW) {
             Slog.d(TAG, "animateCollapse():"
@@ -1572,6 +1573,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         mStatusBarWindow.cancelExpandHelper();
         mStatusBarView.collapseAllPanels(true);
+        super.animateCollapsePanels(flags);
     }
 
     public ViewPropertyAnimator setVisibilityWhenDone(

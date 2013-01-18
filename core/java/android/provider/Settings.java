@@ -2894,6 +2894,13 @@ public final class Settings {
         public static final String PIE_CONTROLS = "pie_controls";
 
         /**
+         * Whether to enable or not pie per-app-coloring
+         * The value is boolean (1 or 0).
+         * @hide
+         */
+        public static final String PIE_PAC = "pie_pac";
+
+        /**
          * Location of the pie in the screen
          * 0 = Gravity.TOP
          * 1 = Gravity.BOTTOM
@@ -2902,6 +2909,16 @@ public final class Settings {
          * @hide
          */
         public static final String PIE_GRAVITY = "pie_gravity";
+
+        /**
+         * Pie status report
+         * 0 = Bare
+         * 1 = Quick
+         * 2 = Default
+         * 3 = Slow
+         * @hide
+         */
+        public static final String PIE_MODE = "pie_mode";
 
         /**
          * whether to hide the signal barss

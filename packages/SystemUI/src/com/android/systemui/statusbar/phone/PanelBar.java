@@ -26,6 +26,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.PieControlPanel;
 
 public class PanelBar extends FrameLayout {
@@ -43,9 +44,9 @@ public class PanelBar extends FrameLayout {
     PanelHolder mPanelHolder;
     ArrayList<PanelView> mPanels = new ArrayList<PanelView>();
     PanelView mTouchingPanel;
-    PieControlPanel mAlternativePanel;
     private int mState = STATE_CLOSED;
     private boolean mTracking;
+    private BaseStatusBar mStatusBar;
 
     float mPanelExpandedFractionSum;
 
@@ -66,6 +67,10 @@ public class PanelBar extends FrameLayout {
     public void addPanel(PanelView pv) {
         mPanels.add(pv);
         pv.setBar(this);
+    }
+
+    public void setStatusBar(BaseStatusBar statusBar) {
+        mStatusBar = statusBar;
     }
 
     public void setPanelHolder(PanelHolder ph) {
@@ -209,13 +214,12 @@ public class PanelBar extends FrameLayout {
             go(STATE_CLOSED);
             onAllPanelsCollapsed();
         }
-        if(mAlternativePanel != null) {
-            mAlternativePanel.animateCollapsePanels();
+        ArrayList<PieControlPanel> panels = mStatusBar.getPieControlPanels();
+        if(!panels.isEmpty()) {
+            for(PieControlPanel panel : panels) {
+                panel.animateCollapsePanels();
+            }
         }
-    }
-
-    public void setAlternativePanel(PieControlPanel panel){
-        mAlternativePanel = panel;
     }
 
     public void onPanelPeeked() {

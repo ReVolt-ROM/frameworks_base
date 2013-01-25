@@ -311,6 +311,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mWifiTetherCallback;
     private State mWifiTetherState = new State();
 
+    private QuickSettingsTileView mPowerMenuTile;
+    private RefreshCallback mPowerMenuCallback;
+    private State mPowerMenuState = new State();
+
  /*   private QuickSettingsTileView mBTTetherTile;
     private RefreshCallback mBTTetherCallback;
     private State mBTTetherState = new State(); */
@@ -424,6 +428,8 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                 refreshLTETile();
             if (toggle.equals(QuickSettings.NAVBAR_HIDE_TOGGLE))
                 refreshNavBarHideTile();
+            if (toggle.equals(QuickSettings.POWER_MENU_TOGGLE))
+                refreshPowerMenuTile();
         }
 
     }
@@ -756,6 +762,20 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mLocationState.label = description;
         if (togglesContain(QuickSettings.GPS_TOGGLE))
             mLocationCallback.refreshView(mLocationTile, mLocationState);
+    }
+
+    // Power Menu
+    void addPowerMenuTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mPowerMenuTile = view;
+        mPowerMenuCallback = cb;
+        refreshPowerMenuTile();
+    }
+
+    void refreshPowerMenuTile() {
+        Resources r = mContext.getResources();
+        mPowerMenuState.label = r.getString(R.string.quick_settings_powermenu);
+        mPowerMenuState.iconId = (mUseDefaultTheme ? R.drawable.ic_qs_powermenu : R.drawable.ic_qs_powermenu_light);
+        mPowerMenuCallback.refreshView(mPowerMenuTile, mPowerMenuState);
     }
 
     // Bug report

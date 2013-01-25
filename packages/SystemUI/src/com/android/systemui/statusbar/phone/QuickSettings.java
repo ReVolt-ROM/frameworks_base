@@ -147,6 +147,7 @@ public class QuickSettings {
     public static final int STATE_JUST_RECORDED = 3;
     public static final int STATE_NO_RECORDING = 4;
 
+    private static final int POWER_MENU_TILE = 25;
 
     public static final String USER_TOGGLE = "USER";
     public static final String BRIGHTNESS_TOGGLE = "BRIGHTNESS";
@@ -174,10 +175,14 @@ public class QuickSettings {
     public static final String LTE_TOGGLE = "LTE";
     public static final String FAV_CONTACT_TOGGLE = "FAVCONTACT";
     public static final String SOUND_STATE_TOGGLE = "SOUNDSTATE";
+<<<<<<< HEAD
     public static final String NAVBAR_HIDE_TOGGLE = "NAVBARHIDE";
     public static final String QUICKRECORD_TOGGLE = "QUICKRECORD";
     private static final String LOG_TAG = "AudioRecord";
     private static String mQuickAudio = null;
+=======
+    public static final String POWER_MENU_TOGGLE = "POWERMENU";
+>>>>>>> 7b76dbb... Add Power Menu Tile
 
     private static final String DEFAULT_TOGGLES = "default";
 
@@ -263,8 +268,12 @@ public class QuickSettings {
             toggleMap.put(LTE_TOGGLE, LTE_TILE);
             toggleMap.put(FAV_CONTACT_TOGGLE, FAV_CONTACT_TILE);
             toggleMap.put(SOUND_STATE_TOGGLE, SOUND_STATE_TILE);
+<<<<<<< HEAD
             toggleMap.put(NAVBAR_HIDE_TOGGLE, NAVBAR_HIDE_TILE);
             toggleMap.put(QUICKRECORD_TOGGLE, QUICKRECORD_TILE);
+=======
+            toggleMap.put(POWER_MENU_TOGGLE, POWER_MENU_TILE);
+>>>>>>> 7b76dbb... Add Power Menu Tile
             //toggleMap.put(BT_TETHER_TOGGLE, BT_TETHER_TILE);
         }
         return toggleMap;
@@ -1530,6 +1539,7 @@ public class QuickSettings {
                     }
                 });
                 break;
+<<<<<<< HEAD
             case QUICKRECORD_TILE:
                 quick = (QuickSettingsTileView)
                         inflater.inflate(R.layout.quick_settings_tile, parent, false);
@@ -1555,11 +1565,25 @@ public class QuickSettings {
                                 stopPlaying();
                                 break;
                         }
+=======
+            case POWER_MENU_TILE:
+                quick = (QuickSettingsTileView)
+                        inflater.inflate(R.layout.quick_settings_tile, parent, false);
+                quick.setBackgroundResource(mTileBG);
+                quick.setContent(R.layout.quick_settings_tile_powermenu, inflater);
+                quick.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getService().animateCollapsePanels();
+                        Intent intent=new Intent(Intent.ACTION_POWERMENU);
+                        mContext.sendBroadcast(intent);
+>>>>>>> 7b76dbb... Add Power Menu Tile
                     }
                 });
                 quick.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
+<<<<<<< HEAD
                         switch (mRecordingState) {
                             case STATE_NO_RECORDING:
                             case STATE_IDLE:
@@ -1576,10 +1600,29 @@ public class QuickSettings {
                         TextView tv = (TextView) view.findViewById(R.id.quickrecord_textview);
                         tv.setText(state.label);
                         tv.setTextSize(1, mTileTextSize);
+=======
+                        getService().animateCollapsePanels();
+                        Intent intent=new Intent(Intent.ACTION_POWERMENU_REBOOT);
+                        mContext.sendBroadcast(intent);
+                        return true;
+                    }
+                });
+                mModel.addPowerMenuTile(quick, new QuickSettingsModel.RefreshCallback() {
+                    @Override
+                    public void refreshView(QuickSettingsTileView view, State state) {
+		       	TextView tv = (TextView) view.findViewById(R.id.powermenu_textview);
+			tv.setText(state.label);
+                        tv.setTextSize(1, mTileTextSize);
+                        tv.setTextColor(mTileText);
+>>>>>>> 7b76dbb... Add Power Menu Tile
                         tv.setCompoundDrawablesWithIntrinsicBounds(0, state.iconId, 0, 0);
                     }
                 });
                 break;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7b76dbb... Add Power Menu Tile
         }
         return quick;
     }

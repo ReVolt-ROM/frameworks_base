@@ -66,6 +66,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.SlidingDrawer.OnDrawerCloseListener;
+import android.widget.SlidingDrawer.OnDrawerOpenListener;
+import android.widget.SlidingDrawer.OnDrawerScrollListener;
 
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarNotification;
@@ -92,6 +95,7 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+
 
 public class TabletStatusBar extends BaseStatusBar implements
         InputMethodsPanel.OnHardKeyboardEnabledChangeListener {
@@ -147,6 +151,11 @@ public class TabletStatusBar extends BaseStatusBar implements
     float mWidthPort = 0f;
     boolean mLandscape = false;
     private int mMaxNotificationIcons = 5;
+
+    /*boolean mIsSlidingDrawer = false;
+    static boolean mAutoHide = false;
+    static long mAutoHideTime = 10000;
+    static boolean mIsDrawerOpen = true;*/
 
     TabletStatusBarView mStatusBarView;
     View mNotificationArea;
@@ -215,6 +224,7 @@ public class TabletStatusBar extends BaseStatusBar implements
     private boolean mClockDoubleClicked;
     private AwesomeAction mAwesomeAction;
     private View mDateTimeView;
+    private int mShowSearchHoldoff = 0;
 
     public Context getContext() { return mContext; }
 
@@ -252,7 +262,7 @@ public class TabletStatusBar extends BaseStatusBar implements
     CustomTheme mCurrentTheme;
     private boolean mRecreating = false;
 
-
+    
     protected void addPanelWindows() {
         final Context context = mContext;
         final Resources res = mContext.getResources();
@@ -361,6 +371,7 @@ public class TabletStatusBar extends BaseStatusBar implements
         lp.windowAnimations = android.R.style.Animation_Dialog;
 
         mWindowManager.addView(mCompatModePanel, lp);
+
         mRecentButton.setOnTouchListener(mRecentsPreloadOnTouchListener);
 
         mPile = (NotificationRowLayout)mNotificationPanel.findViewById(R.id.content);
@@ -370,12 +381,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         ScrollView scroller = (ScrollView)mPile.getParent();
         scroller.setFillViewport(true);
 
-        mDateTimeView = mNotificationPanel.findViewById(R.id.datetime);
-        if (mDateTimeView != null) {
-            mDateTimeView.setOnClickListener(mClockClickListener);
-            mDateTimeView.setOnLongClickListener(mClockLongClickListener);
-            mDateTimeView.setEnabled(true);
-        }
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
     }
@@ -455,9 +460,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         mNotificationPanelParams.height = getNotificationPanelHeight();
         mWindowManager.updateViewLayout(mNotificationPanel,
                 mNotificationPanelParams);
-        mWindowManager.updateViewLayout(mNotificationPanel, mNotificationPanelParams);
-        mShowSearchHoldoff = mContext.getResources().getInteger(
-                R.integer.config_show_search_delay);
         updateSearchPanel();
     }
 
@@ -511,10 +513,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         mStatusBarView = sb;
 
         sb.setHandler(mHandler);
-
-
-        mQuickNavbarTrigger = (View)sb.findViewById(R.id.popup_area1);
-        mQuickNavbarTrigger.setOnTouchListener(new QuickNavbarTouchListener());
 
         try {
             // Sanity-check that someone hasn't set up the config wrong and asked for a navigation
@@ -750,19 +748,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         mWindowManager.updateViewLayout(mStatusBarView, lp);
     }
 
-    @Override
-    protected void onBarTouchEvent(MotionEvent ev) {
-    }
-
-    @Override
-    protected void showBar(boolean showSearch){
-    }
-
-    @Override
-    protected void setSearchLightOn(boolean on){
-    }
-
-    private int mShowSearchHoldoff = 0;
     private Runnable mShowSearchPanel = new Runnable() {
         public void run() {
             showSearchPanel();
@@ -950,6 +935,15 @@ public class TabletStatusBar extends BaseStatusBar implements
                     if (mNotificationPanel.isShowing()) {
                         mNotificationPanel.show(false, true);
                         mNotificationArea.setVisibility(View.VISIBLE);
+                    }
+                    break;
+                case MSG_OPEN_SETTINGS_PANEL:
+                    if (DEBUG) Slog.d(TAG, "opening notifications panel");
+                    if (!mNotificationPanel.isShowing()) {
+                        mNotificationPanel.show(true, true);
+                        mNotificationArea.setVisibility(View.INVISIBLE);
+                        mTicker.halt();
+                        mNotificationPanel.swapPanels();
                     }
                     break;
                 case MSG_OPEN_INPUT_METHODS_PANEL:
@@ -1769,6 +1763,25 @@ public class TabletStatusBar extends BaseStatusBar implements
         return mNotificationPanel.getVisibility() == View.VISIBLE;
     }
 
+    public void cancelAutoHideTimer() {
+        AlarmManager am = (AlarmManager)mContext.getSystemService(Context.ALARM_SERVICE);
+        Intent i = new Intent(mContext, AutoHideReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(mContext, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        try {
+            am.cancel(pi);
+        } catch (Exception e) {
+        }
+    }
+
+    public static class AutoHideReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mAutoHide && mSlider != null) {
+                mSlider.close();
+            }
+        }
+    }
+
     private boolean isLandscape () {
         Configuration config = mContext.getResources().getConfiguration();
         return (config.orientation == Configuration.ORIENTATION_LANDSCAPE);
@@ -1846,9 +1859,8 @@ public class TabletStatusBar extends BaseStatusBar implements
         mWidthLand = Settings.System.getFloat(cr, Settings.System.NAVIGATION_BAR_WIDTH_LAND, 0f);
         mWidthPort = Settings.System.getFloat(cr, Settings.System.NAVIGATION_BAR_WIDTH_PORT, 0f);
         mLandscape = (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
-}
-
 
         UpdateWeights(mLandscape);
     }
 }
+

@@ -497,7 +497,7 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mBar.collapseAllPanels(true);
+                        mBar.collapseAllPanels();
                         final UserManager um =
                                 (UserManager) mContext.getSystemService(Context.USER_SERVICE);
                         if (um.getUsers(true).size() > 1) {
@@ -614,7 +614,7 @@ public class QuickSettings {
                 quick.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mBar.collapseAllPanels(true);
+                        mBar.collapseAllPanels();
                         showBrightnessDialog();
                     }
                 });
@@ -1279,7 +1279,7 @@ public class QuickSettings {
                     @Override
                     public void onClick(View v) {
                         try {
-                            mBar.collapseAllPanels(true);
+                            mBar.collapseAllPanels();
                             Intent intent = new Intent(Settings.ACTION_SHOW_INPUT_METHOD_PICKER);
                             PendingIntent pendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
                             pendingIntent.send();
@@ -1345,7 +1345,7 @@ public class QuickSettings {
                         Settings.System.QUICK_TOGGLE_FAV_CONTACT);
 
                         if (lookupKey != null && lookupKey.length() > 0) {
-                            mBar.collapseAllPanels(true);
+                            mBar.collapseAllPanels();
                             Uri lookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
                             Uri res = ContactsContract.Contacts.lookupContact(mContext.getContentResolver(), lookupUri);
                             Intent intent = ContactsContract.QuickContact.composeQuickContactsIntent(

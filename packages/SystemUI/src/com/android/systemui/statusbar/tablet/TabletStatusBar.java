@@ -361,8 +361,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         lp.windowAnimations = android.R.style.Animation_Dialog;
 
         mWindowManager.addView(mCompatModePanel, lp);
-<<<<<<< HEAD
-=======
         mRecentButton.setOnTouchListener(mRecentsPreloadOnTouchListener);
 
         // Quick navigation bar panel
@@ -391,7 +389,6 @@ public class TabletStatusBar extends BaseStatusBar implements
             mStatusBarView.setIgnoreChildren(4, mQuickNavbarTrigger, mQuickNavbarPanel);
         }
         mQuickNavbarPanel.setHandler(mHandler);
->>>>>>> cfd0885... Voilà, it shows!
 
         mWindowManager.addView(mQuickNavbarPanel, lp);
 
@@ -402,14 +399,12 @@ public class TabletStatusBar extends BaseStatusBar implements
         ScrollView scroller = (ScrollView)mPile.getParent();
         scroller.setFillViewport(true);
 
-<<<<<<< HEAD
         mDateTimeView = mNotificationPanel.findViewById(R.id.datetime);
         if (mDateTimeView != null) {
             mDateTimeView.setOnClickListener(mClockClickListener);
             mDateTimeView.setOnLongClickListener(mClockLongClickListener);
             mDateTimeView.setEnabled(true);
         }
-=======
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
 
@@ -428,7 +423,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         ContentResolver resolver = mContext.getContentResolver();
         boolean hide = Settings.System.getInt(resolver,
                 Settings.System.QUICK_NAVIGATION, 0) == 1;
->>>>>>> cfd0885... Voilà, it shows!
     }
 
     @Override
@@ -504,14 +498,11 @@ public class TabletStatusBar extends BaseStatusBar implements
             onBarHeightChanged(isLandscape() ? mUserBarHeightLand : mUserBarHeight);
         }
         mNotificationPanelParams.height = getNotificationPanelHeight();
-<<<<<<< HEAD
         mWindowManager.updateViewLayout(mNotificationPanel,
                 mNotificationPanelParams);
-=======
         mWindowManager.updateViewLayout(mNotificationPanel, mNotificationPanelParams);
         mShowSearchHoldoff = mContext.getResources().getInteger(
                 R.integer.config_show_search_delay);
->>>>>>> cfd0885... Voilà, it shows!
         updateSearchPanel();
     }
 
@@ -561,8 +552,7 @@ public class TabletStatusBar extends BaseStatusBar implements
 
         sb.setHandler(mHandler);
 
-<<<<<<< HEAD
-=======
+
         mQuickNavbarTrigger = (View)sb.findViewById(R.id.popup_area1);
         mQuickNavbarTrigger.setOnTouchListener(new QuickNavbarTouchListener());
 
@@ -578,7 +568,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         // set recents activity navigation bar view
         RecentsActivity.setNavigationCallback(this);
 
->>>>>>> cfd0885... Voilà, it shows!
         mBarContents = (ViewGroup) sb.findViewById(R.id.bar_contents);
 
         // the whole right-hand side of the bar
@@ -1003,8 +992,6 @@ public class TabletStatusBar extends BaseStatusBar implements
                         mNotificationArea.setVisibility(View.VISIBLE);
                     }
                     break;
-<<<<<<< HEAD
-=======
                 case MSG_OPEN_QUICKNAVBAR_PANEL:
                     if (DEBUG) Slog.d(TAG, "opening quicknavbar panel");
                     if (!mQuickNavbarPanel.isShowing()) {
@@ -1017,7 +1004,6 @@ public class TabletStatusBar extends BaseStatusBar implements
                         mQuickNavbarPanel.show(false);
                     //}
                     break;
->>>>>>> cfd0885... Voilà, it shows!
                 case MSG_OPEN_INPUT_METHODS_PANEL:
                     if (DEBUG) Slog.d(TAG, "opening input methods panel");
                     if (mInputMethodsPanel != null) mInputMethodsPanel.openPanel();
@@ -1532,8 +1518,6 @@ public class TabletStatusBar extends BaseStatusBar implements
                 NOTIFICATION_PEEK_FADE_DELAY);
     }
 
-<<<<<<< HEAD
-=======
     private class NotificationIconTouchListener implements View.OnTouchListener {
         VelocityTracker mVT;
         int mPeekIndex;
@@ -1678,7 +1662,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         }
     }
 
->>>>>>> cfd0885... Voilà, it shows!
     private void reloadAllNotificationIcons() {
         if (mIconLayout == null) return;
         mIconLayout.removeAllViews();
@@ -1882,7 +1865,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         Configuration config = mContext.getResources().getConfiguration();
         return (config.orientation == Configuration.ORIENTATION_LANDSCAPE);
     }
-<<<<<<< HEAD
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -1956,10 +1938,8 @@ public class TabletStatusBar extends BaseStatusBar implements
         mWidthLand = Settings.System.getFloat(cr, Settings.System.NAVIGATION_BAR_WIDTH_LAND, 0f);
         mWidthPort = Settings.System.getFloat(cr, Settings.System.NAVIGATION_BAR_WIDTH_PORT, 0f);
         mLandscape = (mContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
-=======
 }
 
->>>>>>> cfd0885... Voilà, it shows!
 
         UpdateWeights(mLandscape);
     }

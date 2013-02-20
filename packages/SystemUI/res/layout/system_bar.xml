@@ -29,7 +29,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
         >
-<<<<<<< HEAD
         <!-- navigation controls -->
         <LinearLayout
                android:id="@+id/navigationArea"
@@ -38,7 +37,6 @@
                android:layout_weight="45" >
                <include layout="@layout/navigation_bar"
                     android:id="@+id/navigationBar"
-=======
         <RelativeLayout
             android:id="@+id/bar_contents"
             android:layout_width="match_parent"
@@ -91,7 +89,6 @@
 
                 <RelativeLayout
                     android:id="@+id/recentsArea"
->>>>>>> cfd0885... Voilà, it shows!
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
          </LinearLayout>

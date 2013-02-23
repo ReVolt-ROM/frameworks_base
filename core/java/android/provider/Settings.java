@@ -3140,13 +3140,6 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_SHORTCUTS = "lockscreen_shortcuts";
 
-         /**
-          * Action to perform when the menu key is pressed. (Default is 1)
-          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
-          * @hide
-          */
-         public static final String KEY_MENU_ACTION = "key_menu_action";
-
         /**
          * custom lockscreen text color
          * @hide
@@ -3191,13 +3184,6 @@ public final class Settings {
          * @hide
          */
         public static final String QUICK_TOGGLES = "quick_toggles";
-
-        /**
-         * whether to enable end app on back longpress functionality
-         *
-         * @hide
-         */
-        public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
 
         /**
          * number of tiles per row in quick settings
@@ -3299,14 +3285,6 @@ public final class Settings {
           * @hide
           */
          public static final String KEY_APP_SWITCH_LONG_PRESS_ACTION = "key_app_switch_long_press_action";
-
-        /**
-         * Control the display of the action overflow button within app UI.
-         * 0 = use system default
-         * 1 = force on
-         * @hide
-         */
-        public static final String UI_FORCE_OVERFLOW_BUTTON = "ui_force_overflow_button";
 
          /**
           * Volume keys control cursor in text fields (default is 0)

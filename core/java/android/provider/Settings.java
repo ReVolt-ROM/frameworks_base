@@ -968,6 +968,8 @@ public final class Settings {
             MOVED_TO_SECURE.add(Secure.LOCK_SHOW_ERROR_PATH);
             MOVED_TO_SECURE.add(Secure.LOCK_DOTS_VISIBLE);
             MOVED_TO_SECURE.add(Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED);
+            MOVED_TO_SECURE.add(Secure.LOCK_BEFORE_UNLOCK);
+            MOVED_TO_SECURE.add(Secure.LOCKSCREEN_UNSECURE_USED);
             MOVED_TO_SECURE.add(Secure.LOGGING_ID);
             MOVED_TO_SECURE.add(Secure.PARENTAL_CONTROL_ENABLED);
             MOVED_TO_SECURE.add(Secure.PARENTAL_CONTROL_LAST_UPDATE);
@@ -2489,12 +2491,6 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_DISABLED = "lockscreen.disabled";
-
-        /**
-         * Stores value for lock before unlock
-         * @hide
-         */
-        public static final String LOCK_BEFORE_UNLOCK = "lock_before_unlock";
 
         /**
          * Stores values for custom lockscreen targets
@@ -4392,12 +4388,6 @@ public final class Settings {
          */
         public static final String MVNO_ROAMING = "mvno_roaming";
 
-        /**
-         * Stores used unsecure lockscreen for normal mode and unlock before unlock
-         * @hide
-         */
-        public static final String LOCKSCREEN_UNSECURE_USED = "lockscreen_unsecure_used";
-
         public static final String THEME_WALLPAPER = "theme_wallpaper";
 
         /**
@@ -5843,6 +5833,20 @@ public final class Settings {
          */
         public static final String LOCK_SYNC_ENCRYPTION_PASSWORD =
             "lock_sync_encryption_password";
+
+        /**
+         * Stores value for lock before unlock
+         * @hide
+         */
+        public static final String LOCK_BEFORE_UNLOCK =
+            "lock_before_unlock";
+
+        /**
+         * Stores used unsecure lockscreen for normal mode and unlock before unlock
+         * @hide
+         */
+        public static final String LOCKSCREEN_UNSECURE_USED =
+            "lockscreen_unsecure_used"; 
 
         /**
          * The Logging ID (a unique 64-bit value) as a hex string.

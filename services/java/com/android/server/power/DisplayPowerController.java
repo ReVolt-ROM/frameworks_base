@@ -218,9 +218,15 @@ final class DisplayPowerController {
     // a stylish electron beam animation instead.
     private boolean mElectronBeamFadesConfig;
 
+<<<<<<< HEAD
     // Eos settings - override config for ElectronBeam on or off
     private boolean mElectronBeamOnEnabled;
     private boolean mElectronBeamOffEnabled;
+=======
+    // Slim settings - override config for ElectronBeam
+    private boolean mElectronBeamOffEnabled;
+    private int mElectronBeamMode;
+>>>>>>> d1b2ab6... CRT screen off animation user defined (1/2)
 
     // The pending power request.
     // Initially null until the first call to requestPowerState.
@@ -523,7 +529,8 @@ final class DisplayPowerController {
 
     private void initialize() {
         mPowerState = new DisplayPowerState(
-                new ElectronBeam(mDisplayManager), mDisplayBlanker,
+                new ElectronBeam(mDisplayManager, mElectronBeamMode),
+                mDisplayBlanker,
                 mLights.getLight(LightsService.LIGHT_ID_BACKLIGHT));
 
         mElectronBeamOnAnimator = ObjectAnimator.ofFloat(
@@ -595,6 +602,15 @@ final class DisplayPowerController {
         // update crt settings here, it's only two bools
         mElectronBeamOnEnabled = mPowerRequest.electronBeamOnEnabled;
         mElectronBeamOffEnabled = mPowerRequest.electronBeamOffEnabled;
+
+        // update crt settings here
+        mElectronBeamOffEnabled = mPowerRequest.electronBeamOffEnabled;
+
+        // update crt mode settings and force initialize if value changed
+        if (mElectronBeamMode != mPowerRequest.electronBeamMode) {
+            mElectronBeamMode = mPowerRequest.electronBeamMode;
+            mustInitialize = true;
+        }
 
         // Initialize things the first time the power state is changed.
         if (mustInitialize) {

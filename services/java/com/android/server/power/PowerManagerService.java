@@ -294,6 +294,10 @@ public final class PowerManagerService extends IPowerManager.Stub
 
     // Default value for dreams activate-on-dock
     private boolean mDreamsActivatedOnDockByDefaultConfig;
+    
+    // True if we should fade the screen while turning it off, false if we should play
+    // a stylish electron beam animation instead.
+    private boolean mElectronBeamFadesConfig;
 
     // True if we should fade the screen while turning it off, false if we should play
     // a stylish electron beam animation instead.
@@ -310,6 +314,12 @@ public final class PowerManagerService extends IPowerManager.Stub
 
     // The screen off timeout setting value in milliseconds.
     private int mScreenOffTimeoutSetting;
+    
+    // Eos settings - override config for ElectronBeam on or off
+    // used here to send values to DispLayPowerController handler
+    // from SettingsObserver
+    private boolean mElectronBeamOnEnabled;
+    private boolean mElectronBeamOffEnabled;
 
     // Eos settings - override config for ElectronBeam on or off
     // used here to send values to DispLayPowerController handler
@@ -558,6 +568,12 @@ public final class PowerManagerService extends IPowerManager.Stub
                 UserHandle.USER_CURRENT);
         mStayOnWhilePluggedInSetting = Settings.Global.getInt(resolver,
                 Settings.Global.STAY_ON_WHILE_PLUGGED_IN, BatteryManager.BATTERY_PLUGGED_AC);
+                
+        // respect default config values
+        mElectronBeamOnEnabled = Settings.System.getInt(resolver,
+                Settings.System.SYSTEM_POWER_ENABLE_CRT_ON, 0) == 1;
+        mElectronBeamOffEnabled = Settings.System.getInt(resolver,
+                Settings.System.SYSTEM_POWER_ENABLE_CRT_OFF, mElectronBeamFadesConfig ? 0 : 1) == 1;
 
         // respect default config values
         mElectronBeamOnEnabled = Settings.System.getInt(resolver,

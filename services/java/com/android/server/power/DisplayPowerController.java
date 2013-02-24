@@ -591,6 +591,10 @@ final class DisplayPowerController {
 
             mustNotify = !mDisplayReadyLocked;
         }
+        
+        // update crt settings here, it's only two bools
+        mElectronBeamOnEnabled = mPowerRequest.electronBeamOnEnabled;
+        mElectronBeamOffEnabled = mPowerRequest.electronBeamOffEnabled;
 
         // update crt settings here, it's only two bools
         mElectronBeamOnEnabled = mPowerRequest.electronBeamOnEnabled;

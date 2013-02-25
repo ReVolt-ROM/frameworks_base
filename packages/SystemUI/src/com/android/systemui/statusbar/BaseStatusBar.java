@@ -351,54 +351,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
     }
 
-    private void addPie(int gravity) {
-        // Quick navigation bar trigger area
-        mQuickNavbarTrigger = new View(mContext);
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                50,
-        final Resources res = mContext.getResources();
-        mPieControlsTrigger = new View(mContext);
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                (gravity == Gravity.TOP || gravity == Gravity.BOTTOM ?
-                        ViewGroup.LayoutParams.MATCH_PARENT : res.getDimensionPixelSize(R.dimen.pie_trigger_height)),
-                (gravity == Gravity.LEFT || gravity == Gravity.RIGHT ?
-                        ViewGroup.LayoutParams.MATCH_PARENT : res.getDimensionPixelSize(R.dimen.pie_trigger_height)),
-                WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG,
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-                        | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
-                PixelFormat.TRANSLUCENT);
-
-        lp.gravity = gravity;
-
-        // Quick navigation bar panel
-        PieControlPanel panel = (PieControlPanel) View.inflate(mContext,
-                R.layout.pie_control_panel, null);
-
-        mPieControlsTrigger.setOnTouchListener(new PieControlsTouchListener(panel));
-        mWindowManager.addView(mPieControlsTrigger, lp);
-
-        lp = new WindowManager.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG,
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-                        | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
-                        | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                PixelFormat.TRANSLUCENT);
-        lp.setTitle("PieControlPanel");
-        lp.windowAnimations = android.R.style.Animation;
-
-        panel.setBar(this);
-        panel.setHandler(mHandler);
-        panel.setOrientation(gravity);
-        mWindowManager.addView(panel, lp);
-    }
-
     public void start() {
         mWindowManager = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
         mWindowManagerService = WindowManagerGlobal.getWindowManagerService();
@@ -944,110 +896,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
     }
 
-    static float initialX = 0;
-    static float initialY = 0;
-    static float deltaX = 0;
-    static float deltaY = 0;
-    private class PieControlsTouchListener implements View.OnTouchListener {
-        public boolean onTouch(View v, MotionEvent event) {
-            float initialX = 0;
-            float initialY = 0;
-            float deltaX = 0;
-            float deltaY = 0;
-
-            final int action = event.getAction();
-            final boolean panelShowing = mQuickNavbarPanel.isShowing();
-            final int action = event.getAction();
-            final boolean panelShowing = mPieControlPanel.isShowing();
-
-            if (!panelShowing) {
-                switch(action) {
-                    case MotionEvent.ACTION_DOWN:       
-                        // reset deltaX and deltaY
-                        deltaX = deltaY = 0;
-
-                        // get initial positions
-                        initialX = event.getX();
-                        initialY = event.getY();
-                    break;
-                    case MotionEvent.ACTION_MOVE:
-                        deltaX = event.getX() - initialX;
-                        deltaY = event.getY() - initialY;
-
-                        // swipe up event
-                        if(deltaY < 0) {
-                            WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    300,
-                                    (int)event.getX() - 150,
-                                    0,
-                                    WindowManager.LayoutParams.TYPE_STATUS_BAR_PANEL,
-                                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        final Resources res = mContext.getResources();
-                        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                 WindowManager.LayoutParams.TYPE_STATUS_BAR_PANEL,
-                                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                                        | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-                                        | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
-                                        | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                                    PixelFormat.TRANSLUCENT);
-                            lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
-                            lp.setTitle("QuickNavbarPanel");
-                            lp.windowAnimations = android.R.style.Animation;
-
-                            mWindowManager.updateViewLayout(mQuickNavbarPanel, lp);
-                            event.setAction(MotionEvent.ACTION_DOWN);
-                            mQuickNavbarPanel.onTouchEvent(event);
-                        }
-                                PixelFormat.TRANSLUCENT);
-                        lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
-                        lp.setTitle("PieControlPanel");
-                        lp.windowAnimations = android.R.style.Animation;
-                        mWindowManager.updateViewLayout(mPieControlPanel, lp);
-                        mPieControlPanel.show(true);
-
-                        event.setAction(MotionEvent.ACTION_DOWN);
-                        mPieControlPanel.onTouchEvent(event);
-                    break;
-                    case MotionEvent.ACTION_DOWN:
-                        deltaX = deltaY = 0;
-                        initialX = event.getX();
-                        initialY = event.getY();
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        deltaX = event.getX() - initialX;
-                        deltaY = event.getY() - initialY;
-                        // Swipe up
-                        if(deltaY < -10) {
-                            final Resources res = mContext.getResources();
-                            WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    WindowManager.LayoutParams.TYPE_STATUS_BAR_PANEL,
-                                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                                            | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-                                            | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
-                                            | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-                                    PixelFormat.TRANSLUCENT);
-                            lp.gravity = Gravity.BOTTOM | Gravity.LEFT;
-                            lp.setTitle("PieControlPanel");
-                            lp.windowAnimations = android.R.style.Animation;
-                            mWindowManager.updateViewLayout(mPieControlPanel, lp);
-                            mPieControlPanel.show(true);
-
-                            event.setAction(MotionEvent.ACTION_DOWN);
-                            mPieControlPanel.onTouchEvent(event);
-                        }
-                }
-            } else {
-                return mPieControlPanel.onTouchEvent(event);
-            }
-            return false;
-        }
-    }
-
     protected View.OnTouchListener mRecentsPreloadOnTouchListener = new View.OnTouchListener() {
         // additional optimization when we have software system buttons - start loading the recent
         // tasks on touch down
@@ -1115,11 +963,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                  }
                  break;
              case MSG_CLOSE_SEARCH_PANEL:
-                 if (DEBUG) Slog.d(TAG, "closing search panel");
-                 if (mSearchPanelView != null && mSearchPanelView.isShowing()) {
-                     mSearchPanelView.show(false, true);
-                 }
-                 break;
                 if (DEBUG) Slog.d(TAG, "closing search panel");
                 if (mSearchPanelView != null && mSearchPanelView.isShowing()) {
                     mSearchPanelView.show(false, true);

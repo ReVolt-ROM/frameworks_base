@@ -18,3 +18,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_frame"
     android:background="#00000000" />
+

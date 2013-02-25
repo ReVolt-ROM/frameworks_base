@@ -1,19 +1,19 @@
 /*
-* Copyright (C) 2007 The Android Open Source Project
-* Copyright (C) 2012 ParanoidAndroid Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2007 The Android Open Source Project
+ * Copyright (C) 2012 ParanoidAndroid Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.android.internal.policy.impl.keyguard;
 
@@ -53,11 +53,11 @@ import com.android.internal.R;
 import com.android.internal.widget.LockPatternUtils;
 
 /**
-* Manages creating, showing, hiding and resetting the keyguard. Calls back
-* via {@link KeyguardViewMediator.ViewMediatorCallback} to poke
-* the wake lock and report that the keyguard is done, which is in turn,
-* reported to this class by the current {@link KeyguardViewBase}.
-*/
+ * Manages creating, showing, hiding and resetting the keyguard.  Calls back
+ * via {@link KeyguardViewMediator.ViewMediatorCallback} to poke
+ * the wake lock and report that the keyguard is done, which is in turn,
+ * reported to this class by the current {@link KeyguardViewBase}.
+ */
 public class KeyguardViewManager {
     private final static boolean DEBUG = KeyguardViewMediator.DEBUG;
     private static String TAG = "KeyguardViewManager";
@@ -104,11 +104,11 @@ public class KeyguardViewManager {
     }
 
     /**
-* @param context Used to create views.
-* @param viewManager Keyguard will be attached to this.
-* @param callback Used to notify of changes.
-* @param lockPatternUtils
-*/
+     * @param context Used to create views.
+     * @param viewManager Keyguard will be attached to this.
+     * @param callback Used to notify of changes.
+     * @param lockPatternUtils
+     */
     public KeyguardViewManager(Context context, ViewManager viewManager,
             KeyguardViewMediator.ViewMediatorCallback callback,
             LockPatternUtils lockPatternUtils) {
@@ -122,9 +122,9 @@ public class KeyguardViewManager {
     }
 
     /**
-* Show the keyguard. Will handle creating and attaching to the view manager
-* lazily.
-*/
+     * Show the keyguard.  Will handle creating and attaching to the view manager
+     * lazily.
+     */
     public synchronized void show(Bundle options) {
         if (DEBUG) Log.d(TAG, "show(); mKeyguardView==" + mKeyguardView);
 
@@ -481,8 +481,8 @@ public class KeyguardViewManager {
     }
 
     /**
-* Reset the state of the view.
-*/
+     * Reset the state of the view.
+     */
     public synchronized void reset(Bundle options) {
         if (DEBUG) Log.d(TAG, "reset()");
         // User might have switched, check if we need to go back to keyguard
@@ -510,7 +510,7 @@ public class KeyguardViewManager {
             if (showListener != null) {
                 if (mKeyguardHost.getVisibility() == View.VISIBLE) {
                     // Keyguard may be in the process of being shown, but not yet
-                    // updated with the window manager... give it a chance to do so.
+                    // updated with the window manager...  give it a chance to do so.
                     mKeyguardHost.post(new Runnable() {
                         @Override
                         public void run() {
@@ -537,16 +537,16 @@ public class KeyguardViewManager {
     }
 
     /**
-* A key has woken the device. We use this to potentially adjust the state
-* of the lock screen based on the key.
-*
-* The 'Tq' suffix is per the documentation in {@link android.view.WindowManagerPolicy}.
-* Be sure not to take any action that takes a long time; any significant
-* action should be posted to a handler.
-*
-* @param keyCode The wake key. May be {@link KeyEvent#KEYCODE_UNKNOWN} if waking
-* for a reason other than a key press.
-*/
+     * A key has woken the device.  We use this to potentially adjust the state
+     * of the lock screen based on the key.
+     *
+     * The 'Tq' suffix is per the documentation in {@link android.view.WindowManagerPolicy}.
+     * Be sure not to take any action that takes a long time; any significant
+     * action should be posted to a handler.
+     *
+     * @param keyCode The wake key.  May be {@link KeyEvent#KEYCODE_UNKNOWN} if waking
+     * for a reason other than a key press.
+     */
     public boolean wakeWhenReadyTq(int keyCode) {
         if (DEBUG) Log.d(TAG, "wakeWhenReady(" + keyCode + ")");
         if (mKeyguardView != null) {
@@ -558,8 +558,8 @@ public class KeyguardViewManager {
     }
 
     /**
-* Hides the keyguard view
-*/
+     * Hides the keyguard view
+     */
     public synchronized void hide() {
         if (DEBUG) Log.d(TAG, "hide()");
 
@@ -590,8 +590,8 @@ public class KeyguardViewManager {
     }
 
     /**
-* Dismisses the keyguard by going to the next screen or making it gone.
-*/
+     * Dismisses the keyguard by going to the next screen or making it gone.
+     */
     public synchronized void dismiss() {
         if (mScreenOn) {
             mKeyguardView.dismiss();
@@ -599,8 +599,8 @@ public class KeyguardViewManager {
     }
 
     /**
-* @return Whether the keyguard is showing
-*/
+     * @return Whether the keyguard is showing
+     */
     public synchronized boolean isShowing() {
         return (mKeyguardHost != null && mKeyguardHost.getVisibility() == View.VISIBLE);
     }

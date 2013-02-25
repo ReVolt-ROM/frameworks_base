@@ -23,6 +23,8 @@ import android.app.ActivityManagerNative;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
+import android.app.Profile;
+import android.app.ProfileManager;
 import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -248,6 +250,7 @@ public class KeyguardViewMediator {
     private int mLockSoundStreamId;
 
     private int mSlideLockDelay;
+    private ProfileManager mProfileManager;
 
     /**
      * The volume applied to the lock/unlock sounds.
@@ -497,6 +500,8 @@ public class KeyguardViewMediator {
         mKeyguardViewManager = new KeyguardViewManager(context, wm, mViewMediatorCallback,
                 mLockPatternUtils);
 
+        mProfileManager = (ProfileManager) context.getSystemService(Context.PROFILE_SERVICE);
+
         mUserPresentIntent = new Intent(Intent.ACTION_USER_PRESENT);
         mUserPresentIntent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING
                 | Intent.FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT);
@@ -574,7 +579,6 @@ public class KeyguardViewMediator {
 
             mKeyguardDonePending = false;
 
-
             // Prepare for handling Lock/Slide lock delay and timeout
             boolean lockImmediately = false;
             final ContentResolver cr = mContext.getContentResolver();
@@ -620,9 +624,6 @@ public class KeyguardViewMediator {
         // having to unlock the screen)
         final ContentResolver cr = mContext.getContentResolver();
 
-        boolean separateSlideLockTimeoutEnabled = Settings.System.getInt(cr,
-                Settings.System.SCREEN_LOCK_SLIDE_DELAY_TOGGLE, 0) == 1;
-
         // From DisplaySettings
         long displayTimeout = Settings.System.getInt(cr, SCREEN_OFF_TIMEOUT,
                 KEYGUARD_DISPLAY_TIMEOUT_DELAY_DEFAULT);
@@ -633,6 +634,12 @@ public class KeyguardViewMediator {
                 KEYGUARD_LOCK_AFTER_DELAY_DEFAULT);
 
         // From CyanogenMod specific Settings
+        // If utilizing a secured lock screen, we should not utilize the slide
+        // delay and should let it default to the standard delay
+        boolean separateSlideLockTimeoutEnabled = (mLockPatternUtils.isSecure() ? false
+                : Settings.System.getInt(cr,
+                        Settings.System.SCREEN_LOCK_SLIDE_DELAY_TOGGLE, 0) == 1);
+
         int slideLockTimeoutDelay = (mSlideLockDelay == WindowManagerPolicy.OFF_BECAUSE_OF_TIMEOUT ? Settings.System
                 .getInt(cr, Settings.System.SCREEN_LOCK_SLIDE_TIMEOUT_DELAY,
                         KEYGUARD_LOCK_AFTER_DELAY_DEFAULT) : Settings.System.getInt(cr,
@@ -910,6 +917,16 @@ public class KeyguardViewMediator {
                 && mLockPatternUtils.isLockScreenDisabled() && !lockedOrMissing) {
             if (DEBUG) Log.d(TAG, "doKeyguard: not showing because lockscreen is off");
             return;
+        }
+
+        // if the current profile has disabled us, don't show
+        Profile profile = mProfileManager.getActiveProfile();
+        if (profile != null) {
+            if (!lockedOrMissing
+                    && profile.getScreenLockMode() == Profile.LockMode.DISABLE) {
+                if (DEBUG) Log.d(TAG, "doKeyguard: not showing because of profile override");
+                return;
+            }
         }
 
         if (DEBUG) Log.d(TAG, "doKeyguard: showing the lock screen");

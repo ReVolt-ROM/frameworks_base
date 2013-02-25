@@ -114,8 +114,6 @@ public abstract class KeyguardAbsKeyInputView extends LinearLayout
             }
         });
 
-        mQuickUnlock = Settings.System.getBoolean(mContext.getContentResolver(),
-                Settings.System.LOCKSCREEN_QUICK_UNLOCK_CONTROL, false);
         mQuickUnlock = (Settings.System.getInt(mContext.getContentResolver(),
             Settings.System.LOCKSCREEN_QUICK_UNLOCK_CONTROL, 0) == 1);
 

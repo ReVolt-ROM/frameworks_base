@@ -517,12 +517,13 @@
     <string name="quick_settings_swagger">Swagger</string>
     <string name="quick_settings_swaggersun">Swagger Sunday</string>
     <string name="quick_settings_fbgt">FBGT</string>
+    <string name="quick_settings_powermenu">Power Menu</string>
+    <string name="quick_settings_profile_label">Profile</string>
     <string name="quick_settings_recording">Recording...</string>
     <string name="quick_settings_recordingcap">Recording Captured</string>
     <string name="quick_settings_playing">Playing...</string>
     <string name="quick_settings_quickrecord">Quick Record</string>
     <string name="quick_settings_nofile">Long Press To Record</string>
-    <string name="quick_settings_powermenu">Power Menu</string>
 
     <!-- Title of help text shown when the notification panel is pulled down for the very first time. [CHAR LIMIT=NONE] -->
     <string name="status_bar_help_title">Notifications appear here</string>
@@ -548,6 +549,7 @@
 
     <string name="widgets">Widgets</string>
     <string name="toggle_navbar">NavBar - Toggle</string>
+    <string name="toggle_statusbar">StatusBar - Toggle</string>
     <string name="toggle_widgets">Widgets - Toggle</string>
     <string name="toggle_ring_vib">Ring/Vib - Toggle</string>
     <string name="toggle_ring_silent">Ring/Silent - Toggle</string>
@@ -585,6 +587,10 @@
     <string name="quick_settings_navbar_hide_on_label">NavBar Hide On</string>
     <string name="quick_settings_navbar_hide_off_label">NavBAr Hide Off</string>
     <string name="quick_settings_sound_on">Sound on</string>
+    <string name="quick_settings_statusbar_on_label">StatusBar On</string>
+    <string name="quick_settings_statusbar_off_label">StatusBar Off</string>
+    <string name="quick_settings_quiet_hours_on_label">QuietHours On</string>
+    <string name="quick_settings_quiet_hours_off_label">QuietHours Off</string>
     <string name="quick_settings_swaggersuntoast">#SwaggerSunday</string>
 
     <!--  RamBar -->

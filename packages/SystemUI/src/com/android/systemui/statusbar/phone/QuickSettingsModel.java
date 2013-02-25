@@ -44,6 +44,9 @@ import android.view.View;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
+import android.app.Profile;
+import android.app.ProfileManager;
+import com.android.server.ProfileManagerService;
 
 import com.android.internal.view.RotationPolicy;
 import com.android.internal.telephony.PhoneConstants;
@@ -78,6 +81,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private static final String TAG_TRY_SUPPRESSING_IME_SWITCHER = "TrySuppressingImeSwitcher";
 
     private String mFastChargePath;
+    private ProfileManager mProfileManager;
     
     private int dataState = -1;
 
@@ -204,6 +208,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private final BrightnessObserver mBrightnessObserver;
     private Calendar mCalendar;
     private NfcAdapter mNfcAdapter;
+    private boolean mUseDefaultTheme = true;
 
     private boolean sundayToggle = false;
 
@@ -315,6 +320,14 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mPowerMenuCallback;
     private State mPowerMenuState = new State();
 
+    private QuickSettingsTileView mQuietHoursTile;
+    private RefreshCallback mQuietHoursCallback;
+    private State mQuietHoursState = new State();
+
+    private QuickSettingsTileView mProfileTile;
+    private RefreshCallback mProfileCallback;
+    private State mProfileState = new State();
+
  /*   private QuickSettingsTileView mBTTetherTile;
     private RefreshCallback mBTTetherCallback;
     private State mBTTetherState = new State(); */
@@ -334,6 +347,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private QuickSettingsTileView mSettingsTile;
     private RefreshCallback mSettingsCallback;
     private State mSettingsState = new State();
+    
+    private QuickSettingsTileView mStatusBarTile;
+    private RefreshCallback mStatusBarCallback;
+    private State mStatusBarState = new State();
 
     public QuickSettingsModel(Context context) {
         mContext = context;
@@ -353,6 +370,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mBugreportObserver.startObserving();
         mBrightnessObserver = new BrightnessObserver(mHandler);
         mBrightnessObserver.startObserving();
+        mProfileManager = (ProfileManager) mContext.getSystemService(Context.PROFILE_SERVICE);
 
         IntentFilter alarmIntentFilter = new IntentFilter();
         alarmIntentFilter.addAction(Intent.ACTION_ALARM_CHANGED);
@@ -426,10 +444,16 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                 refresh2gTile();
             if (toggle.equals(QuickSettings.LTE_TOGGLE))
                 refreshLTETile();
-            if (toggle.equals(QuickSettings.NAVBAR_HIDE_TOGGLE))
-                refreshNavBarHideTile();
             if (toggle.equals(QuickSettings.POWER_MENU_TOGGLE))
                 refreshPowerMenuTile();
+            if (toggle.equals(QuickSettings.QUIETHOURS_TOGGLE))
+                refreshQuietHoursTile();
+            if (toggle.equals(QuickSettings.PROFILE_TOGGLE))
+                refreshProfileTile();
+            if (toggle.equals(QuickSettings.STATUSBAR_TOGGLE))
+                refreshStatusBarTile();
+            if (toggle.equals(QuickSettings.NAVBAR_HIDE_TOGGLE))
+                refreshNavBarHideTile();
         }
 
     }
@@ -466,6 +490,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     void refreshSettingsTile() {
         Resources r = mContext.getResources();
         mSettingsState.label = r.getString(R.string.quick_settings_settings_label);
+        mSettingsState.iconId = (mUseDefaultTheme ? R.drawable.ic_qs_settings : R.drawable.ic_qs_settings_light);
         mSettingsCallback.refreshView(mSettingsTile, mSettingsState);
     }
 
@@ -562,9 +587,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         // TODO: If view is in awaiting state, disable
         Resources r = mContext.getResources();
         mAirplaneModeState.enabled = enabled;
-        mAirplaneModeState.iconId = (enabled ?
-                R.drawable.ic_qs_airplane_on :
-                R.drawable.ic_qs_airplane_off);
+        mAirplaneModeState.iconId = (enabled ? R.drawable.ic_qs_airplane_on : (mUseDefaultTheme ? R.drawable.ic_qs_airplane_off : R.drawable.ic_qs_airplane_off_light));
         mAirplaneModeState.label = r.getString(R.string.quick_settings_airplane_mode_label);
         if (togglesContain(QuickSettings.AIRPLANE_TOGGLE))
             mAirplaneModeCallback.refreshView(mAirplaneModeTile, mAirplaneModeState);
@@ -615,11 +638,11 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             mWifiState.label = removeDoubleQuotes(enabledDesc);
             mWifiState.signalContentDescription = wifiSignalContentDescription;
         } else if (wifiNotConnected) {
-            mWifiState.iconId = R.drawable.ic_qs_wifi_0;
+            mWifiState.iconId = (mUseDefaultTheme ? R.drawable.ic_qs_wifi_0 : R.drawable.ic_qs_wifi_0_light);
             mWifiState.label = r.getString(R.string.quick_settings_wifi_label);
             mWifiState.signalContentDescription = r.getString(R.string.accessibility_no_wifi);
         } else {
-            mWifiState.iconId = R.drawable.ic_qs_wifi_no_network;
+            mWifiState.iconId = (mUseDefaultTheme ? R.drawable.ic_qs_wifi_no_network : R.drawable.ic_qs_wifi_no_network_light);
             mWifiState.label = r.getString(R.string.quick_settings_wifi_off_label);
             mWifiState.signalContentDescription = r.getString(R.string.accessibility_wifi_off);
         }
@@ -649,7 +672,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             Resources r = mContext.getResources();
             mRSSIState.signalIconId = enabled && (mobileSignalIconId > 0)
                     ? mobileSignalIconId
-                    : R.drawable.ic_qs_signal_no_signal;
+                    : (mUseDefaultTheme ? R.drawable.ic_qs_signal_no_signal : R.drawable.ic_qs_signal_no_signal_light);
             mRSSIState.signalContentDescription = enabled && (mobileSignalIconId > 0)
                     ? signalContentDescription
                     : r.getString(R.string.accessibility_no_signal);
@@ -705,7 +728,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             }
             mBluetoothState.label = r.getString(R.string.quick_settings_bluetooth_label);
         } else {
-            mBluetoothState.iconId = R.drawable.ic_qs_bluetooth_off;
+            mBluetoothState.iconId = (mUseDefaultTheme ? R.drawable.ic_qs_bluetooth_off : R.drawable.ic_qs_bluetooth_off_light);
             mBluetoothState.label = r.getString(R.string.quick_settings_bluetooth_off_label);
             mBluetoothState.stateContentDescription = r.getString(R.string.accessibility_desc_off);
         }
@@ -778,6 +801,58 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mPowerMenuCallback.refreshView(mPowerMenuTile, mPowerMenuState);
     }
 
+    // Quiet Hours
+    void addQuietHoursTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mQuietHoursTile = view;
+        mQuietHoursCallback = cb;
+        onQuietHoursChanged();
+    }
+
+    public void onQuietHoursChanged() {
+        boolean enabled = Settings.System.getInt(mContext.getContentResolver(), Settings.System.QUIET_HOURS_ENABLED, 0) == 1;
+        mQuietHoursState.enabled = enabled;
+        mQuietHoursState.iconId = enabled
+                ? R.drawable.ic_qs_quiet_hours_on
+                : R.drawable.ic_qs_quiet_hours_off;
+        mQuietHoursState.label = enabled
+                ? mContext.getString(R.string.quick_settings_quiet_hours_on_label)
+                : mContext.getString(R.string.quick_settings_quiet_hours_off_label);
+
+        if (mQuietHoursTile != null && mQuietHoursCallback != null) {
+            mQuietHoursCallback.refreshView(mQuietHoursTile, mQuietHoursState);
+        }
+    }
+
+    void refreshQuietHoursTile() {
+        if (mQuietHoursTile != null) {
+            onQuietHoursChanged();
+        }
+    }
+
+
+    // Profile
+    void addProfileTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mProfileTile = view;
+        mProfileCallback = cb;
+        onProfileChanged();
+    }
+
+    public void onProfileChanged() {
+        mProfileState.label = mProfileManager.getActiveProfile().getName();
+        mProfileState.iconId = (mUseDefaultTheme ? R.drawable.ic_qs_profiles : R.drawable.ic_qs_profiles);
+        mProfileCallback.refreshView(mProfileTile, mProfileState);
+
+        if (mProfileTile != null && mProfileCallback != null) {
+            mProfileCallback.refreshView(mProfileTile, mProfileState);
+        }
+    }
+
+    void refreshProfileTile() {
+        if (mProfileTile != null) {
+            onProfileChanged();
+        }
+    }
+
     // Bug report
     void addBugreportTile(QuickSettingsTileView view, RefreshCallback cb) {
         mBugreportTile = view;
@@ -813,7 +888,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         } else {
             mWifiDisplayState.label = mContext.getString(
                     R.string.quick_settings_wifi_display_no_connection_label);
-            mWifiDisplayState.iconId = R.drawable.ic_qs_remote_display;
+            mWifiDisplayState.iconId = (mUseDefaultTheme ? R.drawable.ic_qs_remote_display : R.drawable.ic_qs_remote_display_light);
         }
         mWifiDisplayCallback.refreshView(mWifiDisplayTile, mWifiDisplayState);
 
@@ -880,8 +955,9 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         InputMethodManager imm =
                 (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
         List<InputMethodInfo> imis = imm.getInputMethodList();
-
         mImeState.enabled = (visible && needsToShowImeSwitchOngoingNotification(imm));
+        mImeState.iconId = mUseDefaultTheme ? R.drawable.ic_qs_ime
+                : R.drawable.ic_qs_ime_light;
         mImeState.label = getCurrentInputMethodName(mContext, mContext.getContentResolver(),
                 imm, imis, mContext.getPackageManager());
         if (mImeCallback != null) {
@@ -922,7 +998,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mRotationLockState.enabled = locked;
         mRotationLockState.iconId = locked
                 ? R.drawable.ic_qs_rotation_locked
-                : R.drawable.ic_qs_auto_rotate;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_auto_rotate : R.drawable.ic_qs_auto_rotate_light);
         mRotationLockState.label = locked
                 ? mContext.getString(R.string.quick_settings_rotation_locked_label)
                 : mContext.getString(R.string.quick_settings_rotation_unlocked_label);
@@ -953,7 +1029,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mVibrateState.enabled = enabled;
         mVibrateState.iconId = enabled
                 ? R.drawable.ic_qs_vibrate_on
-                : R.drawable.ic_qs_vibrate_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_vibrate_off : R.drawable.ic_qs_vibrate_off_light);
         mVibrateState.label = enabled
                 ? mContext.getString(R.string.quick_settings_vibrate_on_label)
                 : mContext.getString(R.string.quick_settings_vibrate_off_label);
@@ -988,7 +1064,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mSilentState.enabled = enabled;
         mSilentState.iconId = enabled
                 ? R.drawable.ic_qs_silence_on
-                : R.drawable.ic_qs_silence_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_silence_off : R.drawable.ic_qs_silence_off_light);
         mSilentState.label = enabled
                 ? mContext.getString(R.string.quick_settings_silent_on_label)
                 : mContext.getString(R.string.quick_settings_silent_off_label);
@@ -1014,17 +1090,17 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                 case AudioManager.RINGER_MODE_NORMAL:
                 default:
                     enabled = false;
-                    iconId = R.drawable.ic_qs_sound_sound;
+                    iconId = (mUseDefaultTheme ? R.drawable.ic_qs_ringtoggle_sound : R.drawable.ic_qs_ringtoggle_sound_light);
                     label = R.string.quick_settings_sound_on;
                     break;
                 case AudioManager.RINGER_MODE_VIBRATE:
                     enabled = true;
-                    iconId = R.drawable.ic_qs_sound_vibrate;
+                    iconId = (mUseDefaultTheme ? R.drawable.ic_qs_ringtoggle_vibrate : R.drawable.ic_qs_ringtoggle_vibrate_light);
                     label = R.string.quick_settings_vibrate_on_label;
                     break;
                 case AudioManager.RINGER_MODE_SILENT:
                     enabled = true;
-                    iconId = R.drawable.ic_qs_sound_silent;
+                    iconId = (mUseDefaultTheme ? R.drawable.ic_qs_ringtoggle_silent : R.drawable.ic_qs_ringtoggle_silent_light);
                     label = R.string.quick_settings_silent_on_label;
                     break;
             }
@@ -1050,7 +1126,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             mFChargeState.enabled = enabled;
             mFChargeState.iconId = enabled
                     ? R.drawable.ic_qs_fcharge_on
-                    : R.drawable.ic_qs_fcharge_off;
+                    : (mUseDefaultTheme ? R.drawable.ic_qs_fcharge_off : R.drawable.ic_qs_fcharge_off_light);
             mFChargeState.label = enabled
                     ? mContext.getString(R.string.quick_settings_fcharge_on_label)
                     : mContext.getString(R.string.quick_settings_fcharge_off_label);
@@ -1073,7 +1149,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mSyncState.enabled = enabled;
         mSyncState.iconId = enabled
                 ? R.drawable.ic_qs_sync_on
-                : R.drawable.ic_qs_sync_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_sync_off : R.drawable.ic_qs_sync_off_light);
         mSyncState.label = enabled
                 ? mContext.getString(R.string.quick_settings_sync_on_label)
                 : mContext.getString(R.string.quick_settings_sync_off_label);
@@ -1136,7 +1212,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mLTEState.enabled = enabled;
         mLTEState.iconId = enabled
                 ? R.drawable.ic_qs_lte_on
-                : R.drawable.ic_qs_lte_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_lte_off : R.drawable.ic_qs_lte_off_light);
         mLTEState.label = enabled
                 ? mContext.getString(R.string.quick_settings_lte_on_label)
                 : mContext.getString(R.string.quick_settings_lte_off_label);
@@ -1169,7 +1245,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         m2gState.enabled = enabled;
         m2gState.iconId = enabled
                 ? R.drawable.ic_qs_2g_on
-                : R.drawable.ic_qs_2g_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_2g_off : R.drawable.ic_qs_2g_off_light);
         m2gState.label = enabled
                 ? mContext.getString(R.string.quick_settings_twog_on_label)
                 : mContext.getString(R.string.quick_settings_twog_off_label);
@@ -1200,7 +1276,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mNFCState.enabled = enabled;
         mNFCState.iconId = enabled
                 ? R.drawable.ic_qs_nfc_on
-                : R.drawable.ic_qs_nfc_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_nfc_off : R.drawable.ic_qs_nfc_off_light);
         mNFCState.label = enabled
                 ? mContext.getString(R.string.quick_settings_nfc_on_label)
                 : mContext.getString(R.string.quick_settings_nfc_off_label);
@@ -1230,7 +1306,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mWifiTetherState.enabled = enabled;
         mWifiTetherState.iconId = enabled
                 ? R.drawable.ic_qs_wifi_tether_on
-                : R.drawable.ic_qs_wifi_tether_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_wifi_tether_off : R.drawable.ic_qs_wifi_tether_off_light);
         mWifiTetherState.label = enabled
                 ? mContext.getString(R.string.quick_settings_wifi_tether_on_label)
                 : mContext.getString(R.string.quick_settings_wifi_tether_off_label);
@@ -1258,7 +1334,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mUSBTetherState.enabled = enabled;
         mUSBTetherState.iconId = enabled
                 ? R.drawable.ic_qs_usb_tether_on
-                : R.drawable.ic_qs_usb_tether_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_usb_tether_off : R.drawable.ic_qs_usb_tether_off_light);
         mUSBTetherState.label = enabled
                 ? mContext.getString(R.string.quick_settings_usb_tether_on_label)
                 : mContext.getString(R.string.quick_settings_usb_tether_off_label);
@@ -1303,7 +1379,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mTorchState.enabled = enabled;
         mTorchState.iconId = enabled
                 ? R.drawable.ic_qs_torch_on
-                : R.drawable.ic_qs_torch_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_torch_off : R.drawable.ic_qs_torch_off_light);
         mTorchState.label = enabled
                 ? mContext.getString(R.string.quick_settings_torch_on_label)
                 : mContext.getString(R.string.quick_settings_torch_off_label);
@@ -1346,7 +1422,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
         mNavBarHideState.enabled = enabled;
         mNavBarHideState.iconId = enabled
                 ? R.drawable.ic_qs_navbar_hide_on
-                : R.drawable.ic_qs_navbar_hide_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_navbar_hide_off : R.drawable.ic_qs_navbar_hide_off_light);
         mNavBarHideState.label = enabled
                 ? mContext.getString(R.string.quick_settings_navbar_hide_on_label)
                 : mContext.getString(R.string.quick_settings_navbar_hide_off_label);
@@ -1380,7 +1456,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
                 (mode == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
         mBrightnessState.iconId = mBrightnessState.autoBrightness
                 ? R.drawable.ic_qs_brightness_auto_on
-                : R.drawable.ic_qs_brightness_auto_off;
+                : (mUseDefaultTheme ? R.drawable.ic_qs_brightness_auto_off : R.drawable.ic_qs_brightness_auto_off_light);
         mBrightnessState.label = r.getString(R.string.quick_settings_brightness_label);
         if (togglesContain(QuickSettings.BRIGHTNESS_TOGGLE))
             mBrightnessCallback.refreshView(mBrightnessTile, mBrightnessState);
@@ -1388,6 +1464,34 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
     void refreshBrightnessTile() {
         onBrightnessLevelChanged();
+    }
+    
+    // Statusbar toggle
+    void addStatusBarTile(QuickSettingsTileView view, RefreshCallback cb) {
+        mStatusBarTile = view;
+        mStatusBarCallback = cb;
+        onStatusBarChanged();
+    }
+    
+    void onStatusBarChanged() {
+        boolean enabled = Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.STATUSBAR_HIDDEN, false);
+        mStatusBarState.enabled = enabled;
+        mStatusBarState.iconId = enabled
+                ? R.drawable.ic_qs_statusbar_off
+                : R.drawable.ic_qs_statusbar_on;
+        mStatusBarState.label = enabled
+                ? mContext.getString(R.string.quick_settings_statusbar_off_label)
+                : mContext.getString(R.string.quick_settings_statusbar_on_label);
+
+        if (mStatusBarTile != null && mStatusBarCallback != null) {
+            mStatusBarCallback.refreshView(mStatusBarTile, mStatusBarState);
+        }
+    }
+    
+    void refreshStatusBarTile() {
+        if (mStatusBarTile != null) {
+            onStatusBarChanged();
+        }
     }
 
     /**
@@ -1411,7 +1515,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
         return getDefaultTiles().contains(tile);
     }
-    
+
     private ArrayList getDefaultTiles() {
         ArrayList tiles = new ArrayList();
         tiles.add(QuickSettings.USER_TOGGLE);
@@ -1444,6 +1548,10 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
 
     public void setNfcAdapter(NfcAdapter adapter) {
         mNfcAdapter = adapter;
+    }
+
+    public void setDefaultTheme(boolean theme) {
+         mUseDefaultTheme = theme;
     }
 
     protected boolean isFastChargeOn() {

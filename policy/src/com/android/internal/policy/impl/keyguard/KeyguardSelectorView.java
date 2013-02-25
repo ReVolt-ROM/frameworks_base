@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import android.animation.ObjectAnimator;
 import android.app.SearchManager;
 import android.app.admin.DevicePolicyManager;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -31,7 +32,16 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Xfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
@@ -214,10 +224,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         Resources res = getResources();
         InsetDrawable[] inactivelayer = new InsetDrawable[2];
         InsetDrawable[] activelayer = new InsetDrawable[2];
-        //maxwen: dont like that circle around
-        //inactivelayer[0] = new InsetDrawable(res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_lock_pressed), 0, 0, 0, 0);
-        // just use an "empty" image
-        inactivelayer[0] = new InsetDrawable(res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_empty), 0, 0, 0, 0);
+        inactivelayer[0] = new InsetDrawable(res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_lock_pressed), 0, 0, 0, 0);
         inactivelayer[1] = new InsetDrawable(front, inset, inset, inset, inset);
         activelayer[0] = new InsetDrawable(back, 0, 0, 0, 0);
         activelayer[1] = new InsetDrawable(frontBlank ? res.getDrawable(android.R.color.transparent) : front, inset, inset, inset, inset);
@@ -253,8 +260,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                 || secureCameraDisabled;
         final KeyguardUpdateMonitor monitor = KeyguardUpdateMonitor.getInstance(getContext());
         boolean disabledBySimState = monitor.isSimLocked();
-        boolean cameraTargetPresent =
-            isTargetPresent(com.android.internal.R.drawable.ic_lockscreen_camera);
+        boolean cameraPresent = mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
         boolean searchTargetPresent =
             isTargetPresent(com.android.internal.R.drawable.ic_action_assist_generic);
 
@@ -271,7 +277,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         boolean searchActionAvailable =
                 ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
                 .getAssistIntent(mContext, UserHandle.USER_CURRENT) != null;
-        mCameraDisabled = cameraDisabledByAdmin || disabledBySimState || !cameraTargetPresent
+        mCameraDisabled = cameraDisabledByAdmin || disabledBySimState || !cameraPresent
                 || !currentUserSetup;
         mSearchDisabled = disabledBySimState || !searchActionAvailable || !searchTargetPresent
                 || !currentUserSetup;
@@ -330,7 +336,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                 if (i < mStoredTargets.length) {
                     String uri = mStoredTargets[i];
                     if (!uri.equals(GlowPadView.EMPTY_TARGET)) {
-                    	Log.v(TAG, "add uri:"+uri);
                         try {
                             Intent in = Intent.parseUri(uri,0);
                             Drawable front = null;
@@ -341,7 +346,8 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                                 if (fSource != null) {
                                     File fPath = new File(fSource);
                                     if (fPath.exists()) {
-                                        front = new BitmapDrawable(res, BitmapFactory.decodeFile(fSource));
+                                        front = new BitmapDrawable(res, getRoundedCornerBitmap(BitmapFactory.decodeFile(fSource)));
+                                        tmpInset = tmpInset + 5;
                                     }
                                 }
                             } else if (in.hasExtra(GlowPadView.ICON_RESOURCE)) {
@@ -381,8 +387,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                                 }
                             }
                             TargetDrawable nDrawable = new TargetDrawable(res, getLayeredDrawable(back,front, tmpInset, frontBlank));
-                            // maxwen: no need to check this for custom lockscreen targets
-                            /*ComponentName compName = in.getComponent();
+                            ComponentName compName = in.getComponent();
                             if (compName != null) {
                                 String cls = compName.getClassName();
                                 if (cls.equals("com.android.camera.CameraLauncher")) {
@@ -390,7 +395,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                                 } else if (cls.equals("SearchActivity")) {
                                     nDrawable.setEnabled(!mSearchDisabled);
                                 }
-                            }*/
+                            }
                             storedDraw.add(nDrawable);
                         } catch (Exception e) {
                             storedDraw.add(new TargetDrawable(res, 0));
@@ -404,6 +409,25 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
             }
             mGlowPadView.setTargetResources(storedDraw);
         }
+    }
+
+    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+            bitmap.getHeight(), Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final RectF rectF = new RectF(rect);
+        final float roundPx = 24;
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        return output;
     }
 
     void doTransition(View view, float to) {

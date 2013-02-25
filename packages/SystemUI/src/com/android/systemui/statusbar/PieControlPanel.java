@@ -132,6 +132,31 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
     }
 
     public void bumpConfiguration() {
+<<<<<<< HEAD
+=======
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.PIE_STICK, 1) == 1) {
+
+            // Get original offset
+            int gravityIndex = findGravityOffset(convertPieGravitytoGravity(
+                    Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.PIE_GRAVITY, 3)));
+            
+            // Orient Pie to that place
+            reorient(gravityArray[gravityIndex], false);
+
+            // Now re-orient it for landscape orientation
+            switch(mDisplay.getRotation()) {
+                case Surface.ROTATION_270:
+                    reorient(gravityArray[gravityIndex + 1], false);
+                    break;
+                case Surface.ROTATION_90:
+                    reorient(gravityArray[gravityIndex - 1], false);
+                    break;
+            }
+        }
+
+>>>>>>> a12335b... PIE: compressed layout, stubs, new defaults
         show(false);
         if (mPieControl != null) mPieControl.onConfigurationChanged();
     }
@@ -150,6 +175,7 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
         mWindowManager.addView(mTrigger, BaseStatusBar
                 .getPieTriggerLayoutParams(mContext, mOrientation));
         show(mShowing);
+<<<<<<< HEAD
 
         int pieGravity = 3;
         switch(mOrientation) {
@@ -162,6 +188,28 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
             case Gravity.RIGHT:
                 pieGravity = 2;
                 break;
+=======
+        if (storeSetting) {
+            int gravityOffset = mOrientation;
+            if (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.PIE_STICK, 1) == 1) {
+
+                gravityOffset = findGravityOffset(mOrientation);
+                switch(mDisplay.getRotation()) {
+                    case Surface.ROTATION_270:
+                        gravityOffset = gravityArray[gravityOffset - 1];
+                        break;
+                    case Surface.ROTATION_90:
+                        gravityOffset = gravityArray[gravityOffset + 1];
+                        break;
+                    default:
+                        gravityOffset = mOrientation;
+                        break;
+                }
+            }
+            Settings.System.putInt(mContext.getContentResolver(),
+                    Settings.System.PIE_GRAVITY, convertGravitytoPieGravity(gravityOffset));
+>>>>>>> a12335b... PIE: compressed layout, stubs, new defaults
         }
 
         Settings.System.putInt(mContext.getContentResolver(),

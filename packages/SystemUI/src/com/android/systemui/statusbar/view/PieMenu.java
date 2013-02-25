@@ -56,6 +56,7 @@ import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.BounceInterpolator;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -114,7 +115,7 @@ public class PieMenu extends FrameLayout {
     private static final int COLOR_BATTERY_BACKGROUND = 0xffffff;
     private static final int COLOR_STATUS = 0xffffff;
     private static final int BASE_SPEED = 1000;
-    private static final int EMPTY_ANGLE_BASE = 12;
+    private static final int EMPTY_ANGLE_BASE = 0;
     private static final int CHEVRON_FRAGMENTS = 16;
     private static final float SIZE_BASE = 1f;
 
@@ -376,11 +377,11 @@ public class PieMenu extends FrameLayout {
 
         if (mEnableColor) {
             mPieBackground.setColor(Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.PIE_BACKGROUND, COLOR_PIE_BACKGROUND));
+                        Settings.System.PIE_BACKGROUND, COLOR_PIE_BACKGROUND) | COLOR_ALPHA_MASK);
             mPieSelected.setColor(Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.PIE_SELECT, COLOR_PIE_SELECT));
+                        Settings.System.PIE_SELECT, COLOR_PIE_SELECT) | COLOR_ALPHA_MASK);
             mPieOutlines.setColor(Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.PIE_OUTLINES, COLOR_PIE_OUTLINES));
+                        Settings.System.PIE_OUTLINES, COLOR_PIE_OUTLINES) | COLOR_ALPHA_MASK);
             mClockPaint.setColor(Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.PIE_STATUS_CLOCK, COLOR_STATUS));
             mAmPmPaint.setColor(Settings.System.getInt(mContext.getContentResolver(),
@@ -388,11 +389,12 @@ public class PieMenu extends FrameLayout {
             mStatusPaint.setColor(Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.PIE_STATUS, COLOR_STATUS));
             mChevronBackgroundLeft.setColor(Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.PIE_CHEVRON_LEFT, COLOR_CHEVRON_LEFT));
+                        Settings.System.PIE_CHEVRON_LEFT, COLOR_CHEVRON_LEFT) | COLOR_OPAQUE_MASK);
             mChevronBackgroundRight.setColor(Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.PIE_CHEVRON_RIGHT, COLOR_CHEVRON_RIGHT));
+                        Settings.System.PIE_CHEVRON_RIGHT, COLOR_CHEVRON_RIGHT) | COLOR_OPAQUE_MASK);
             mBatteryJuice.setColorFilter(new PorterDuffColorFilter(extractRGB(Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.PIE_JUICE, COLOR_BATTERY_JUICE)) | COLOR_OPAQUE_MASK, Mode.SRC_ATOP));
+
             for (PieItem item : mItems) {
                 item.setColor(Settings.System.getInt(mContext.getContentResolver(), Settings.System.PIE_BUTTON_COLOR, COLOR_PIE_BUTTON));
             }
@@ -407,7 +409,7 @@ public class PieMenu extends FrameLayout {
             mChevronBackgroundRight.setColor(getResources().getColor(R.color.chevron_right));
             mBatteryJuice.setColorFilter(null);
             for (PieItem item: mItems) {
-                item.setColor(COLOR_PIE_BUTTON);
+                item.setColor(getResources().getColor(R.color.status));
             }
         }
 
@@ -440,17 +442,18 @@ public class PieMenu extends FrameLayout {
 
         mAnimators[ANIMATOR_ACC_SPEED15].duration = (int)(mOverallSpeed * 1.5);
         mAnimators[ANIMATOR_ACC_SPEED15].animator.setInterpolator(new AccelerateInterpolator());
-        mAnimators[ANIMATOR_DEC_SPEED15].animator.setStartDelay((int)(mInitialSpeed * 1.5));
+        mAnimators[ANIMATOR_ACC_SPEED15].animator.setStartDelay((int)(mInitialSpeed * 1.5));
 
         // Cascade accelerators
+        int count = 0;
         for(int i = ANIMATOR_ACC_INC_1; i < ANIMATOR_ACC_INC_15 + 1; i++) {
-            mAnimators[i].duration = (int)(mOverallSpeed);
-            mAnimators[i].animator.setInterpolator(new AccelerateInterpolator());
-            mAnimators[i].animator.setStartDelay(mInitialSpeed + i * 75);
+            mAnimators[i].duration = 150;
+            mAnimators[i].animator.setInterpolator(new DecelerateInterpolator());
+            mAnimators[i].animator.setStartDelay((int)(mInitialSpeed * 1.5f + (++count * 75) ));
         }
 
         // Special purpose
-        mAnimators[ANIMATOR_BATTERY_METER].duration = (int)(mOverallSpeed * 3);
+        mAnimators[ANIMATOR_BATTERY_METER].duration = (int)(mOverallSpeed * 1.5);
         mAnimators[ANIMATOR_BATTERY_METER].animator.setInterpolator(new DecelerateInterpolator());
         mAnimators[ANIMATOR_BATTERY_METER].animator.setStartDelay((int)(mInitialSpeed * 1.5));
 
@@ -470,7 +473,7 @@ public class PieMenu extends FrameLayout {
                             mStatusPanel.hidePanels(true);
                             deselect();
                             animateOut();
-                            mPanel.reorient(snap.gravity);
+                            mPanel.reorient(snap.gravity, true);
                         }
                     }
                 }
@@ -653,11 +656,15 @@ public class PieMenu extends FrameLayout {
         if (!mPanel.currentAppUsesMenu() && !mUseMenuAlways) itemCount--;
         if (!mUseSearch) itemCount--;
 
-
+        int totalCount = 0;
         int lesserSweepCount = 0;
         for (PieItem item : mItems) {
-            if (item.isLesser() && canItemDisplay(item)) {
-                lesserSweepCount += 1;
+            boolean canDisplay = canItemDisplay(item);
+            if (canDisplay) {
+                totalCount++;
+                if (item.isLesser()) {
+                    lesserSweepCount += 1;
+                }
             }
         }
 
@@ -666,12 +673,14 @@ public class PieMenu extends FrameLayout {
         float angle = 0;
         float total = 0;
 
+        int count = 0;
         for (PieItem item : mItems) {
             if (!canItemDisplay(item)) continue;
 
             sweep = ((float) (Math.PI - 2 * emptyangle) / itemCount) * (item.isLesser() ? 0.65f : 1 + adjustedSweep);
             angle = (emptyangle + sweep / 2 - (float)Math.PI/2);
-            item.setPath(makeSlice(getDegrees(0) - mPieGap, getDegrees(sweep) + mPieGap, outer, inner, mCenter));
+            item.setPath(makeSlice(getDegrees(0) - mPieGap, getDegrees(sweep) + mPieGap, outer, inner, mCenter,
+                    (mPieGap > 0 ? mPieGap + 0.4f : 0), count != 0));
             View view = item.getView();
 
             if (view != null) {
@@ -705,6 +714,7 @@ public class PieMenu extends FrameLayout {
             float itemstart = total + angle - sweep / 2;
             item.setGeometry(itemstart, sweep, inner, outer);
             total += sweep;
+            count++;
         }
     }
 
@@ -913,11 +923,15 @@ public class PieMenu extends FrameLayout {
     }
 
     private Path makeSlice(float start, float end, int outer, int inner, Point center) {
+        return makeSlice(start, end, outer, inner, center, 0, true);
+    }
+
+    private Path makeSlice(float start, float end, int outer, int inner, Point center, float narrow, boolean bothEnds) {
         RectF bb = new RectF(center.x - outer, center.y - outer, center.x + outer, center.y + outer);
         RectF bbi = new RectF(center.x - inner, center.y - inner, center.x + inner, center.y + inner);
         Path path = new Path();
         path.arcTo(bb, start, end - start, true);
-        path.arcTo(bbi, end, start - end);
+        path.arcTo(bbi, end + narrow, start - end - (bothEnds ? narrow : narrow*2));
         path.close();
         return path;
     }
@@ -1043,7 +1057,7 @@ public class PieMenu extends FrameLayout {
                 // Check for onEnter separately or'll face constant deselect
                 PieItem item = findItem(getPolar(mX, mY));
                 if (item != null) {
-                    if (mCenterDistance < shadeTreshold && mCenterDistance > (mInnerPieRadius/2)) {
+                    if (mCenterDistance < shadeTreshold && mCenterDistance > (mInnerPieRadius * 0.75f)) {
                         onEnter(item);
                     } else {
                         deselect();
@@ -1150,3 +1164,4 @@ public class PieMenu extends FrameLayout {
         }
     }
 }
+

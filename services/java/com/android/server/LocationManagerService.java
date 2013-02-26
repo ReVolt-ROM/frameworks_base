@@ -2104,6 +2104,10 @@ public class LocationManagerService extends ILocationManager.Stub {
                 mGeoFencerEnabled = true;
             }
 
+            if (mGeoFencer != null) {
+                mGeoFencerEnabled = true;
+            }
+
             // reinstate real provider if available
             LocationProviderInterface realProvider = mRealProviders.get(provider);
             if (realProvider != null) {

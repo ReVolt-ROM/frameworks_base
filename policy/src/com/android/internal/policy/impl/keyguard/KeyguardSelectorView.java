@@ -73,6 +73,8 @@ import com.android.internal.widget.multiwaveview.TargetDrawable;
 
 import java.util.ArrayList;
 
+import java.util.ArrayList;
+
 public class KeyguardSelectorView extends LinearLayout implements KeyguardSecurityView {
     private static final boolean DEBUG = KeyguardHostView.DEBUG;
     private static final String TAG = "SecuritySelectorView";
@@ -90,6 +92,60 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private int mTargetOffset;
     private boolean mIsScreenLarge;
     private int mCreationOrientation;
+
+    private boolean mGlowPadLock;
+    private boolean mBoolLongPress;
+    private int mTarget;
+    private boolean mLongPress = false;
+    private boolean mUsesCustomTargets;
+    private String[] targetActivities = new String[8];
+    private String[] longActivities = new String[8];
+    private String[] customIcons = new String[8];
+
+    private class H extends Handler {
+        public void handleMessage(Message m) {
+            switch (m.what) {
+            }
+        }
+    }
+    private H mHandler = new H();
+
+    private void launchAction(String action) {
+        try {
+            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+        } catch (RemoteException ignored) {
+        }
+
+        AwesomeConstant AwesomeEnum = fromString(action);
+        switch (AwesomeEnum) {
+        case ACTION_UNLOCK:
+            mCallback.userActivity(0);
+            mCallback.dismiss(false);
+            break;
+        case ACTION_ASSIST:
+            Intent assistIntent =
+                ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
+                .getAssistIntent(mContext, UserHandle.USER_CURRENT);
+                if (assistIntent != null) {
+                    mActivityLauncher.launchActivity(assistIntent, false, true, null, null);
+                } else {
+                    Log.w(TAG, "Failed to get intent for assist activity");
+                }
+                mCallback.userActivity(0);
+                break;
+        case ACTION_CAMERA:
+            mActivityLauncher.launchCamera(null, null);
+            mCallback.userActivity(0);
+            break;
+        case ACTION_APP:
+            Intent i = new Intent();
+            i.setAction("com.android.systemui.aokp.LAUNCH_ACTION");
+            i.putExtra("action", action);
+            mContext.sendBroadcastAsUser(i, UserHandle.ALL);
+            mCallback.userActivity(0);
+            break;
+        }
+    }
 
     private boolean mGlowPadLock;
     private boolean mBoolLongPress;
@@ -298,36 +354,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     }
 
     private void updateTargets() {
-        int currentUserHandle = mLockPatternUtils.getCurrentUser();
-        DevicePolicyManager dpm = mLockPatternUtils.getDevicePolicyManager();
-        int disabledFeatures = dpm.getKeyguardDisabledFeatures(null, currentUserHandle);
-        boolean secureCameraDisabled = mLockPatternUtils.isSecure()
-                && (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_CAMERA) != 0;
-        boolean cameraDisabledByAdmin = dpm.getCameraDisabled(null, currentUserHandle)
-                || secureCameraDisabled;
-        final KeyguardUpdateMonitor monitor = KeyguardUpdateMonitor.getInstance(getContext());
-        boolean disabledBySimState = monitor.isSimLocked();
-        boolean cameraPresent = mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
-        boolean searchTargetPresent =
-            isTargetPresent(com.android.internal.R.drawable.ic_action_assist_generic);
-
-        if (cameraDisabledByAdmin) {
-            Log.v(TAG, "Camera disabled by Device Policy");
-        } else if (disabledBySimState) {
-            Log.v(TAG, "Camera disabled by Sim State");
-        }
-        boolean currentUserSetup = 0 != Settings.Secure.getIntForUser(
-                mContext.getContentResolver(),
-                Settings.Secure.USER_SETUP_COMPLETE,
-                0 /*default */,
-                currentUserHandle);
-        boolean searchActionAvailable =
-                ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
-                .getAssistIntent(mContext, UserHandle.USER_CURRENT) != null;
-        mCameraDisabled = cameraDisabledByAdmin || disabledBySimState || !cameraPresent
-                || !currentUserSetup;
-        mSearchDisabled = disabledBySimState || !searchActionAvailable || !searchTargetPresent
-                || !currentUserSetup;
         mLongPress = false;
         mGlowPadLock = false;
         mUsesCustomTargets = mUnlockCounter() != 0;

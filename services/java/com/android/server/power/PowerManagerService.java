@@ -299,10 +299,6 @@ public final class PowerManagerService extends IPowerManager.Stub
     // a stylish electron beam animation instead.
     private boolean mElectronBeamFadesConfig;
 
-    // True if we should fade the screen while turning it off, false if we should play
-    // a stylish electron beam animation instead.
-    private boolean mElectronBeamFadesConfig;
-
     // True if dreams are enabled by the user.
     private boolean mDreamsEnabledSetting;
 
@@ -315,12 +311,6 @@ public final class PowerManagerService extends IPowerManager.Stub
     // The screen off timeout setting value in milliseconds.
     private int mScreenOffTimeoutSetting;
     
-    // Eos settings - override config for ElectronBeam on or off
-    // used here to send values to DispLayPowerController handler
-    // from SettingsObserver
-    private boolean mElectronBeamOnEnabled;
-    private boolean mElectronBeamOffEnabled;
-
     // Eos settings - override config for ElectronBeam on or off
     // used here to send values to DispLayPowerController handler
     // from SettingsObserver

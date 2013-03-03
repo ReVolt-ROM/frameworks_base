@@ -3284,16 +3284,6 @@ public final class Settings {
          * @hide
          */
         public static final String QUICK_TEXT_COLOR = "quick_text_color";
-
-        /**
-         * @hide
-         */
-        public static final String SYSTEM_POWER_ENABLE_CRT_OFF = "system_power_enable_crt_off";
-        
-        /**
-         * @hide
-         */
-        public static final String SYSTEM_POWER_ENABLE_CRT_ON = "system_power_enable_crt_on";
         
         /**
          * @hide

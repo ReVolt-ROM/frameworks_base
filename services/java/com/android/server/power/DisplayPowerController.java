@@ -596,10 +596,6 @@ final class DisplayPowerController {
         mElectronBeamOnEnabled = mPowerRequest.electronBeamOnEnabled;
         mElectronBeamOffEnabled = mPowerRequest.electronBeamOffEnabled;
 
-        // update crt settings here, it's only two bools
-        mElectronBeamOnEnabled = mPowerRequest.electronBeamOnEnabled;
-        mElectronBeamOffEnabled = mPowerRequest.electronBeamOffEnabled;
-
         // Initialize things the first time the power state is changed.
         if (mustInitialize) {
             initialize();

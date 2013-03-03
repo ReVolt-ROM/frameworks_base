@@ -66,10 +66,6 @@ final class DisplayPowerRequest {
     public boolean electronBeamOnEnabled;
     public boolean electronBeamOffEnabled;
 
-    // Eos settings - override config for ElectronBeam on or off
-    public boolean electronBeamOnEnabled;
-    public boolean electronBeamOffEnabled;    
-
     public DisplayPowerRequest() {
         screenState = SCREEN_STATE_BRIGHT;
         useProximitySensor = false;

@@ -625,5 +625,7 @@
     <string name="pie_hour_format_12">hh:mm</string>
     <string name="pie_hour_format_24">HH:mm</string>
     <string name="pie_am_pm">a</string>
+    <string name="quick_settings_pie_off_label">Pie Off</string>
+    <string name="quick_settings_pie_on_label">Pie On</string>
 
 </resources>

@@ -1127,8 +1127,7 @@ public class InputManagerService extends IInputManager.Stub
     }
 
     public void updateStylusIconEnabledFromSettings() {
-        int enabled = getStylusIconEnabled(0);
-        nativeSetStylusIconEnabled(mPtr, enabled != 0);
+        nativeSetStylusIconEnabled(mPtr, getStylusIconEnabled());
     }
 
     public void registerStylusIconEnabledSettingObserver() {
@@ -1142,13 +1141,10 @@ public class InputManagerService extends IInputManager.Stub
                 });
     }
 
-    private int getStylusIconEnabled(int defaultValue) {
-        int result = defaultValue;
-        try {
-            result = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.STYLUS_ICON_ENABLED);
-        } catch (SettingNotFoundException snfe) {
-        }
+
+    private boolean getStylusIconEnabled() {
+        boolean result = Settings.System.getBoolean(mContext.getContentResolver(),
+                    Settings.System.STYLUS_ICON_ENABLED, true);
         return result;
     }
 

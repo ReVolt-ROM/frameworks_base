@@ -64,6 +64,7 @@ public class PhoneStatusBarView extends PanelBar {
     PanelView mLastFullyOpenedPanel = null;
     PanelView mNotificationPanel, mSettingsPanel;
     private boolean mShouldFade;
+    private int mToggleStyle;
 
     public PhoneStatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -81,6 +82,10 @@ public class PhoneStatusBarView extends PanelBar {
         if(bg instanceof ColorDrawable) {
             setBackground(new BackgroundAlphaColorDrawable(((ColorDrawable) bg).getColor()));
         }
+
+        // no need for observer, sysui gets killed when the style is changed.
+        mToggleStyle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TOGGLES_STYLE, 0);
     }
 
     public void setBar(PhoneStatusBar bar) {
@@ -145,6 +150,9 @@ public class PhoneStatusBarView extends PanelBar {
                         + mNotificationPanel.getExpandedHeight() > 0) 
                     ? null 
                     : mNotificationPanel;
+        }
+        if(mToggleStyle != 0) {
+            return mNotificationPanel;
         }
 
         // We split the status bar into thirds: the left 2/3 are for notifications, and the
@@ -251,15 +259,15 @@ public class PhoneStatusBarView extends PanelBar {
         if (panel.getAlpha() != alpha) {
             panel.setAlpha(alpha);
         }
-        updateBackgroundAlpha();
+        updateBackgroundAlpha(frac);
         mBar.updateCarrierLabelVisibility(false);
     }
 
-    private void updateBackgroundAlpha() {
-        if(mFadingPanel != null) {
-            mBar.mTransparencyManager.setTempStatusbarState(true);
+    private void updateBackgroundAlpha(float ex) {
+        if(mFadingPanel != null || ex > 0) {
+            mBar.mTransparencyManager.setTempDisableStatusbarState(true);
         } else {
-            mBar.mTransparencyManager.setTempStatusbarState(false);
+            mBar.mTransparencyManager.setTempDisableStatusbarState(false);
         }
         mBar.mTransparencyManager.update();
     }

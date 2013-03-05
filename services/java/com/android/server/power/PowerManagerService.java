@@ -318,6 +318,7 @@ public final class PowerManagerService extends IPowerManager.Stub
     // Slim settings - override config for ElectronBeam
     // used here to send values to DispLayPowerController handler
     // from SettingsObserver
+
     private boolean mElectronBeamOffEnabled;
     private int mElectronBeamMode;
 

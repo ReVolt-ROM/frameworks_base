@@ -20,7 +20,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import android.animation.ObjectAnimator;
-import android.app.ActivityManagerNative;
 import android.app.SearchManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ActivityNotFoundException;
@@ -48,36 +47,26 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
-import android.os.Handler;
-import android.os.Message;
-import android.os.RemoteException;
 import android.os.UserHandle;
 import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Slog;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.widget.LinearLayout;
 
-import static com.android.internal.util.aokp.AwesomeConstants.*;
-import com.android.internal.util.aokp.LockScreenHelpers;
 import com.android.internal.telephony.IccCardConstants.State;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.multiwaveview.GlowPadView;
 import com.android.internal.widget.multiwaveview.GlowPadView.OnTriggerListener;
-import com.android.internal.widget.multiwaveview.TargetDrawable;
 import com.android.internal.R;
 import com.android.internal.widget.multiwaveview.TargetDrawable;
-
-import java.util.ArrayList;
-
-import java.util.ArrayList;
 
 public class KeyguardSelectorView extends LinearLayout implements KeyguardSecurityView {
     private static final boolean DEBUG = KeyguardHostView.DEBUG;
     private static final String TAG = "SecuritySelectorView";
+    private static final String ASSIST_ICON_METADATA_NAME =
+        "com.android.systemui.action_assist_icon";
 
     private KeyguardSecurityCallback mCallback;
     private KeyguardShortcuts mShortcuts;
@@ -85,6 +74,8 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private ObjectAnimator mAnim;
     private View mFadeView;
     private boolean mIsBouncing;
+    private boolean mCameraDisabled;
+    private boolean mSearchDisabled;
     private LockPatternUtils mLockPatternUtils;
     private SecurityMessageDisplay mSecurityMessageDisplay;
     private Drawable mBouncerFrame;
@@ -93,134 +84,49 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private boolean mIsScreenLarge;
     private int mCreationOrientation;
 
-    private boolean mGlowPadLock;
-    private boolean mBoolLongPress;
-    private int mTarget;
-    private boolean mLongPress = false;
-    private boolean mUsesCustomTargets;
-    private String[] targetActivities = new String[8];
-    private String[] longActivities = new String[8];
-    private String[] customIcons = new String[8];
-
-    private class H extends Handler {
-        public void handleMessage(Message m) {
-            switch (m.what) {
-            }
-        }
-    }
-    private H mHandler = new H();
-
-    private void launchAction(String action) {
-        try {
-            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-        } catch (RemoteException ignored) {
-        }
-
-        AwesomeConstant AwesomeEnum = fromString(action);
-        switch (AwesomeEnum) {
-        case ACTION_UNLOCK:
-            mCallback.userActivity(0);
-            mCallback.dismiss(false);
-            break;
-        case ACTION_ASSIST:
-            Intent assistIntent =
-                ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
-                .getAssistIntent(mContext, UserHandle.USER_CURRENT);
-                if (assistIntent != null) {
-                    mActivityLauncher.launchActivity(assistIntent, false, true, null, null);
-                } else {
-                    Log.w(TAG, "Failed to get intent for assist activity");
-                }
-                mCallback.userActivity(0);
-                break;
-        case ACTION_CAMERA:
-            mActivityLauncher.launchCamera(null, null);
-            mCallback.userActivity(0);
-            break;
-        case ACTION_APP:
-            Intent i = new Intent();
-            i.setAction("com.android.systemui.aokp.LAUNCH_ACTION");
-            i.putExtra("action", action);
-            mContext.sendBroadcastAsUser(i, UserHandle.ALL);
-            mCallback.userActivity(0);
-            break;
-        }
-    }
-
-    private boolean mGlowPadLock;
-    private boolean mBoolLongPress;
-    private int mTarget;
-    private boolean mLongPress = false;
-    private boolean mUsesCustomTargets;
-    private String[] targetActivities = new String[8];
-    private String[] longActivities = new String[8];
-    private String[] customIcons = new String[8];
-
-    private class H extends Handler {
-        public void handleMessage(Message m) {
-            switch (m.what) {
-            }
-        }
-    }
-    private H mHandler = new H();
-
-    private void launchAction(String action) {
-        try {
-            ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
-        } catch (RemoteException ignored) {
-        }
-
-        AwesomeConstant AwesomeEnum = fromString(action);
-        switch (AwesomeEnum) {
-        case ACTION_UNLOCK:
-            mCallback.userActivity(0);
-            mCallback.dismiss(false);
-            break;
-        case ACTION_ASSIST:
-            Intent assistIntent =
-                ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
-                .getAssistIntent(mContext, UserHandle.USER_CURRENT);
-                if (assistIntent != null) {
-                    mActivityLauncher.launchActivity(assistIntent, false, true, null, null);
-                } else {
-                    Log.w(TAG, "Failed to get intent for assist activity");
-                }
-                mCallback.userActivity(0);
-                break;
-        case ACTION_CAMERA:
-            mActivityLauncher.launchCamera(null, null);
-            mCallback.userActivity(0);
-            break;
-        case ACTION_APP:
-            Intent i = new Intent();
-            i.setAction("com.android.systemui.aokp.LAUNCH_ACTION");
-            i.putExtra("action", action);
-            mContext.sendBroadcastAsUser(i, UserHandle.ALL);
-            mCallback.userActivity(0);
-            break;
-        }
-    }
-
     OnTriggerListener mOnTriggerListener = new OnTriggerListener() {
 
-       final Runnable SetLongPress = new Runnable () {
-            public void run() {
-                if (!mGlowPadLock) {
-                    mGlowPadLock = true;
-                    mLongPress = true;
-                    launchAction(longActivities[mTarget]);
-                 }
-            }
-        };
-
         public void onTrigger(View v, int target) {
-            if (!mUsesCustomTargets) {
-                mCallback.userActivity(0);
-                mCallback.dismiss(false);
+            if (mStoredTargets == null) {
+                final int resId = mGlowPadView.getResourceIdForTarget(target);
+                switch (resId) {
+                case com.android.internal.R.drawable.ic_action_assist_generic:
+                    Intent assistIntent =
+                    ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
+                    .getAssistIntent(mContext, UserHandle.USER_CURRENT);
+                    if (assistIntent != null) {
+                        mActivityLauncher.launchActivity(assistIntent, false, true, null, null);
+                    } else {
+                        Log.w(TAG, "Failed to get intent for assist activity");
+                    }
+                    mCallback.userActivity(0);
+                    break;
+
+                case com.android.internal.R.drawable.ic_lockscreen_camera:
+                    mActivityLauncher.launchCamera(null, null);
+                    mCallback.userActivity(0);
+                    break;
+
+                case com.android.internal.R.drawable.ic_lockscreen_unlock_phantom:
+                case com.android.internal.R.drawable.ic_lockscreen_unlock:
+                    mCallback.userActivity(0);
+                    mCallback.dismiss(false);
+                    break;
+                }
             } else {
-                if (!mLongPress) {
-                    mHandler.removeCallbacks(SetLongPress);
-                    launchAction(targetActivities[target]);
+                final boolean isLand = mCreationOrientation == Configuration.ORIENTATION_LANDSCAPE;
+                if ((target == 0 && (mIsScreenLarge || !isLand)) || (target == 2 && !mIsScreenLarge && isLand)) {
+                    mCallback.dismiss(false);
+                } else {
+                    target -= 1 + mTargetOffset;
+                    if (target < mStoredTargets.length && mStoredTargets[target] != null) {
+                        try {
+                            Intent launchIntent = Intent.parseUri(mStoredTargets[target], 0);
+                            mActivityLauncher.launchActivity(launchIntent, false, true, null, null);
+                            return;
+                        } catch (URISyntaxException e) {
+                        }
+                    }
                 }
             }
         }
@@ -237,20 +143,11 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         }
 
         public void onGrabbedStateChange(View v, int handle) {
-            mHandler.removeCallbacks(SetLongPress);
-            mLongPress = false;
+
         }
 
         public void onTargetChange(View v, int target) {
-            if (target == -1) {
-                mHandler.removeCallbacks(SetLongPress);
-                mLongPress = false;
-            } else {
-                if (mBoolLongPress && !TextUtils.isEmpty(longActivities[target]) && !longActivities[target].equals(AwesomeConstant.ACTION_NULL.value())) {
-                    mTarget = target;
-                    mHandler.postDelayed(SetLongPress, ViewConfiguration.getLongPressTimeout());
-                }
-            }
+
         }
 
         public void onFinishFinalAnimation() {
@@ -354,50 +251,37 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     }
 
     private void updateTargets() {
-        mLongPress = false;
-        mGlowPadLock = false;
-        mUsesCustomTargets = mUnlockCounter() != 0;
-        ArrayList<TargetDrawable> storedDraw = new ArrayList<TargetDrawable>();
+        int currentUserHandle = mLockPatternUtils.getCurrentUser();
+        DevicePolicyManager dpm = mLockPatternUtils.getDevicePolicyManager();
+        int disabledFeatures = dpm.getKeyguardDisabledFeatures(null, currentUserHandle);
+        boolean secureCameraDisabled = mLockPatternUtils.isSecure()
+                && (disabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_CAMERA) != 0;
+        boolean cameraDisabledByAdmin = dpm.getCameraDisabled(null, currentUserHandle)
+                || secureCameraDisabled;
+        final KeyguardUpdateMonitor monitor = KeyguardUpdateMonitor.getInstance(getContext());
+        boolean disabledBySimState = monitor.isSimLocked();
+        boolean cameraPresent = mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA);
+        boolean searchTargetPresent =
+            isTargetPresent(com.android.internal.R.drawable.ic_action_assist_generic);
 
-        for (int i = 0; i < 8; i++) {
-            targetActivities[i] = Settings.System.getString(
-                    mContext.getContentResolver(), Settings.System.LOCKSCREEN_TARGETS_SHORT[i]);
-            longActivities[i] = Settings.System.getString(
-                    mContext.getContentResolver(), Settings.System.LOCKSCREEN_TARGETS_LONG[i]);
-            customIcons[i] = Settings.System.getString(
-                    mContext.getContentResolver(), Settings.System.LOCKSCREEN_TARGETS_ICON[i]);
+        if (cameraDisabledByAdmin) {
+            Log.v(TAG, "Camera disabled by Device Policy");
+        } else if (disabledBySimState) {
+            Log.v(TAG, "Camera disabled by Sim State");
         }
-
-        mBoolLongPress = Settings.System.getBoolean(
-              mContext.getContentResolver(), Settings.System.LOCKSCREEN_TARGETS_LONGPRESS, false);
-
-        // no targets? add just an unlock.
-        if (!mUsesCustomTargets) {
-            storedDraw.add(LockScreenHelpers.getTargetDrawable(mContext, AwesomeConstant.ACTION_UNLOCK.value()));
-        } else {
-            // Add The Target actions and Icons
-            for (int i = 0; i < 8 ; i++) {
-                if (!TextUtils.isEmpty(customIcons[i])) {
-                    storedDraw.add(LockScreenHelpers.getCustomDrawable(mContext, customIcons[i]));
-                } else {
-                    storedDraw.add(LockScreenHelpers.getTargetDrawable(mContext, targetActivities[i]));
-                }
-            }
-        }
-        mGlowPadView.setTargetResources(storedDraw);
+        boolean currentUserSetup = 0 != Settings.Secure.getIntForUser(
+                mContext.getContentResolver(),
+                Settings.Secure.USER_SETUP_COMPLETE,
+                0 /*default */,
+                currentUserHandle);
+        boolean searchActionAvailable =
+                ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
+                .getAssistIntent(mContext, UserHandle.USER_CURRENT) != null;
+        mCameraDisabled = cameraDisabledByAdmin || disabledBySimState || !cameraPresent
+                || !currentUserSetup;
+        mSearchDisabled = disabledBySimState || !searchActionAvailable || !searchTargetPresent
+                || !currentUserSetup;
         updateResources();
-    }
-
-    private int mUnlockCounter() {
-        int counter = 0;
-        for (int i = 0; i < 8 ; i++) {
-            if (!TextUtils.isEmpty(targetActivities[i])) {
-                if (targetActivities[i].equals(AwesomeConstant.ACTION_UNLOCK.value())) {
-                    counter += 1;
-                }
-            }
-        }
-        return counter;
     }
 
     public void updateResources() {
@@ -522,18 +406,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                 } else {
                     storedDraw.add(new TargetDrawable(res, 0));
                 }
-        // Update the search icon with drawable from the search .apk
-        Intent intent = ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
-               .getAssistIntent(mContext, UserHandle.USER_CURRENT);
-        if (intent != null) {
-            ComponentName component = intent.getComponent();
-            boolean replaced = mGlowPadView.replaceTargetDrawablesIfPresent(component,
-                    ASSIST_ICON_METADATA_NAME + "_google",
-                    com.android.internal.R.drawable.ic_action_assist_generic);
-            if (!replaced && !mGlowPadView.replaceTargetDrawablesIfPresent(component,
-                        ASSIST_ICON_METADATA_NAME,
-                            com.android.internal.R.drawable.ic_action_assist_generic)) {
-                Slog.w(TAG, "Couldn't grab icon from package " + component);
             }
             mGlowPadView.setTargetResources(storedDraw);
         }

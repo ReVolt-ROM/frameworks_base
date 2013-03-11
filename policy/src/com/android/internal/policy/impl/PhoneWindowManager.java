@@ -377,15 +377,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     WindowState mFocusedWindow;
     IApplicationToken mFocusedApp;
 
-    // Behavior of volume wake
-    boolean mVolumeWakeScreen;
 
     // HW overlays state
     int mDisableOverlays = 0;
 
-    // Behavior of volbtn music controls
-    boolean mVolBtnMusicControls;
-    boolean mIsLongPress;
 
     private PowerMenuReceiver mPowerMenuReceiver;
 

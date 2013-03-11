@@ -270,9 +270,4 @@
 
     <!-- Constant for hidden navbar drag handle -->
     <dimen name="drag_handle_height">10dp</dimen>
-
-    <!-- Notification Shortcuts -->
-    <dimen name="notification_shortcuts_close_handle_height">28dp</dimen>
-    <dimen name="notification_shortcuts_spacing_height">88dp</dimen>
-    <dimen name="notification_shortcuts_drawer_margin">56dp</dimen>
 </resources>

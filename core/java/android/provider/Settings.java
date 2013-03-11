@@ -276,20 +276,6 @@ public final class Settings {
             "android.settings.DISPLAY_SETTINGS";
 
     /**
-     * Activity Action: Show settings to allow configuration of display.
-     * <p>
-     * In some cases, a matching Activity may not exist, so ensure you
-     * safeguard against this.
-     * <p>
-     * Input: Nothing.
-     * <p>
-     * Output: Nothing.
-     */
-    @SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
-    public static final String ACTION_NOTIFICATION_SHORTCUTS_SETTINGS =
-            "android.settings.slim.notificationshortcuts.NOTIFICATION_SHORTCUTS";
-
-    /**
      * Activity Action: Show settings to allow configuration of locale.
      * <p>
      * In some cases, a matching Activity may not exist, so ensure you
@@ -3936,53 +3922,6 @@ public final class Settings {
          * @hide
          */
         public static final String TOGGLES_STYLE = "toggls_style";
-
-        /**
-         * @hide
-         * Show Wifi network name in notification shade
-         * 0 - don't show
-         * 1 - show
-         */
-        public static final String NOTIFICATION_SHOW_WIFI_SSID = "notification_show_wifi_ssid";
-
-        /**
-         * Whether to enable notification shortcuts (toggle)
-         *
-         * @hide
-         */
-
-        public static final String NOTIFICATION_SHORTCUTS_TOGGLE = "pref_notification_shortcuts_toggle";
-
-        /**
-         * Stores the number of notification shortcuts to display settings for
-         * @hide
-         */
-        public static final String NOTIFICATION_SHORTCUTS_QUANTITY = "pref_notification_shortcuts_quantity";
-
-        /**
-         * Stores values for notification shortcut targets
-         * @hide
-         */
-        public static final String NOTIFICATION_SHORTCUTS_TARGETS = "notification_shortcuts_targets";
-
-        /**
-         * Stores the value for notification shortcuts icon color
-         * @hide
-         */
-        public static final String NOTIFICATION_SHORTCUTS_COLOR = "notification_shortcuts_color";
-
-        /**
-         * Whether to colorize the default application icons
-         * @hide
-         */
-        public static final String NOTIFICATION_SHORTCUTS_COLORIZE_TOGGLE = "notification_shortcuts_colorize_toggle";
-
-        /**
-         * Whether to colorize the default application icons
-         * @hide
-         */
-        public static final String NOTIFICATION_SHORTCUTS_HIDE_CARRIER = "notification_shortcuts_hide_carrier";
-
     }
 
     /**

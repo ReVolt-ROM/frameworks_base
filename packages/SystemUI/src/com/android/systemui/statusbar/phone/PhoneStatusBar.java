@@ -372,6 +372,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext);
     }
+
     // ================================================================================
     // Constructing the view
     // ================================================================================
@@ -1125,18 +1126,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     public void removeNotification(IBinder key) {
-        if (mSettingsButton == null || mNotificationButton == null) {
-            // Tablet
-            updateNotificationShortcutsVisibility(false, true);
-            if (mNotificationShortcutsToggle) {
-                mNotificationPanel.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateNotificationShortcutsVisibility(true);
-                    }
-                }, 750);
-            }
-        }
         StatusBarNotification old = removeNotificationViews(key);
         if (SPEW) Slog.d(TAG, "removeNotification key=" + key + " old=" + old);
 
@@ -1902,6 +1891,8 @@ public class PhoneStatusBar extends BaseStatusBar {
         if ((mDisabled & StatusBarManager.DISABLE_NOTIFICATION_ICONS) == 0) {
             setNotificationIconVisibility(true, com.android.internal.R.anim.fade_in);
         }
+        // Just in case
+        updateNotificationShortcutsVisibility(false);
 
         // Close any "App info" popups that might have snuck on-screen
         dismissPopups();

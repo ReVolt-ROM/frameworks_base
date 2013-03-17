@@ -30,10 +30,12 @@ import android.util.Slog;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.internal.util.aokp.StatusBarHelpers;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.NetworkController;
 
@@ -62,6 +64,9 @@ public class SignalClusterView
 
     private boolean showingSignalText = false;
     private boolean showingWiFiText = false;
+    private int mStockFontSize;
+    private int mFontSize;
+
     private boolean showingAltCluster = false;
 
     ViewGroup mWifiGroup, mMobileGroup;
@@ -112,6 +117,8 @@ public class SignalClusterView
 
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
+
+        mStockFontSize = StatusBarHelpers.pixelsToSp(mContext,mMobileText.getTextSize());
 
         apply();
     }
@@ -306,13 +313,24 @@ public class SignalClusterView
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-        showingSignalText = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_SIGNAL_TEXT, 0) != 0;
+        int fontSize = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_FONT_SIZE,mStockFontSize);
+        showingSignalText = (Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_SIGNAL_TEXT,STYLE_HIDE) > 0);
         showingWiFiText = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_WIFI_SIGNAL_TEXT, 0) != 0;
         boolean clustdefault = getResources().getBoolean(R.bool.statusbar_alt_signal_layout);
         showingAltCluster = Settings.System.getBoolean(resolver,
                 Settings.System.STATUSBAR_SIGNAL_CLUSTER_ALT, clustdefault);
+        if (fontSize != mFontSize) {
+            mFontSize = fontSize;
+            mWiFiText.setTextSize(mFontSize);
+            mMobileText.setTextSize(mFontSize);
+            int width = StatusBarHelpers.getIconWidth(mContext, mFontSize);
+            mWifi.getLayoutParams().width = width;
+            mMobile.getLayoutParams().width = width;
+            mAirplane.getLayoutParams().width = width;
+        }
         apply();
     }
 }

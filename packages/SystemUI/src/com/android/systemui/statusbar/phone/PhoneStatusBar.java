@@ -270,17 +270,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     // the power widget
     PowerWidget mPowerWidget;
 
-    // Notification Shortcuts
-    ShortcutsWidget mNotificationShortcutsLayout;
-    HorizontalScrollView mNotificationShortcutsScrollView;
-    private boolean mNotificationShortcutsVisible;
-    private boolean mNotificationShortcutsToggle;
-    private boolean mNotificationShortcutsHideCarrier;
-    FrameLayout.LayoutParams lpScrollView;
-    FrameLayout.LayoutParams lpCarrierLabel;
-    int mShortcutsDrawerMargin;
-    int mShortcutsSpacingHeight;
-
     // ticker
     private Ticker mTicker;
     private View mTickerView;
@@ -728,7 +717,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         mPowerWidget.setupWidget();
         mPowerWidget.updateVisibility();
         mTransparencyManager.setStatusbar(mStatusBarView);
-        mNotificationShortcutsLayout.setupShortcuts();
 
         mIsAutoBrightNess = checkAutoBrightNess();
         updatePropFactorValue();
@@ -2839,115 +2827,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         }
     }
 
-
-    /**
-     *  ContentObserver to watch for Quick Settings tiles changes
-     * @author dvtonder
-     *
-     */
-    private class TilesChangedObserver extends ContentObserver {
-        public TilesChangedObserver(Handler handler) {
-	        super(handler);
-                setNotificationWallpaperHelper();
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            boolean uiModeIsToggled = Settings.Secure.getInt(mContext.getContentResolver(),
-                                    Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
-
-            if (uiModeIsToggled != mUiModeIsToggled) {
-                recreateStatusBar();
-            }
-
-	}
-
-        @Override
-        public void onChange(boolean selfChange, Uri uri) {
-            if (mSettingsContainer != null) {
-                mQS.setupQuickSettings();
-            }
-        }
-
-        public void startObserving() {
-            final ContentResolver cr = mContext.getContentResolver();
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.QUICK_SETTINGS),
-                    false, this);
-
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.QS_DYNAMIC_ALARM),
-                    false, this);
-
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.QS_DYNAMIC_BUGREPORT),
-                    false, this);
-
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.QS_DYNAMIC_IME),
-                    false, this);
-
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.QS_DYNAMIC_USBTETHER),
-                    false, this);
-
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.QS_DYNAMIC_WIFI),
-                    false, this);
-
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.NOTIF_WALLPAPER_ALPHA),
-                    false, this);
-        }
-    }
-
-    /**
-     * ContentObserver to watch for Notification background/alpha
-     * @author dvtonder
-     * @author kufikugel
-     */
-    private class NotifChangedObserver extends ContentObserver {
-        public NotifChangedObserver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            setNotificationWallpaperHelper();
-            setNotificationAlphaHelper();
-        }
-
-        public void startObserving() {
-            final ContentResolver cr = mContext.getContentResolver();
-
-            cr.registerContentObserver(
-                    Settings.Secure.getUriFor(Settings.Secure.UI_MODE_IS_TOGGLED),
-                    false, this);
-
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.NOTIF_WALLPAPER_ALPHA),
-                    false, this);
-
-            cr.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.NOTIF_ALPHA),
-                    false, this);
-        }
-    }
-
-    private void setNotificationAlphaHelper() {
-        float notifAlpha = Settings.System.getFloat(mContext.getContentResolver(), Settings.System.NOTIF_ALPHA, 0.0f);
-        if (mPile != null) {
-            int N = mNotificationData.size();
-            for (int i=0; i<N; i++) {
-              Entry ent = mNotificationData.get(N-i-1);
-              View expanded = ent.expanded;
-              if (expanded !=null && expanded.getBackground()!=null) expanded.getBackground().setAlpha((int) ((1-notifAlpha) * 255));
-              View large = ent.getLargeView();
-              if (large != null && large.getBackground()!=null) large.getBackground().setAlpha((int) ((1-notifAlpha) * 255));
-            }
-        }
-    }
-
    class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -2969,10 +2848,14 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.NAV_HIDE_ENABLE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAV_HIDE_TIMEOUT), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.Secure.UI_MODE_IS_TOGGLED), false, this); 
         }
 
          @Override
         public void onChange(boolean selfChange) {
+            boolean uiModeIsToggled = Settings.Secure.getInt(mContext.getContentResolver(),
+                                    Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1; 
             updateSettings();
         }
     }

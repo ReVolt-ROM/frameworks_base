@@ -2838,14 +2838,6 @@ public final class Settings {
         public static final String EXPANDED_FLASH_MODE = "expanded_flash_mode";
 
         /**
-         * Whether custom light sensor levels & values are enabled. The value is
-         * boolean (1 or 0).
-         *
-         * @hide
-         */
-        public static final String LIGHT_SENSOR_CUSTOM = "light_sensor_custom";
-
-        /**
          * Screen dim value to use if LIGHT_SENSOR_CUSTOM is set. The value is int.
          * Default is android.os.BRIGHTNESS_DIM.
          *

@@ -1023,6 +1023,19 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 	        mGlobalActions.showProfileDialog();
     }
 
+    public void showRebootDialog() {
+        if (mGlobalActions == null) {
+            mGlobalActions = new GlobalActions(mContext, mWindowManagerFuncs);
+        }
+        final boolean keyguardShowing = keyguardIsShowingTq();
+        mGlobalActions.showRebootDialog(keyguardShowing);
+        if (keyguardShowing) {
+            // since it took two seconds of long press to bring this up,
+            // poke the wake lock so they have some time to see the dialog.
+            mKeyguardMediator.userActivity();
+        }
+    }
+
     boolean isDeviceProvisioned() {
         return Settings.Global.getInt(
                 mContext.getContentResolver(), Settings.Global.DEVICE_PROVISIONED, 0) != 0;

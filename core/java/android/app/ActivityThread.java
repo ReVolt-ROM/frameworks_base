@@ -1,29 +1,22 @@
 /*
-* Copyright (C) 2006 The Android Open Source Project
-* This code has been modified. Portions copyright (C) 2012, ParanoidAndroid Project.
-* This code has been modified. Portions copyright (C) 2010, T-Mobile USA, Inc.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2006 The Android Open Source Project
+ * This code has been modified.  Portions copyright (C) 2012, ParanoidAndroid Project.
+ * This code has been modified.  Portions copyright (C) 2010, T-Mobile USA, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package android.app;
-
-import com.android.internal.app.IAssetRedirectionManager;
-import com.android.internal.os.BinderInternal;
-import com.android.internal.os.RuntimeInit;
-import com.android.internal.os.SamplingProfilerIntegration;
-
-import org.apache.harmony.xnet.provider.jsse.OpenSSLSocketImpl;
 
 import android.app.backup.BackupAgent;
 import android.content.BroadcastReceiver;
@@ -33,10 +26,11 @@ import android.content.ContentProvider;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.IContentProvider;
-import android.content.IIntentReceiver;
 import android.content.Intent;
+import android.content.IIntentReceiver;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.IPackageManager;
 import android.content.pm.InstrumentationInfo;
 import android.content.pm.PackageInfo;
@@ -80,6 +74,7 @@ import android.os.ServiceManager;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.os.SystemProperties;
+import android.text.TextUtils;
 import android.os.Trace;
 import android.os.UserHandle;
 import android.provider.Settings;
@@ -105,7 +100,13 @@ import android.view.WindowManager;
 import android.view.WindowManagerGlobal;
 import android.renderscript.RenderScript;
 
+import com.android.internal.app.IAssetRedirectionManager;
+import com.android.internal.os.BinderInternal;
+import com.android.internal.os.RuntimeInit;
+import com.android.internal.os.SamplingProfilerIntegration;
 import com.android.internal.util.Objects;
+
+import org.apache.harmony.xnet.provider.jsse.OpenSSLSocketImpl;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -129,9 +130,6 @@ import libcore.io.EventLogger;
 import libcore.io.IoUtils;
 
 import dalvik.system.CloseGuard;
-import dalvik.system.VMRuntime;
-import android.os.SystemProperties;
-import java.lang.*;
 
 final class SuperNotCalledException extends AndroidRuntimeException {
     public SuperNotCalledException(String msg) {
@@ -146,13 +144,13 @@ final class RemoteServiceException extends AndroidRuntimeException {
 }
 
 /**
-* This manages the execution of the main thread in an
-* application process, scheduling and executing activities,
-* broadcasts, and other operations on it as the activity
-* manager requests.
-*
-* {@hide}
-*/
+ * This manages the execution of the main thread in an
+ * application process, scheduling and executing activities,
+ * broadcasts, and other operations on it as the activity
+ * manager requests.
+ *
+ * {@hide}
+ */
 public final class ActivityThread {
     /** @hide */
     public static final String TAG = "ActivityThread";
@@ -219,7 +217,7 @@ public final class ActivityThread {
     // NOTE: The activity and window managers need to call in to
     // ActivityThread to do things like update resource configurations,
     // which means this lock gets held while the activity and window managers
-    // holds their own lock. Thus you MUST NEVER call back into the activity manager
+    // holds their own lock.  Thus you MUST NEVER call back into the activity manager
     // or window manager or anything that depends on them while holding this lock.
     final HashMap<String, WeakReference<LoadedApk>> mPackages
             = new HashMap<String, WeakReference<LoadedApk>>();
@@ -273,7 +271,7 @@ public final class ActivityThread {
     final GcIdler mGcIdler = new GcIdler();
     boolean mGcIdlerScheduled = false;
 
-    static Handler sMainThreadHandler; // set once in main()
+    static Handler sMainThreadHandler;  // set once in main()
 
     Bundle mCoreSettings = null;
 
@@ -555,7 +553,7 @@ public final class ActivityThread {
         private static final String HEAP_COLUMN = "%13s %8s %8s %8s %8s %8s %8s";
         private static final String ONE_COUNT_COLUMN = "%21s %8d";
         private static final String TWO_COUNT_COLUMNS = "%21s %8d %21s %8d";
-        private static final String DB_INFO_FORMAT = " %8s %8s %14s %14s %s";
+        private static final String DB_INFO_FORMAT = "  %8s %8s %14s %14s  %s";
 
         // Formatting for checkin service - update version if row format changes
         private static final int ACTIVITY_THREAD_CHECKIN_VERSION = 1;
@@ -1081,7 +1079,7 @@ public final class ActivityThread {
             int N = stats.dbStats.size();
             if (N > 0) {
                 pw.println(" DATABASES");
-                printRow(pw, " %8s %8s %14s %14s %s", "pgsz", "dbsz", "Lookaside(b)", "cache",
+                printRow(pw, "  %8s %8s %14s %14s  %s", "pgsz", "dbsz", "Lookaside(b)", "cache",
                         "Dbname");
                 for (int i = 0; i < N; i++) {
                     DbStats dbStats = stats.dbStats.get(i);
@@ -1145,49 +1143,49 @@ public final class ActivityThread {
     }
 
     private class H extends Handler {
-        public static final int LAUNCH_ACTIVITY = 100;
-        public static final int PAUSE_ACTIVITY = 101;
+        public static final int LAUNCH_ACTIVITY         = 100;
+        public static final int PAUSE_ACTIVITY          = 101;
         public static final int PAUSE_ACTIVITY_FINISHING= 102;
-        public static final int STOP_ACTIVITY_SHOW = 103;
-        public static final int STOP_ACTIVITY_HIDE = 104;
-        public static final int SHOW_WINDOW = 105;
-        public static final int HIDE_WINDOW = 106;
-        public static final int RESUME_ACTIVITY = 107;
-        public static final int SEND_RESULT = 108;
-        public static final int DESTROY_ACTIVITY = 109;
-        public static final int BIND_APPLICATION = 110;
-        public static final int EXIT_APPLICATION = 111;
-        public static final int NEW_INTENT = 112;
-        public static final int RECEIVER = 113;
-        public static final int CREATE_SERVICE = 114;
-        public static final int SERVICE_ARGS = 115;
-        public static final int STOP_SERVICE = 116;
-        public static final int REQUEST_THUMBNAIL = 117;
-        public static final int CONFIGURATION_CHANGED = 118;
-        public static final int CLEAN_UP_CONTEXT = 119;
-        public static final int GC_WHEN_IDLE = 120;
-        public static final int BIND_SERVICE = 121;
-        public static final int UNBIND_SERVICE = 122;
-        public static final int DUMP_SERVICE = 123;
-        public static final int LOW_MEMORY = 124;
+        public static final int STOP_ACTIVITY_SHOW      = 103;
+        public static final int STOP_ACTIVITY_HIDE      = 104;
+        public static final int SHOW_WINDOW             = 105;
+        public static final int HIDE_WINDOW             = 106;
+        public static final int RESUME_ACTIVITY         = 107;
+        public static final int SEND_RESULT             = 108;
+        public static final int DESTROY_ACTIVITY        = 109;
+        public static final int BIND_APPLICATION        = 110;
+        public static final int EXIT_APPLICATION        = 111;
+        public static final int NEW_INTENT              = 112;
+        public static final int RECEIVER                = 113;
+        public static final int CREATE_SERVICE          = 114;
+        public static final int SERVICE_ARGS            = 115;
+        public static final int STOP_SERVICE            = 116;
+        public static final int REQUEST_THUMBNAIL       = 117;
+        public static final int CONFIGURATION_CHANGED   = 118;
+        public static final int CLEAN_UP_CONTEXT        = 119;
+        public static final int GC_WHEN_IDLE            = 120;
+        public static final int BIND_SERVICE            = 121;
+        public static final int UNBIND_SERVICE          = 122;
+        public static final int DUMP_SERVICE            = 123;
+        public static final int LOW_MEMORY              = 124;
         public static final int ACTIVITY_CONFIGURATION_CHANGED = 125;
-        public static final int RELAUNCH_ACTIVITY = 126;
-        public static final int PROFILER_CONTROL = 127;
-        public static final int CREATE_BACKUP_AGENT = 128;
-        public static final int DESTROY_BACKUP_AGENT = 129;
-        public static final int SUICIDE = 130;
-        public static final int REMOVE_PROVIDER = 131;
-        public static final int ENABLE_JIT = 132;
+        public static final int RELAUNCH_ACTIVITY       = 126;
+        public static final int PROFILER_CONTROL        = 127;
+        public static final int CREATE_BACKUP_AGENT     = 128;
+        public static final int DESTROY_BACKUP_AGENT    = 129;
+        public static final int SUICIDE                 = 130;
+        public static final int REMOVE_PROVIDER         = 131;
+        public static final int ENABLE_JIT              = 132;
         public static final int DISPATCH_PACKAGE_BROADCAST = 133;
-        public static final int SCHEDULE_CRASH = 134;
-        public static final int DUMP_HEAP = 135;
-        public static final int DUMP_ACTIVITY = 136;
-        public static final int SLEEPING = 137;
-        public static final int SET_CORE_SETTINGS = 138;
+        public static final int SCHEDULE_CRASH          = 134;
+        public static final int DUMP_HEAP               = 135;
+        public static final int DUMP_ACTIVITY           = 136;
+        public static final int SLEEPING                = 137;
+        public static final int SET_CORE_SETTINGS       = 138;
         public static final int UPDATE_PACKAGE_COMPATIBILITY_INFO = 139;
-        public static final int TRIM_MEMORY = 140;
-        public static final int DUMP_PROVIDER = 141;
-        public static final int UNSTABLE_PROVIDER_DIED = 142;
+        public static final int TRIM_MEMORY             = 140;
+        public static final int DUMP_PROVIDER           = 141;
+        public static final int UNSTABLE_PROVIDER_DIED  = 142;
         String codeToString(int code) {
             if (DEBUG_MESSAGES) {
                 switch (code) {
@@ -1578,7 +1576,10 @@ public final class ActivityThread {
             if (mScale != peer.mScale) {
                 return false;
             }
-            return mIsThemeable == peer.mIsThemeable;
+            if (mIsThemeable != peer.mIsThemeable) {
+                return false;
+            }
+            return true;
         }
     }
 
@@ -1652,13 +1653,13 @@ public final class ActivityThread {
         } else {
             // Display no longer exists
             // FIXME: This would not be a problem if we kept the Display object around
-            // instead of using the raw display id everywhere. The Display object caches
+            // instead of using the raw display id everywhere.  The Display object caches
             // its information even after the display has been removed.
             dm.setToDefaults();
         }
         //Slog.i("foo", "New metrics: w=" + metrics.widthPixels + " h="
-        // + metrics.heightPixels + " den=" + metrics.density
-        // + " xdpi=" + metrics.xdpi + " ydpi=" + metrics.ydpi);
+        //        + metrics.heightPixels + " den=" + metrics.density
+        //        + " xdpi=" + metrics.xdpi + " ydpi=" + metrics.ydpi);
         return dm;
     }
 
@@ -1677,19 +1678,18 @@ public final class ActivityThread {
     }
 
     /**
-* Creates the top level Resources for applications with the given compatibility info.
-*
-* @param resDir the resource directory.
-* @param compInfo the compability info. It will use the default compatibility info when it's
-* null.
-*/
+     * Creates the top level Resources for applications with the given compatibility info.
+     *
+     * @param resDir the resource directory.
+     * @param compInfo the compability info. It will use the default compatibility info when it's
+     * null.
+     */
     Resources getTopLevelResources(String resDir,
             int displayId, Configuration overrideConfiguration,
             CompatibilityInfo compInfo) {
         ResourcesKey key = new ResourcesKey(resDir,
                 displayId, overrideConfiguration,
-                compInfo.applicationScale,
-                compInfo.isThemeable);
+                compInfo.applicationScale, compInfo.isThemeable);
         Resources r;
         synchronized (mPackages) {
             // Resources is app scale dependent.
@@ -1710,8 +1710,8 @@ public final class ActivityThread {
         }
 
         //if (r != null) {
-        // Slog.w(TAG, "Throwing away out-of-date resources!!!! "
-        // + r + " " + resDir);
+        //    Slog.w(TAG, "Throwing away out-of-date resources!!!! "
+        //            + r + " " + resDir);
         //}
 
         AssetManager assets = new AssetManager();
@@ -1719,6 +1719,18 @@ public final class ActivityThread {
         assets.setThemeSupport(compInfo.isThemeable);
         if (assets.addAssetPath(resDir) == 0) {
             return null;
+        }
+
+        /* Attach theme information to the resulting AssetManager when appropriate. */
+        Configuration themeConfig = getConfiguration();
+        if (compInfo.isThemeable && themeConfig != null) {
+            if (themeConfig.customTheme == null) {
+                themeConfig.customTheme = CustomTheme.getBootTheme();
+            }
+
+            if (!TextUtils.isEmpty(themeConfig.customTheme.getThemePackageName())) {
+                attachThemeAssets(assets, themeConfig.customTheme);
+            }
         }
 
         //Slog.i(TAG, "Resource: key=" + key + ", display metrics=" + metrics);
@@ -1737,18 +1749,6 @@ public final class ActivityThread {
         } else {
             config = getConfiguration();
         }
-
-        /* Attach theme information to the resulting AssetManager when appropriate. */
-        if (compInfo.isThemeable && config != null) {
-            if (config.customTheme == null) {
-                config.customTheme = CustomTheme.getBootTheme();
-            }
-
-            if (!TextUtils.isEmpty(config.customTheme.getThemePackageName())) {
-                attachThemeAssets(assets, config.customTheme);
-            }
-        }
-
         r = new Resources(assets, dm, config, compInfo);
         if (false) {
             Slog.i(TAG, "Created app resources " + resDir + " " + r + ": "
@@ -1784,16 +1784,16 @@ public final class ActivityThread {
     }
 
     /**
-* Attach the necessary theme asset paths and meta information to convert an
-* AssetManager to being globally "theme-aware".
-*
-* @param assets
-* @param theme
-* @return true if the AssetManager is now theme-aware; false otherwise.
-* This can fail, for example, if the theme package has been been
-* removed and the theme manager has yet to revert formally back to
-* the framework default.
-*/
+     * Attach the necessary theme asset paths and meta information to convert an
+     * AssetManager to being globally "theme-aware".
+     *
+     * @param assets
+     * @param theme
+     * @return true if the AssetManager is now theme-aware; false otherwise
+     *         this can fail, for example, if the theme package has been
+     *         removed and the theme manager has yet to revert formally back to
+     *         the framework default.
+     */
     private boolean attachThemeAssets(AssetManager assets, CustomTheme theme) {
         IAssetRedirectionManager rm = getAssetRedirectionManager();
         if (rm == null) {
@@ -1816,10 +1816,10 @@ public final class ActivityThread {
                     int packageId = assets.getBasePackageId(i);
 
                     /*
-* For now, we only consider redirections coming from the
-* framework or regular android packages. This excludes
-* themes and other specialty APKs we are not aware of.
-*/
+                     * For now, we only consider redirections coming from the
+                     * framework or regular android packages. This excludes
+                     * themes and other specialty APKs we are not aware of.
+                     */
                     if (packageId != 0x01 && packageId != 0x7f) {
                         continue;
                     }
@@ -1848,8 +1848,8 @@ public final class ActivityThread {
     }
 
     /**
-* Creates the top level resources for the given package.
-*/
+     * Creates the top level resources for the given package.
+     */
     Resources getTopLevelResources(String resDir,
             int displayId, Configuration overrideConfiguration,
             LoadedApk pkgInfo) {
@@ -1878,7 +1878,7 @@ public final class ActivityThread {
             LoadedApk packageInfo = ref != null ? ref.get() : null;
             //Slog.i(TAG, "getPackageInfo " + packageName + ": " + packageInfo);
             //if (packageInfo != null) Slog.i(TAG, "isUptoDate " + packageInfo.mResDir
-            // + ": " + packageInfo.mResources.getAssets().isUpToDate());
+            //        + ": " + packageInfo.mResources.getAssets().isUpToDate());
             if (packageInfo != null && (packageInfo.mResources == null
                     || packageInfo.mResources.getAssets().isUpToDate())) {
                 if (packageInfo.isSecurityViolation()
@@ -2034,7 +2034,7 @@ public final class ActivityThread {
                                 CompatibilityInfo.DEFAULT_COMPATIBILITY_INFO));
                 mSystemContext = context;
                 //Slog.i(TAG, "Created system resources " + context.getResources()
-                // + ": " + context.getResources().getConfiguration());
+                //        + ": " + context.getResources().getConfiguration());
             }
         }
         return mSystemContext;
@@ -2078,7 +2078,7 @@ public final class ActivityThread {
         mGcIdlerScheduled = false;
         final long now = SystemClock.uptimeMillis();
         //Slog.i(TAG, "**** WE MIGHT WANT TO GC: then=" + Binder.getLastGcTime()
-        // + "m now=" + now);
+        //        + "m now=" + now);
         if ((BinderInternal.getLastGcTime()+MIN_TIME_BETWEEN_GCS) < now) {
             //Slog.i(TAG, "**** WE DO, WE DO WANT TO GC!");
             BinderInternal.forceGc("bg");
@@ -2370,10 +2370,10 @@ public final class ActivityThread {
             if (!r.activity.mFinished && r.startsNotResumed) {
                 // The activity manager actually wants this one to start out
                 // paused, because it needs to be visible but isn't in the
-                // foreground. We accomplish this by going through the
+                // foreground.  We accomplish this by going through the
                 // normal startup (because activities expect to go through
                 // onResume() the first time they run, before their window
-                // is displayed), and then pausing it. However, in this case
+                // is displayed), and then pausing it.  However, in this case
                 // we do -not- need to do the full pause cycle (of freezing
                 // and such) because the activity manager assumes it can just
                 // retain the current state it has.
@@ -2381,10 +2381,10 @@ public final class ActivityThread {
                     r.activity.mCalled = false;
                     mInstrumentation.callActivityOnPause(r.activity);
                     // We need to keep around the original state, in case
-                    // we need to be created again. But we only do this
+                    // we need to be created again.  But we only do this
                     // for pre-Honeycomb apps, which always save their state
                     // when pausing, so we can not have them save their state
-                    // when restarting from a paused state. For HC and later,
+                    // when restarting from a paused state.  For HC and later,
                     // we want to (and can) let the state be saved as the normal
                     // part of stopping the activity.
                     if (r.isPreHoneycomb()) {
@@ -2456,10 +2456,10 @@ public final class ActivityThread {
     private static final ThreadLocal<Intent> sCurrentBroadcastIntent = new ThreadLocal<Intent>();
 
     /**
-* Return the Intent that's currently being handled by a
-* BroadcastReceiver on this thread, or null if none.
-* @hide
-*/
+     * Return the Intent that's currently being handled by a
+     * BroadcastReceiver on this thread, or null if none.
+     * @hide
+     */
     public static Intent getIntentBeingBroadcast() {
         return sCurrentBroadcastIntent.get();
     }
@@ -2555,7 +2555,7 @@ public final class ActivityThread {
         }
 
         if (mBackupAgents.get(packageName) != null) {
-            Slog.d(TAG, "BackupAgent " + " for " + packageName
+            Slog.d(TAG, "BackupAgent " + "  for " + packageName
                     + " already exists");
             return;
         }
@@ -2563,7 +2563,7 @@ public final class ActivityThread {
         BackupAgent agent = null;
         String classname = data.appInfo.backupAgentName;
 
-        // full backup operation but no app-supplied agent? use the default implementation
+        // full backup operation but no app-supplied agent?  use the default implementation
         if (classname == null && (data.backupMode == IApplicationThread.BACKUP_MODE_FULL
                 || data.backupMode == IApplicationThread.BACKUP_MODE_RESTORE_FULL)) {
             classname = "android.app.backup.FullBackupAgent";
@@ -3197,7 +3197,7 @@ public final class ActivityThread {
 
         // When this is set, the stable and unstable ref counts are 0 and
         // we have a pending operation scheduled to remove the ref count
-        // from the activity manager. On the activity manager we are still
+        // from the activity manager.  On the activity manager we are still
         // holding an unstable ref, though it is not reflected in the counts
         // here.
         public boolean removePending;
@@ -3212,13 +3212,13 @@ public final class ActivityThread {
     }
 
     /**
-* Core implementation of stopping an activity. Note this is a little
-* tricky because the server's meaning of stop is slightly different
-* than our client -- for the server, stop means to save state and give
-* it the result when it is done, but the window may still be visible.
-* For the client, we want to call onStop()/onStart() to indicate when
-* the activity's UI visibillity changes.
-*/
+     * Core implementation of stopping an activity.  Note this is a little
+     * tricky because the server's meaning of stop is slightly different
+     * than our client -- for the server, stop means to save state and give
+     * it the result when it is done, but the window may still be visible.
+     * For the client, we want to call onStop()/onStart() to indicate when
+     * the activity's UI visibillity changes.
+     */
     private void performStopActivityInner(ActivityClientRecord r,
             StopInfo info, boolean keepShown, boolean saveState) {
         if (localLOGV) Slog.v(TAG, "Performing stop of " + r);
@@ -3227,7 +3227,7 @@ public final class ActivityThread {
             if (!keepShown && r.stopped) {
                 if (r.activity.mFinished) {
                     // If we are finishing, we won't call onResume() in certain
-                    // cases. So here we likewise don't want to call onStop()
+                    // cases.  So here we likewise don't want to call onStop()
                     // if the activity isn't resumed.
                     return;
                 }
@@ -3333,7 +3333,7 @@ public final class ActivityThread {
         }
 
         // Schedule the call to tell the activity manager we have
-        // stopped. We don't do this immediately, because we want to
+        // stopped.  We don't do this immediately, because we want to
         // have a chance for any other pending work (in particular memory
         // trim requests) to complete before you tell the activity
         // manager to proceed and allow us to go fully into the background.
@@ -3467,7 +3467,7 @@ public final class ActivityThread {
             if (!r.activity.mFinished && r.activity.mDecor != null
                     && r.hideForNow && resumed) {
                 // We had hidden the activity because it started another
-                // one... we have gotten a result back and we are not
+                // one...  we have gotten a result back and we are not
                 // paused, so make sure our window is visible.
                 updateVisibility(r, true);
             }
@@ -3629,9 +3629,9 @@ public final class ActivityThread {
             }
             if (r.mPendingRemoveWindow == null) {
                 // If we are delaying the removal of the activity window, then
-                // we can't clean up all windows here. Note that we can't do
+                // we can't clean up all windows here.  Note that we can't do
                 // so later either, which means any windows that aren't closed
-                // by the app will leak. Well we try to warning them a lot
+                // by the app will leak.  Well we try to warning them a lot
                 // about leaking windows, because that is a bug, so if they are
                 // using this recreate facility then they get to live with leaks.
                 WindowManagerGlobal.getInstance().closeAll(token,
@@ -3870,7 +3870,7 @@ public final class ActivityThread {
                             callbacks.add(a);
                         } else if (thisConfig != null) {
                             // Otherwise, we will tell it about the change
-                            // the next time it is resumed or shown. Note that
+                            // the next time it is resumed or shown.  Note that
                             // the activity manager may, before then, decide the
                             // activity needs to be destroyed to handle its new
                             // configuration.
@@ -3902,7 +3902,7 @@ public final class ActivityThread {
 
     private static void performConfigurationChanged(ComponentCallbacks2 cb, Configuration config) {
         // Only for Activity objects, check that they actually call up to their
-        // superclass implementation. ComponentCallbacks2 is an interface, so
+        // superclass implementation.  ComponentCallbacks2 is an interface, so
         // we check the runtime type and act accordingly.
         Activity activity = (cb instanceof Activity) ? (Activity) cb : null;
         if (activity != null) {
@@ -3994,10 +3994,6 @@ public final class ActivityThread {
             if (r != null) {
                 if (DEBUG_CONFIGURATION) Slog.v(TAG, "Changing resources "
                         + r + " config to: " + config);
-                int displayId = entry.getKey().mDisplayId;
-                boolean isDefaultDisplay = (displayId == Display.DEFAULT_DISPLAY);
-                DisplayMetrics dm = defaultDisplayMetrics;
-                Configuration overrideConfig = entry.getKey().mOverrideConfiguration;
                 boolean themeChanged = (changes & ActivityInfo.CONFIG_THEME_RESOURCE) != 0;
                 if (themeChanged) {
                     AssetManager am = r.getAssets();
@@ -4008,6 +4004,10 @@ public final class ActivityThread {
                         }
                     }
                 }
+                int displayId = entry.getKey().mDisplayId;
+                boolean isDefaultDisplay = (displayId == Display.DEFAULT_DISPLAY);
+                DisplayMetrics dm = defaultDisplayMetrics;
+                Configuration overrideConfig = entry.getKey().mOverrideConfiguration;
                 if (!isDefaultDisplay || overrideConfig != null) {
                     if (tmpConfig == null) {
                         tmpConfig = new Configuration();
@@ -4028,7 +4028,7 @@ public final class ActivityThread {
                     r.updateStringCache();
                 }
                 //Slog.i(TAG, "Updated app resources " + v.getKey()
-                // + " " + r + ": " + r.getConfiguration());
+                //        + " " + r + ": " + r.getConfiguration());
             } else {
                 //Slog.i(TAG, "Removing old resources " + v.getKey());
                 it.remove();
@@ -4166,7 +4166,7 @@ public final class ActivityThread {
         if (start) {
             try {
                 switch (profileType) {
-                    default:
+                    default:                        
                         mProfiler.setProfiler(pcd.path, pcd.fd);
                         mProfiler.autoStopProfiler = false;
                         mProfiler.startProfiling();
@@ -4284,7 +4284,7 @@ public final class ActivityThread {
             String[] packages = getPackageManager().getPackagesForUid(uid);
 
             // If there are several packages in this application we won't
-            // initialize the graphics disk caches
+            // initialize the graphics disk caches 
             if (packages != null && packages.length == 1) {
                 HardwareRenderer.setupDiskCache(cacheDir);
                 RenderScript.setupDiskCache(cacheDir);
@@ -4320,7 +4320,6 @@ public final class ActivityThread {
 
         // send up app name; do this *before* waiting for debugger
         Process.setArgV0(data.processName);
-
         android.ddm.DdmHandleAppName.setAppName(data.processName,
                                                 UserHandle.myUserId());
 
@@ -4338,7 +4337,7 @@ public final class ActivityThread {
         }
 
         // If the app is Honeycomb MR1 or earlier, switch its AsyncTask
-        // implementation to use the pool executor. Normally, we use the
+        // implementation to use the pool executor.  Normally, we use the
         // serialized executor as the default. This has to happen in the
         // main thread so the main looper is set right.
         if (data.appInfo.targetSdkVersion <= android.os.Build.VERSION_CODES.HONEYCOMB_MR1) {
@@ -4346,23 +4345,23 @@ public final class ActivityThread {
         }
 
         /*
-* Before spawning a new process, reset the time zone to be the system time zone.
-* This needs to be done because the system time zone could have changed after the
-* the spawning of this process. Without doing this this process would have the incorrect
-* system time zone.
-*/
+         * Before spawning a new process, reset the time zone to be the system time zone.
+         * This needs to be done because the system time zone could have changed after the
+         * the spawning of this process. Without doing this this process would have the incorrect
+         * system time zone.
+         */
         TimeZone.setDefault(null);
 
         /*
-* Initialize the default locale in this process for the reasons we set the time zone.
-*/
+         * Initialize the default locale in this process for the reasons we set the time zone.
+         */
         Locale.setDefault(data.config.locale);
 
         /*
-* Update the system configuration since its preloaded and might not
-* reflect configuration changes. The configuration object passed
-* in AppBindData can be safely assumed to be up to date
-*/
+         * Update the system configuration since its preloaded and might not
+         * reflect configuration changes. The configuration object passed
+         * in AppBindData can be safely assumed to be up to date
+         */
         applyConfigurationToResourcesLocked(data.config, data.compatInfo);
         mCurDefaultDisplayDpi = data.config.densityDpi;
         applyCompatConfiguration(mCurDefaultDisplayDpi);
@@ -4370,8 +4369,8 @@ public final class ActivityThread {
         data.info = getPackageInfoNoCheck(data.appInfo, data.compatInfo);
 
         /**
-* Switch this process to density compatibility mode if needed.
-*/
+         * Switch this process to density compatibility mode if needed.
+         */
         if ((data.appInfo.flags&ApplicationInfo.FLAG_SUPPORTS_SCREEN_DENSITIES)
                 == 0) {
             mDensityCompatMode = true;
@@ -4394,9 +4393,9 @@ public final class ActivityThread {
             }
         }
         /**
-* For system applications on userdebug/eng builds, log stack
-* traces of disk and network access to dropbox for analysis.
-*/
+         * For system applications on userdebug/eng builds, log stack
+         * traces of disk and network access to dropbox for analysis.
+         */
         if ((data.appInfo.flags &
              (ApplicationInfo.FLAG_SYSTEM |
               ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0) {
@@ -4404,12 +4403,12 @@ public final class ActivityThread {
         }
 
         /**
-* For apps targetting SDK Honeycomb or later, we don't allow
-* network usage on the main event loop / UI thread.
-*
-* Note to those grepping: this is what ultimately throws
-* NetworkOnMainThreadException ...
-*/
+         * For apps targetting SDK Honeycomb or later, we don't allow
+         * network usage on the main event loop / UI thread.
+         *
+         * Note to those grepping:  this is what ultimately throws
+         * NetworkOnMainThreadException ...
+         */
         if (data.appInfo.targetSdkVersion > 9) {
             StrictMode.enableDeathOnNetwork();
         }
@@ -4446,12 +4445,12 @@ public final class ActivityThread {
         }
 
         /**
-* Initialize the default http proxy in this process for the reasons we set the time zone.
-*/
+         * Initialize the default http proxy in this process for the reasons we set the time zone.
+         */
         IBinder b = ServiceManager.getService(Context.CONNECTIVITY_SERVICE);
         if (b != null) {
             // In pre-boot mode (doing initial launch to collect password), not
-            // all system is up. This includes the connectivity service, so don't
+            // all system is up.  This includes the connectivity service, so don't
             // crash if we can't get it.
             IConnectivityManager service = IConnectivityManager.Stub.asInterface(b);
             try {
@@ -4573,7 +4572,7 @@ public final class ActivityThread {
             Debug.stopMethodTracing();
         }
         //Slog.i(TAG, "am: " + ActivityManagerNative.getDefault()
-        // + ", app thr: " + mAppThread);
+        //      + ", app thr: " + mAppThread);
         try {
             am.finishInstrumentation(mAppThread, resultCode, results);
         } catch (RemoteException ex) {
@@ -4616,8 +4615,8 @@ public final class ActivityThread {
             return provider;
         }
 
-        // There is a possible race here. Another thread may try to acquire
-        // the same provider at the same time. When this happens, we want to ensure
+        // There is a possible race here.  Another thread may try to acquire
+        // the same provider at the same time.  When this happens, we want to ensure
         // that the first one wins.
         // Note that we cannot hold the lock while acquiring and installing the
         // provider since it might take a long time to run and it could also potentially
@@ -4648,7 +4647,7 @@ public final class ActivityThread {
                 int unstableDelta;
                 if (prc.removePending) {
                     // We have a pending remove operation, which is holding the
-                    // last unstable reference. At this point we are converting
+                    // last unstable reference.  At this point we are converting
                     // that unstable reference to our new stable reference.
                     unstableDelta = -1;
                     // Cancel the removal of the provider.
@@ -4657,6 +4656,8 @@ public final class ActivityThread {
                                 + "snatched provider from the jaws of death");
                     }
                     prc.removePending = false;
+                    // There is a race! It fails to remove the message, which
+                    // will be handled in completeRemoveProvider().
                     mH.removeMessages(H.REMOVE_PROVIDER, prc);
                 } else {
                     unstableDelta = 0;
@@ -4680,7 +4681,7 @@ public final class ActivityThread {
                 if (prc.removePending) {
                     // Oh look, we actually have a remove pending for the
                     // provider, which is still holding the last unstable
-                    // reference. We just need to cancel that to take new
+                    // reference.  We just need to cancel that to take new
                     // ownership of the reference.
                     if (DEBUG_PROVIDER) {
                         Slog.v(TAG, "incProviderRef: unstable "
@@ -4726,7 +4727,7 @@ public final class ActivityThread {
                 return null;
             }
 
-            // Only increment the ref count if we have one. If we don't then the
+            // Only increment the ref count if we have one.  If we don't then the
             // provider is not reference counted and never needs to be released.
             ProviderRefCount prc = mProviderRefCountMap.get(jBinder);
             if (prc != null) {
@@ -4828,13 +4829,18 @@ public final class ActivityThread {
     final void completeRemoveProvider(ProviderRefCount prc) {
         synchronized (mProviderMap) {
             if (!prc.removePending) {
-                // There was a race! Some other client managed to acquire
+                // There was a race!  Some other client managed to acquire
                 // the provider before the removal was completed.
-                // Abort the removal. We will do it later.
+                // Abort the removal.  We will do it later.
                 if (DEBUG_PROVIDER) Slog.v(TAG, "completeRemoveProvider: lost the race, "
                         + "provider still in use");
                 return;
             }
+
+            // More complicated race!! Some client managed to acquire the
+            // provider and release it before the removal was completed.
+            // Continue the removal, and abort the next remove message.
+            prc.removePending = false;
 
             final IBinder jBinder = prc.holder.provider.asBinder();
             ProviderRefCount existingPrc = mProviderRefCountMap.get(jBinder);
@@ -4887,7 +4893,7 @@ public final class ActivityThread {
             }
             if (fromClient) {
                 // We found out about this due to execution in our client
-                // code. Tell the activity manager about it now, to ensure
+                // code.  Tell the activity manager about it now, to ensure
                 // that the next time we go to do anything with the provider
                 // it knows it is dead (so we don't race with its death
                 // notification).
@@ -4922,19 +4928,19 @@ public final class ActivityThread {
     }
 
     /**
-* Installs the provider.
-*
-* Providers that are local to the process or that come from the system server
-* may be installed permanently which is indicated by setting noReleaseNeeded to true.
-* Other remote providers are reference counted. The initial reference count
-* for all reference counted providers is one. Providers that are not reference
-* counted do not have a reference count (at all).
-*
-* This method detects when a provider has already been installed. When this happens,
-* it increments the reference count of the existing provider (if appropriate)
-* and returns the existing provider. This can happen due to concurrent
-* attempts to acquire the same provider.
-*/
+     * Installs the provider.
+     *
+     * Providers that are local to the process or that come from the system server
+     * may be installed permanently which is indicated by setting noReleaseNeeded to true.
+     * Other remote providers are reference counted.  The initial reference count
+     * for all reference counted providers is one.  Providers that are not reference
+     * counted do not have a reference count (at all).
+     *
+     * This method detects when a provider has already been installed.  When this happens,
+     * it increments the reference count of the existing provider (if appropriate)
+     * and returns the existing provider.  This can happen due to concurrent
+     * attempts to acquire the same provider.
+     */
     private IActivityManager.ContentProviderHolder installProvider(Context context,
             IActivityManager.ContentProviderHolder holder, ProviderInfo info,
             boolean noisy, boolean noReleaseNeeded, boolean stable) {
@@ -5027,7 +5033,7 @@ public final class ActivityThread {
                         Slog.v(TAG, "installProvider: lost the race, updating ref count");
                     }
                     // We need to transfer our new reference to the existing
-                    // ref count, releasing the old one... but only if
+                    // ref count, releasing the old one...  but only if
                     // release is needed (that is, it is not running in the
                     // system process).
                     if (!noReleaseNeeded) {
@@ -5105,7 +5111,7 @@ public final class ActivityThread {
                     // immediately, because upon returning the view
                     // hierarchy will be informed about it.
                     if (applyConfigurationToResourcesLocked(newConfig, null) != 0) {
-                        // This actually changed the resources! Tell
+                        // This actually changed the resources!  Tell
                         // everyone about it.
                         if (mPendingConfiguration == null ||
                                 mPendingConfiguration.isOtherSeqNewer(newConfig)) {
@@ -5176,7 +5182,7 @@ public final class ActivityThread {
     public static void main(String[] args) {
         SamplingProfilerIntegration.start();
 
-        // CloseGuard defaults to true and can be quite spammy. We
+        // CloseGuard defaults to true and can be quite spammy.  We
         // disable it here, but selectively enable it later (via
         // StrictMode) on debug builds, but using DropBox, not logs.
         CloseGuard.setEnabled(false);

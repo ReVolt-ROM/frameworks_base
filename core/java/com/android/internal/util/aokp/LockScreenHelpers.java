@@ -62,7 +62,7 @@ public class LockScreenHelpers {
         final Resources res = context.getResources();
 
         if (TextUtils.isEmpty(action) || action.equals(AwesomeConstant.ACTION_NULL.value())) {
-            TargetDrawable drawable = new TargetDrawable(res, com.android.internal.R.drawable.ic_action_empty);
+            TargetDrawable drawable = new TargetDrawable(res, stateDrawable(res.getDrawable(com.android.internal.R.drawable.ic_empty), context));
             drawable.setEnabled(false);
             return drawable;
         }
@@ -81,46 +81,55 @@ public class LockScreenHelpers {
             case ACTION_APP:
                 // no pre-defined action, try to resolve URI
                 try {
-	            Drawable iconBg = res.getDrawable(
-                            com.android.internal.R.drawable.ic_navbar_blank_activated);
-                    int inset = (int)(iconBg.getIntrinsicHeight() / 3);
                     Intent intent = Intent.parseUri(action, 0);
                     PackageManager pm = context.getPackageManager();
                     ActivityInfo info = intent.resolveActivityInfo(pm, PackageManager.GET_ACTIVITIES);
+                    if (info == null) {
+                        TargetDrawable drawable = new TargetDrawable(res, stateDrawable(res.getDrawable(com.android.internal.R.drawable.ic_empty), context));
+                        drawable.setEnabled(false);
+                        return drawable;
+                    }
                     Drawable front = info.loadIcon(pm);
-                    final Drawable blankActiveDrawable = res.getDrawable(
-                        com.android.internal.R.drawable.ic_lockscreen_target_activated);
-                    final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
-                    Drawable back = activeBack;
-                    InsetDrawable[] inactivelayer = new InsetDrawable[2];
-                    InsetDrawable[] activelayer = new InsetDrawable[2];
-                    inactivelayer[0] = new InsetDrawable(
-                        res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_lock_pressed), 0, 0,0, 0);
-                    inactivelayer[1] = new InsetDrawable(front, inset, inset, inset, inset);
-                    activelayer[0] = new InsetDrawable(back, 0, 0, 0, 0);
-                    activelayer[1] = new InsetDrawable(
-                         front, inset, inset, inset, inset);
-                    StateListDrawable states = new StateListDrawable();
-                    LayerDrawable inactiveLayerDrawable = new LayerDrawable(inactivelayer);
-                    inactiveLayerDrawable.setId(0, 0);
-                    inactiveLayerDrawable.setId(1, 1);
-                    LayerDrawable activeLayerDrawable = new LayerDrawable(activelayer);
-                    activeLayerDrawable.setId(0, 0);
-                    activeLayerDrawable.setId(1, 1);
-                    states.addState(TargetDrawable.STATE_INACTIVE, inactiveLayerDrawable);
-                    states.addState(TargetDrawable.STATE_ACTIVE, activeLayerDrawable);
-                    states.addState(TargetDrawable.STATE_FOCUSED, activeLayerDrawable);
-                    return new TargetDrawable(res, states);
+                    return new TargetDrawable(res, stateDrawable(front, context));
                 } catch (URISyntaxException e) {
-                    resourceId = com.android.internal.R.drawable.ic_action_empty;
+                    resourceId = com.android.internal.R.drawable.ic_empty;
                 }
                 break;
             }
         TargetDrawable drawable = new TargetDrawable(res, resourceId);
-        if (resourceId == com.android.internal.R.drawable.ic_action_empty) {
+        if (resourceId == com.android.internal.R.drawable.ic_empty) {
             drawable.setEnabled(false);
         }
         return drawable;
+    }
+
+    public static StateListDrawable stateDrawable(Drawable front, Context context) {
+        final Resources res = context.getResources();
+        Drawable iconBg = res.getDrawable(
+            com.android.internal.R.drawable.ic_navbar_blank_activated);
+        int inset = (int)(iconBg.getIntrinsicHeight() / 3);
+        final Drawable blankActiveDrawable = res.getDrawable(
+            com.android.internal.R.drawable.ic_lockscreen_target_activated);
+        final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
+        Drawable back = activeBack;
+        InsetDrawable[] inactivelayer = new InsetDrawable[2];
+        InsetDrawable[] activelayer = new InsetDrawable[2];
+        inactivelayer[0] = new InsetDrawable(
+            res.getDrawable(com.android.internal.R.drawable.ic_lockscreen_lock_pressed), 0, 0,0, 0);
+        inactivelayer[1] = new InsetDrawable(front, inset, inset, inset, inset);
+        activelayer[0] = new InsetDrawable(back, 0, 0, 0, 0);
+        activelayer[1] = new InsetDrawable(front, inset, inset, inset, inset);
+        StateListDrawable states = new StateListDrawable();
+        LayerDrawable inactiveLayerDrawable = new LayerDrawable(inactivelayer);
+        inactiveLayerDrawable.setId(0, 0);
+        inactiveLayerDrawable.setId(1, 1);
+        LayerDrawable activeLayerDrawable = new LayerDrawable(activelayer);
+        activeLayerDrawable.setId(0, 0);
+        activeLayerDrawable.setId(1, 1);
+        states.addState(TargetDrawable.STATE_INACTIVE, inactiveLayerDrawable);
+        states.addState(TargetDrawable.STATE_ACTIVE, activeLayerDrawable);
+        states.addState(TargetDrawable.STATE_FOCUSED, activeLayerDrawable);
+        return states;
     }
 
     public static TargetDrawable getCustomDrawable(Context context, String action) {
@@ -133,7 +142,7 @@ public class LockScreenHelpers {
             com.android.internal.R.drawable.ic_lockscreen_target_activated);
         final InsetDrawable activeBack = new InsetDrawable(blankActiveDrawable, 0, 0, 0, 0);
         Drawable back = activeBack;
-	Drawable iconBg = res.getDrawable(
+        Drawable iconBg = res.getDrawable(
             com.android.internal.R.drawable.ic_navbar_blank_activated);
         int inset = (int)(iconBg.getIntrinsicHeight() / 3);
         InsetDrawable[] inactivelayer = new InsetDrawable[2];

@@ -195,9 +195,6 @@ final class UiModeManagerService extends IUiModeManager.Stub {
         mContext.registerReceiver(mBatteryReceiver,
                 new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
-
-        ThemeUtils.registerThemeChangeReceiver(mContext, mThemeChangeReceiver);
-
         mTwilightService.registerListener(mTwilightListener, mHandler);
 
         // Register settings observer and set initial preferences

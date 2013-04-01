@@ -276,6 +276,20 @@ public final class Settings {
             "android.settings.DISPLAY_SETTINGS";
 
     /**
+     * Activity Action: Show settings to allow configuration of display.
+     * <p>
+     * In some cases, a matching Activity may not exist, so ensure you
+     * safeguard against this.
+     * <p>
+     * Input: Nothing.
+     * <p>
+     * Output: Nothing.
+     */
+    @SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+    public static final String ACTION_NOTIFICATION_SHORTCUTS_SETTINGS =
+            "android.settings.slim.notificationshortcuts.NOTIFICATION_SHORTCUTS";
+
+    /**
      * Activity Action: Show settings to allow configuration of locale.
      * <p>
      * In some cases, a matching Activity may not exist, so ensure you
@@ -901,6 +915,8 @@ public final class Settings {
             MOVED_TO_SECURE.add(Secure.LOCK_BIOMETRIC_WEAK_FLAGS);
             MOVED_TO_SECURE.add(Secure.LOCK_PATTERN_ENABLED);
             MOVED_TO_SECURE.add(Secure.LOCK_PATTERN_VISIBLE);
+            MOVED_TO_SECURE.add(Secure.LOCK_SHOW_ERROR_PATH);
+            MOVED_TO_SECURE.add(Secure.LOCK_DOTS_VISIBLE);
             MOVED_TO_SECURE.add(Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED);
             MOVED_TO_SECURE.add(Secure.LOGGING_ID);
             MOVED_TO_SECURE.add(Secure.PARENTAL_CONTROL_ENABLED);
@@ -1789,6 +1805,24 @@ public final class Settings {
          */
         public static final String MODE_RINGER_STREAMS_AFFECTED = "mode_ringer_streams_affected";
 
+        /**
+         * Custom automatic brightness light sensor levels.
+         * The value is a comma separated int array with length N.
+         * Example: "100,300,3000".
+         *
+         * @hide
+         */
+        public static final String AUTO_BRIGHTNESS_LUX = "auto_brightness_lux";
+
+        /**
+         * Custom automatic brightness display backlight brightness values.
+         * The value is a comma separated int array with length N+1.
+         * Example: "10,50,100,255".
+         *
+         * @hide
+         */
+        public static final String AUTO_BRIGHTNESS_BACKLIGHT = "auto_brightness_backlight";
+
          /**
           * Determines which streams are affected by mute. The
           * stream type's bit should be set to 1 if it should be muted when a mute request
@@ -2533,6 +2567,12 @@ public final class Settings {
         */
         public static final String TORCH_STATE = "torch_state";
 
+       /**
+        * Status Bar notification icon opacity
+        * @hide
+        */
+        public static final String STATUS_BAR_NOTIF_ICON_OPACITY = "status_bar_notif_icon_opacity";
+
         /**
          * whether to hide the kill-all-button on recent switcher
          *
@@ -2838,6 +2878,14 @@ public final class Settings {
         public static final String EXPANDED_FLASH_MODE = "expanded_flash_mode";
 
         /**
+         * Whether custom light sensor levels & values are enabled. The value is
+         * boolean (1 or 0).
+         *
+         * @hide
+         */
+        public static final String LIGHT_SENSOR_CUSTOM = "light_sensor_custom";
+
+        /**
          * Screen dim value to use if LIGHT_SENSOR_CUSTOM is set. The value is int.
          * Default is android.os.BRIGHTNESS_DIM.
          *
@@ -3098,12 +3146,6 @@ public final class Settings {
         public static final String PIE_CONTROLS = "pie_controls";
 
         /**
-         * Restart Launcher
-         * @hide
-         */
-        public static final String EXPANDED_DESKTOP_RESTART_LAUNCHER = "expanded_desktop_restart_launcher";
-
-        /**
          * Pie menu, should default to 1 (yes, show)
          * @hide
          */
@@ -3234,7 +3276,11 @@ public final class Settings {
          */
         public static final String PIE_CENTER = "pie_center";
 
-       // PIE COLORS EVERYWHERE! //
+        /**
+         * Swap volume buttons when the screen is rotated by 90 or 180 degrees
+         * @hide
+         */
+        public static final String SWAP_VOLUME_KEYS = "swap_volume_keys";
 
         /**
          * whether to hide the signal barss
@@ -3256,6 +3302,12 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_WIFI_SIGNAL_TEXT_COLOR = "statusbar_wifi_signal_text_color";
+
+        /**
+         * Automatic keyboard rotation timeout.  0 to disable completely.
+         * @hide
+         */
+        public static final String KEYBOARD_ROTATION_TIMEOUT = "keyboard_rotation_timeout";
 
         /**
          *
@@ -3384,58 +3436,6 @@ public final class Settings {
         public static final String LOCKSCREEN_USE_WIDGET_CONTAINER_CAROUSEL = "lockscreen_use_widget_container_carousel";
 
         /**
-         * Enable longpress on expand challenge handle to unlock device
-         * @hide
-         */
-        public static final String LOCKSCREEN_LONGPRESS_CHALLENGE = "lockscreen_longpress_challenge";
-
-        /**
-* Indicates that custom light sensor settings has changed. The value is
-* random and changes reloads light settings.
-*
-* @hide
-*/
-        public static final String LIGHTS_CHANGED = "lights_changed";
-
-        /**
-* Whether custom light sensor levels & values are enabled. The value is
-* boolean (1 or 0).
-*
-* @hide
-*/
-        public static final String LIGHT_SENSOR_CUSTOM = "light_sensor_custom";
-
-        /**
-* Custom light sensor levels. The value is a comma separated int array
-* with length N.
-* Example: "100,300,3000".
-*
-* @hide
-*/
-        public static final String LIGHT_SENSOR_LEVELS = "light_sensor_levels";
-
-        /**
-* Custom light sensor lcd values. The value is a comma separated int array
-* with length N+1.
-* Example: "10,50,100,255".
-*
-* @hide
-*/
-        public static final String LIGHT_SENSOR_LCD_VALUES = "light_sensor_lcd_values";
-
-        /**
-* Custom light sensor lcd values. The value is a comma separated int array
-* with length N+1.
-* Example: "10,50,100,255".
-*
-* @hide
-*/
-        public static final String LIGHT_SENSOR_BUTTON_VALUES = "light_sensor_button_values";
-
-
-
-
-        /**
          * enabled and order of quick toggles
          * 
          * @hide
@@ -3478,12 +3478,6 @@ public final class Settings {
         public static final String CHOOSE_FASTTOGGLE_SIDE = "choose_fasttoggle_side";
 
         /**
-         * Stores values for custom lockscreen targets
-         * @hide
-         */
-        public static final String LOCKSCREEN_TARGETS = "lockscreen_targets";
-
-        /**
         * holo dark/light theme description in quick settings
         *
         *@hide
@@ -3496,8 +3490,8 @@ public final class Settings {
          * @hide
          */
         public static final String QUICK_TEXT_COLOR = "quick_text_color";
-     
-        /*
+
+        /**
          * Whether electronic beam animation is enabled or not
          * @hide
          */
@@ -4095,6 +4089,53 @@ public final class Settings {
          * @hide
          */
         public static final String TOGGLES_STYLE = "toggls_style";
+
+        /**
+         * @hide
+         * Show Wifi network name in notification shade
+         * 0 - don't show
+         * 1 - show
+         */
+        public static final String NOTIFICATION_SHOW_WIFI_SSID = "notification_show_wifi_ssid";
+
+        /**
+         * Whether to enable notification shortcuts (toggle)
+         *
+         * @hide
+         */
+
+        public static final String NOTIFICATION_SHORTCUTS_TOGGLE = "pref_notification_shortcuts_toggle";
+
+        /**
+         * Stores the number of notification shortcuts to display settings for
+         * @hide
+         */
+        public static final String NOTIFICATION_SHORTCUTS_QUANTITY = "pref_notification_shortcuts_quantity";
+
+        /**
+         * Stores values for notification shortcut targets
+         * @hide
+         */
+        public static final String NOTIFICATION_SHORTCUTS_TARGETS = "notification_shortcuts_targets";
+
+        /**
+         * Stores the value for notification shortcuts icon color
+         * @hide
+         */
+        public static final String NOTIFICATION_SHORTCUTS_COLOR = "notification_shortcuts_color";
+
+        /**
+         * Whether to colorize the default application icons
+         * @hide
+         */
+        public static final String NOTIFICATION_SHORTCUTS_COLORIZE_TOGGLE = "notification_shortcuts_colorize_toggle";
+
+        /**
+         * Whether to colorize the default application icons
+         * @hide
+         */
+        public static final String NOTIFICATION_SHORTCUTS_HIDE_CARRIER = "notification_shortcuts_hide_carrier";
+
     }
 
     /**
@@ -4128,6 +4169,8 @@ public final class Settings {
             MOVED_TO_LOCK_SETTINGS = new HashSet<String>(3);
             MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_PATTERN_ENABLED);
             MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_PATTERN_VISIBLE);
+            MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_SHOW_ERROR_PATH);
+            MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_DOTS_VISIBLE);
             MOVED_TO_LOCK_SETTINGS.add(Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED);
 
             MOVED_TO_GLOBAL = new HashSet<String>();

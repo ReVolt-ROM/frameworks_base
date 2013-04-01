@@ -43,11 +43,6 @@ public class DateUtils
     private static String sElapsedFormatMMSS;
     private static String sElapsedFormatHMMSS;
 
-    private static final String FAST_FORMAT_HMMSS = "%1$d:%2$02d:%3$02d";
-    private static final String FAST_FORMAT_MMSS = "%1$02d:%2$02d";
-    private static final char TIME_SEPARATOR = ':';
-
-
     public static final long SECOND_IN_MILLIS = 1000;
     public static final long MINUTE_IN_MILLIS = SECOND_IN_MILLIS * 60;
     public static final long HOUR_IN_MILLIS = MINUTE_IN_MILLIS * 60;
@@ -434,20 +429,7 @@ public class DateUtils
                 }
             }
         } else if (duration < WEEK_IN_MILLIS && minResolution < WEEK_IN_MILLIS) {
-            count = getNumberOfDaysPassed(time, now);
-            if (past) {
-                if (abbrevRelative) {
-                    resId = com.android.internal.R.plurals.abbrev_num_days_ago;
-                } else {
-                    resId = com.android.internal.R.plurals.num_days_ago;
-                }
-            } else {
-                if (abbrevRelative) {
-                    resId = com.android.internal.R.plurals.abbrev_in_num_days;
-                } else {
-                    resId = com.android.internal.R.plurals.in_num_days;
-                }
-            }
+            return getRelativeDayString(r, time, now);
         } else {
             // We know that we won't be showing the time, so it is safe to pass
             // in a null context.
@@ -456,24 +438,6 @@ public class DateUtils
 
         String format = r.getQuantityString(resId, (int) count);
         return String.format(format, count);
-    }
-
-    /**
-     * Returns the number of days passed between two dates.
-     *
-     * @param date1 first date
-     * @param date2 second date
-     * @return number of days passed between to dates.
-     */
-    private synchronized static long getNumberOfDaysPassed(long date1, long date2) {
-        if (sThenTime == null) {
-            sThenTime = new Time();
-        }
-        sThenTime.set(date1);
-        int day1 = Time.getJulianDay(date1, sThenTime.gmtoff);
-        sThenTime.set(date2);
-        int day2 = Time.getJulianDay(date2, sThenTime.gmtoff);
-        return Math.abs(day2 - day1);
     }
 
     /**
@@ -534,28 +498,29 @@ public class DateUtils
      * today this function returns "Today", if the day was a week ago it returns "7 days ago", and
      * if the day is in 2 weeks it returns "in 14 days".
      *
-     * @param r the resources to get the strings from
+     * @param r the resources
      * @param day the relative day to describe in UTC milliseconds
      * @param today the current time in UTC milliseconds
-     * @return a formatting string
      */
     private static final String getRelativeDayString(Resources r, long day, long today) {
+        Locale locale = r.getConfiguration().locale;
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+
+        // TODO: use TimeZone.getOffset instead.
         Time startTime = new Time();
         startTime.set(day);
+        int startDay = Time.getJulianDay(day, startTime.gmtoff);
+
         Time currentTime = new Time();
         currentTime.set(today);
-
-        int startDay = Time.getJulianDay(day, startTime.gmtoff);
         int currentDay = Time.getJulianDay(today, currentTime.gmtoff);
 
         int days = Math.abs(currentDay - startDay);
         boolean past = (today > day);
 
         // TODO: some locales name other days too, such as de_DE's "Vorgestern" (today - 2).
-        Locale locale = r.getConfiguration().locale;
-        if (locale == null) {
-            locale = Locale.getDefault();
-        }
         if (days == 1) {
             if (past) {
                 return LocaleData.get(locale).yesterday;
@@ -640,19 +605,18 @@ public class DateUtils
     }
 
     /**
-     * Formats an elapsed time in the form "MM:SS" or "H:MM:SS"
-     * for display on the call-in-progress screen.
+     * Formats an elapsed time in a format like "MM:SS" or "H:MM:SS" (using a form
+     * suited to the current locale), similar to that used on the call-in-progress
+     * screen.
      *
-     * @param recycle {@link StringBuilder} to recycle, if possible
+     * @param recycle {@link StringBuilder} to recycle, or null to use a temporary one.
      * @param elapsedSeconds the elapsed time in seconds.
      */
     public static String formatElapsedTime(StringBuilder recycle, long elapsedSeconds) {
-        initFormatStrings();
-
+        // Break the elapsed seconds into hours, minutes, and seconds.
         long hours = 0;
         long minutes = 0;
         long seconds = 0;
-
         if (elapsedSeconds >= 3600) {
             hours = elapsedSeconds / 3600;
             elapsedSeconds -= hours * 3600;
@@ -663,70 +627,23 @@ public class DateUtils
         }
         seconds = elapsedSeconds;
 
-        String result;
+        // Create a StringBuilder if we weren't given one to recycle.
+        // TODO: if we cared, we could have a thread-local temporary StringBuilder.
+        StringBuilder sb = recycle;
+        if (sb == null) {
+            sb = new StringBuilder(8);
+        } else {
+            sb.setLength(0);
+        }
+
+        // Format the broken-down time in a locale-appropriate way.
+        // TODO: use icu4c when http://unicode.org/cldr/trac/ticket/3407 is fixed.
+        Formatter f = new Formatter(sb, Locale.getDefault());
+        initFormatStrings();
         if (hours > 0) {
-            return formatElapsedTime(recycle, sElapsedFormatHMMSS, hours, minutes, seconds);
+            return f.format(sElapsedFormatHMMSS, hours, minutes, seconds).toString();
         } else {
-            return formatElapsedTime(recycle, sElapsedFormatMMSS, minutes, seconds);
-        }
-    }
-
-    private static void append(StringBuilder sb, long value, boolean pad, char zeroDigit) {
-        if (value < 10) {
-            if (pad) {
-                sb.append(zeroDigit);
-            }
-        } else {
-            sb.append((char) (zeroDigit + (value / 10)));
-        }
-        sb.append((char) (zeroDigit + (value % 10)));
-    }
-
-    /**
-     * Fast formatting of h:mm:ss.
-     */
-    private static String formatElapsedTime(StringBuilder recycle, String format, long hours,
-            long minutes, long seconds) {
-        if (FAST_FORMAT_HMMSS.equals(format)) {
-            char zeroDigit = LocaleData.get(Locale.getDefault()).zeroDigit;
-
-            StringBuilder sb = recycle;
-            if (sb == null) {
-                sb = new StringBuilder(8);
-            } else {
-                sb.setLength(0);
-            }
-            append(sb, hours, false, zeroDigit);
-            sb.append(TIME_SEPARATOR);
-            append(sb, minutes, true, zeroDigit);
-            sb.append(TIME_SEPARATOR);
-            append(sb, seconds, true, zeroDigit);
-            return sb.toString();
-        } else {
-            return String.format(format, hours, minutes, seconds);
-        }
-    }
-
-    /**
-     * Fast formatting of mm:ss.
-     */
-    private static String formatElapsedTime(StringBuilder recycle, String format, long minutes,
-            long seconds) {
-        if (FAST_FORMAT_MMSS.equals(format)) {
-            char zeroDigit = LocaleData.get(Locale.getDefault()).zeroDigit;
-
-            StringBuilder sb = recycle;
-            if (sb == null) {
-                sb = new StringBuilder(8);
-            } else {
-                sb.setLength(0);
-            }
-            append(sb, minutes, false, zeroDigit);
-            sb.append(TIME_SEPARATOR);
-            append(sb, seconds, true, zeroDigit);
-            return sb.toString();
-        } else {
-            return String.format(format, minutes, seconds);
+            return f.format(sElapsedFormatMMSS, minutes, seconds).toString();
         }
     }
 

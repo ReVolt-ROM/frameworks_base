@@ -521,6 +521,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         intentFilter.addAction(Intent.ACTION_BOOT_COMPLETED);
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilter.addAction(Intent.ACTION_USER_BACKGROUND);
         intentFilter.addAction(Intent.ACTION_USER_SWITCHED);
         intentFilter.addAction(Intent.ACTION_WIFI_DISPLAY_AUDIO);
         intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
@@ -2401,11 +2402,15 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     //   (step <= oldIndex < 2 * step) is equivalent to: (old UI index == 1)
                     if (step <= oldIndex && oldIndex < 2 * step) {
                         ringerMode = RINGER_MODE_VIBRATE;
+                        if (mVoiceCapable)
+                            adjustVolumeIndex = false;
                     }
                 } else {
                     // (oldIndex < step) is equivalent to (old UI index == 0)
                     if ((oldIndex < step) && mPrevVolDirection != AudioManager.ADJUST_LOWER) {
                         ringerMode = RINGER_MODE_SILENT;
+                        if (mVoiceCapable)
+                            adjustVolumeIndex = false;
                     }
                 }
             }
@@ -4026,7 +4031,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 AudioSystem.setParameters("screen_state=off");
             } else if (action.equalsIgnoreCase(Intent.ACTION_CONFIGURATION_CHANGED)) {
                 handleConfigurationChanged(context);
-            } else if (action.equals(Intent.ACTION_USER_SWITCHED)) {
+            } else if (action.equals(Intent.ACTION_USER_BACKGROUND)) {
                 // attempt to stop music playback for background user
                 sendMsg(mAudioHandler,
                         MSG_BROADCAST_AUDIO_BECOMING_NOISY,
@@ -4035,6 +4040,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                         0,
                         null,
                         0);
+            } else if (action.equals(Intent.ACTION_USER_SWITCHED)) {
                 // the current audio focus owner is no longer valid
                 discardAudioFocusOwner();
 

@@ -90,7 +90,7 @@
     <dimen name="status_bar_icon_drawing_size">18dip</dimen>
 
     <!-- opacity at which Notification icons will be drawn in the status bar -->
-    <item type="dimen" name="status_bar_icon_drawing_alpha">65%</item>
+    <item type="dimen" name="status_bar_icon_drawing_alpha">90%</item>
 
     <!-- gap on either side of status bar notification icons -->
     <dimen name="status_bar_icon_padding">0dp</dimen>
@@ -286,4 +286,9 @@
 
     <!-- Constant for hidden navbar drag handle -->
     <dimen name="drag_handle_height">10dp</dimen>
+
+    <!-- Notification Shortcuts -->
+    <dimen name="notification_shortcuts_close_handle_height">28dp</dimen>
+    <dimen name="notification_shortcuts_spacing_height">88dp</dimen>
+    <dimen name="notification_shortcuts_drawer_margin">56dp</dimen>
 </resources>

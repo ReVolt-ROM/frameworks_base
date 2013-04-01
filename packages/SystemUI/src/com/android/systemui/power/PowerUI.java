@@ -71,7 +71,6 @@ public class PowerUI extends SystemUI {
         mLowBatteryReminderLevels[1] = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_criticalBatteryWarningLevel);
 
-
         // Register for Intent broadcasts for...
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_BATTERY_CHANGED);

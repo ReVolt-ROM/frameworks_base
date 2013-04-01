@@ -61,7 +61,6 @@ final class DisplayPowerRequest {
     // extra unnecessary latency) but we do prevent content on screen from becoming
     // visible to the user.
     public boolean blockScreenOn;
-    
 
     // Slim settings - override config for ElectronBeam on or off
     public int electronBeamMode;

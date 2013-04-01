@@ -1195,7 +1195,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
             for (int i = 0; i < 5; i++) {
                 View itemView = v.findViewById(ITEM_IDS[i]);
-                itemView.setSelected((i==0)&&(mNavbarStatusInvisible)||(i==1)&&(mNavbarVisible));
+                itemView.setSelected((i==0)&&(!mNavbarStatusInvisible)||(i==1)&&(mNavbarVisible));
                 // Set up click handler
                 itemView.setTag(i);
                 itemView.setOnClickListener(this);

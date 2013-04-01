@@ -139,12 +139,15 @@ public class SbBatteryController extends LinearLayout {
         mBatteryStyle = Settings.System.getInt(cr,
                 Settings.System.STATUSBAR_BATTERY_ICON, 0);
         int icon;
-        if (mBatteryStyle == STYLE_ICON_CIRCLE) {
-            icon = plugged ? R.drawable.stat_sys_battery_charge_circle
-                    : R.drawable.stat_sys_battery_circle;
-        } else {
-            icon = plugged ? R.drawable.stat_sys_battery_charge
-                    : R.drawable.stat_sys_battery;
+        switch (mBatteryStyle) {
+            case STYLE_ICON_CIRCLE:
+                 icon = plugged ? R.drawable.stat_sys_battery_charge_circle
+                 : R.drawable.stat_sys_battery_circle;
+                 break;
+            default:
+                 icon = plugged ? R.drawable.stat_sys_battery_charge
+                 : R.drawable.stat_sys_battery;
+                 break;
         }
         int N = mIconViews.size();
         for (int i = 0; i < N; i++) {

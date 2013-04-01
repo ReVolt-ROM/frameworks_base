@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2006 The Android Open Source Project
- * This code has been modified.  Portions copyright (C) 2012, ParanoidAndroid Project.
- * This code has been modified.  Portions copyright (C) 2010, T-Mobile USA, Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright (C) 2006 The Android Open Source Project
+* This code has been modified. Portions copyright (C) 2012, ParanoidAndroid Project.
+* This code has been modified. Portions copyright (C) 2010, T-Mobile USA, Inc.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package android.app;
 
@@ -79,8 +79,6 @@ import android.net.wifi.IWifiManager;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.IWifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wimax.WimaxHelper;
-import android.net.wimax.WimaxManagerConstants;
 import android.nfc.NfcManager;
 import android.os.Binder;
 import android.os.Bundle;
@@ -127,13 +125,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.stericsson.hardware.fm.IFmReceiver;
-import com.stericsson.hardware.fm.IFmTransmitter;
-import com.stericsson.hardware.fm.FmReceiver;
-import com.stericsson.hardware.fm.FmTransmitter;
-import com.stericsson.hardware.fm.FmReceiverImpl;
-import com.stericsson.hardware.fm.FmTransmitterImpl;
-
 class ReceiverRestrictedContext extends ContextWrapper {
     ReceiverRestrictedContext(Context base) {
         super(base);
@@ -178,9 +169,9 @@ class ReceiverRestrictedContext extends ContextWrapper {
 }
 
 /**
- * Common implementation of Context API, which provides the base
- * context object for Activity and other application components.
- */
+* Common implementation of Context API, which provides the base
+* context object for Activity and other application components.
+*/
 class ContextImpl extends Context {
     private final static String TAG = "ContextImpl";
     private final static boolean DEBUG = false;
@@ -216,15 +207,15 @@ class ContextImpl extends Context {
     private static final String[] EMPTY_FILE_LIST = {};
 
     /**
-     * Override this class when the system service constructor needs a
-     * ContextImpl.  Else, use StaticServiceFetcher below.
-     */
+* Override this class when the system service constructor needs a
+* ContextImpl. Else, use StaticServiceFetcher below.
+*/
     /*package*/ static class ServiceFetcher {
         int mContextCacheIndex = -1;
 
         /**
-         * Main entrypoint; only override if you don't need caching.
-         */
+* Main entrypoint; only override if you don't need caching.
+*/
         public Object getService(ContextImpl ctx) {
             ArrayList<Object> cache = ctx.mServiceCache;
             Object service;
@@ -250,17 +241,17 @@ class ContextImpl extends Context {
         }
 
         /**
-         * Override this to create a new per-Context instance of the
-         * service.  getService() will handle locking and caching.
-         */
+* Override this to create a new per-Context instance of the
+* service. getService() will handle locking and caching.
+*/
         public Object createService(ContextImpl ctx) {
             throw new RuntimeException("Not implemented");
         }
     }
 
     /**
-     * Override this class for services to be cached process-wide.
-     */
+* Override this class for services to be cached process-wide.
+*/
     abstract static class StaticServiceFetcher extends ServiceFetcher {
         private Object mCachedInstance;
 
@@ -399,7 +390,7 @@ class ContextImpl extends Context {
 
         registerService(KEYGUARD_SERVICE, new ServiceFetcher() {
                 public Object getService(ContextImpl ctx) {
-                    // TODO: why isn't this caching it?  It wasn't
+                    // TODO: why isn't this caching it? It wasn't
                     // before, so I'm preserving the old behavior and
                     // using getService(), instead of createService()
                     // which would do the caching.
@@ -549,31 +540,6 @@ class ContextImpl extends Context {
                 IUserManager service = IUserManager.Stub.asInterface(b);
                 return new UserManager(ctx, service);
             }});
-
-        registerService(PROFILE_SERVICE, new ServiceFetcher() {
-                public Object createService(ContextImpl ctx) {
-                    final Context outerContext = ctx.getOuterContext();
-                    return new ProfileManager (outerContext, ctx.mMainThread.getHandler());
-                }});
-
-        registerService(WimaxManagerConstants.WIMAX_SERVICE, new ServiceFetcher() {
-                public Object createService(ContextImpl ctx) {
-                    return WimaxHelper.createWimaxService(ctx, ctx.mMainThread.getHandler());
-                }});
-
-        registerService("fm_receiver", new ServiceFetcher() {
-                public Object createService(ContextImpl ctx) {
-                    IBinder b = ServiceManager.getService("fm_receiver");
-                    IFmReceiver service = IFmReceiver.Stub.asInterface(b);
-                    return new FmReceiverImpl(service);
-                }});
-
-        registerService("fm_transmitter", new ServiceFetcher() {
-                public Object createService(ContextImpl ctx) {
-                    IBinder b = ServiceManager.getService("fm_transmitter");
-                    IFmTransmitter service = IFmTransmitter.Stub.asInterface(b);
-                    return new FmTransmitterImpl(service);
-                }});
     }
 
     static ContextImpl getImpl(Context context) {
@@ -586,7 +552,7 @@ class ContextImpl extends Context {
     }
 
     // The system service cache for the system services that are
-    // cached per-ContextImpl.  Package-scoped to avoid accessor
+    // cached per-ContextImpl. Package-scoped to avoid accessor
     // methods.
     final ArrayList<Object> mServiceCache = new ArrayList<Object>();
 
@@ -601,9 +567,9 @@ class ContextImpl extends Context {
     }
 
     /**
-     * Refresh resources object which may have been changed by a theme
-     * configuration change.
-     */
+* Refresh resources object which may have been changed by a theme
+* configuration change.
+*/
     /* package */ void refreshResourcesIfNecessary() {
         if (mResources == Resources.getSystem()) {
             return;
@@ -723,7 +689,7 @@ class ContextImpl extends Context {
         if ((mode & Context.MODE_MULTI_PROCESS) != 0 ||
             getApplicationInfo().targetSdkVersion < android.os.Build.VERSION_CODES.HONEYCOMB) {
             // If somebody else (some other process) changed the prefs
-            // file behind our back, we reload it.  This has been the
+            // file behind our back, we reload it. This has been the
             // historical (if undocumented) behavior.
             sp.startReloadIfChangedUnexpectedly();
         }
@@ -964,7 +930,7 @@ class ContextImpl extends Context {
     }
 
     @Override
-    public void setWallpaper(Bitmap bitmap) throws IOException  {
+    public void setWallpaper(Bitmap bitmap) throws IOException {
         getWallpaperManager().setBitmap(bitmap);
     }
 
@@ -1891,11 +1857,11 @@ class ContextImpl extends Context {
     }
 
     /**
-     * Create a new ApplicationContext from an existing one.  The new one
-     * works and operates the same as the one it is copying.
-     *
-     * @param context Existing application context.
-     */
+* Create a new ApplicationContext from an existing one. The new one
+* works and operates the same as the one it is copying.
+*
+* @param context Existing application context.
+*/
     public ContextImpl(ContextImpl context) {
         mPackageInfo = context.mPackageInfo;
         mBasePackageName = context.mBasePackageName;
@@ -1951,29 +1917,28 @@ class ContextImpl extends Context {
                 }
                                             
                 // Load package manager, so it's accessible system wide
-                ExtendedPropertiesUtils.mPackageManager = 
+                ExtendedPropertiesUtils.mPackageManager =
                     ExtendedPropertiesUtils.mContext.getPackageManager();
                 if (ExtendedPropertiesUtils.mPackageManager == null) {
                     throw new NullPointerException();
                 }
 
                 // Get package list and fetch PID
-                ExtendedPropertiesUtils.mPackageList = 
+                ExtendedPropertiesUtils.mPackageList =
                     ExtendedPropertiesUtils.mPackageManager.getInstalledPackages(0);
                 ExtendedPropertiesUtils.mGlobalHook.pid = android.os.Process.myPid();
-
                 ExtendedPropertiesUtils.mRomLcdDensity = SystemProperties.getInt("qemu.sf.lcd_density",
                     SystemProperties.getInt("ro.sf.lcd_density", DisplayMetrics.DENSITY_DEFAULT));
 
                 // After we have PID, we get app info using it
-                ExtendedPropertiesUtils.mGlobalHook.info = 
+                ExtendedPropertiesUtils.mGlobalHook.info =
                     ExtendedPropertiesUtils.getAppInfoFromPID(ExtendedPropertiesUtils.mGlobalHook.pid);
                 if (ExtendedPropertiesUtils.mGlobalHook.info != null) {
                     // If the global hook info isn't null, we load the name, package name
                     // and path for the global hook
-                    ExtendedPropertiesUtils.mGlobalHook.name = 
+                    ExtendedPropertiesUtils.mGlobalHook.name =
                         ExtendedPropertiesUtils.mGlobalHook.info.packageName;
-                    ExtendedPropertiesUtils.mGlobalHook.path = 
+                    ExtendedPropertiesUtils.mGlobalHook.path =
                         ExtendedPropertiesUtils.mGlobalHook.info.sourceDir.substring(0,
                         ExtendedPropertiesUtils.mGlobalHook.info.sourceDir.lastIndexOf("/"));
                     ExtendedPropertiesUtils.setAppConfiguration(ExtendedPropertiesUtils.mGlobalHook);
@@ -1983,12 +1948,12 @@ class ContextImpl extends Context {
                     ExtendedPropertiesUtils.mGlobalHook.path = "";
                     ExtendedPropertiesUtils.setAppConfiguration(ExtendedPropertiesUtils.mGlobalHook);
                 }
-            } catch (Exception e) { 
+            } catch (Exception e) {
                 // We use global exception to catch a lot of possible crashes.
                 // This is not a dirty workaround, but an expected behaviour
                 ExtendedPropertiesUtils.mMainThread = null;
             }
-        }        
+        }
     }
 
     final void init(LoadedApk packageInfo, IBinder activityToken, ActivityThread mainThread) {

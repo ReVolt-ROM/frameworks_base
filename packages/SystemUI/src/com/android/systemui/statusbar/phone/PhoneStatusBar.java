@@ -399,29 +399,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         mIconPolicy = new PhoneStatusBarPolicy(mContext);
     }
 
-    private int calculateCarrierLabelBottomMargin() {
-        return mNotificationShortcutsToggle ? mShortcutsSpacingHeight : 0;
-    }
-
-    private void updateCarrierMargin(boolean forceHide) {
-        lpScrollView.bottomMargin = mNotificationShortcutsToggle ? mShortcutsDrawerMargin : 0;
-        mScrollView.setLayoutParams(lpScrollView);
-
-        if (!mShowCarrierInPanel) return;
-        if (forceHide) {
-            lpCarrierLabel.bottomMargin = mNotificationShortcutsToggle ? mShortcutsSpacingHeight : 0;
-        } else {
-            lpCarrierLabel.bottomMargin = mNotificationShortcutsToggle ? mShortcutsSpacingHeight : mCloseViewHeight;
-        }
-        mCarrierAndWifiView.setLayoutParams(lpCarrierLabel);
-    }
-
-    private void toggleCarrierAndWifiLabelVisibility() {
-        mShowCarrierInPanel = !mNotificationShortcutsHideCarrier;
-        updateCarrierMargin(mNotificationShortcutsHideCarrier);
-        mCarrierAndWifiView.setVisibility(mShowCarrierInPanel ? View.VISIBLE : View.INVISIBLE);
-    }
-
     // ================================================================================
     // Constructing the view
     // ================================================================================

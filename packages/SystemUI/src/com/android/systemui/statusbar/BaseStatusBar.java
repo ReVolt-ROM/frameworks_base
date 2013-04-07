@@ -158,7 +158,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     public PieControlPanel mPieControlPanel;
     public View mPieControlsTrigger;
     public PieExpandPanel mContainer;
-    public View[] mPieDummyTrigger = new View[4];
+    public View mPieDummytrigger;
     int mIndex;
 
     // Policy
@@ -534,11 +534,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     public void updatePieControls() {
         if (mPieControlsTrigger != null) mWindowManager.removeView(mPieControlsTrigger);
         if (mPieControlPanel != null)  mWindowManager.removeView(mPieControlPanel);
-
-        for (int i = 0; i < 4; i++) {
-            if (mPieDummyTrigger[i] != null)  mWindowManager.removeView(mPieDummyTrigger[i]);
-        }
-
+        if (mPieDummytrigger != null)  mWindowManager.removeView(mPieDummytrigger);
         attachPie();
     }
 
@@ -576,9 +572,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         } else {
             mPieControlsTrigger = null;
             mPieControlPanel = null;
-            for (int i = 0; i < 4; i++) {
-                mPieDummyTrigger[i] = null;
-            }
+            mPieDummytrigger = null;
         }
     }
 
@@ -594,13 +588,8 @@ public abstract class BaseStatusBar extends SystemUI implements
         mPieControlsTrigger = new View(mContext);
         mPieControlsTrigger.setOnTouchListener(new PieControlsTouchListener());
         mWindowManager.addView(mPieControlsTrigger, getPieTriggerLayoutParams(mContext, gravity));
-
-        // Overload screen with views that literally do nothing, thank you Google
-        int dummyGravity[] = {Gravity.LEFT, Gravity.TOP, Gravity.RIGHT, Gravity.BOTTOM};  
-        for (int i = 0; i < 4; i++) {
-            mPieDummyTrigger[i] = new View(mContext);
-            mWindowManager.addView(mPieDummyTrigger[i], getDummyTriggerLayoutParams(mContext, dummyGravity[i]));
-        }
+        mWindowManager.addView(mPieDummytrigger, getDummyTriggerLayoutParams(mContext,
+            gravity==Gravity.LEFT ? Gravity.RIGHT : Gravity.LEFT));
 
         // Init Panel
         mPieControlPanel.init(mHandler, this, mPieControlsTrigger, gravity);

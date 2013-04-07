@@ -158,7 +158,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     public PieControlPanel mPieControlPanel;
     public View mPieControlsTrigger;
     public PieExpandPanel mContainer;
-    public View mPieDummytrigger;
     int mIndex;
 
     // Policy
@@ -534,7 +533,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     public void updatePieControls() {
         if (mPieControlsTrigger != null) mWindowManager.removeView(mPieControlsTrigger);
         if (mPieControlPanel != null)  mWindowManager.removeView(mPieControlPanel);
-        if (mPieDummytrigger != null)  mWindowManager.removeView(mPieDummytrigger);
         attachPie();
     }
 
@@ -572,27 +570,25 @@ public abstract class BaseStatusBar extends SystemUI implements
         } else {
             mPieControlsTrigger = null;
             mPieControlPanel = null;
-            mPieDummytrigger = null;
         }
     }
 
-    private void addPieInLocation(int gravity) {        
-        // Create a dummy view to force the screen to redraw
-        mPieDummytrigger = new View(mContext);
-
+    private void addPieInLocation(int gravity) {
         // Quick navigation bar panel
-        mPieControlPanel = (PieControlPanel) View.inflate(mContext,
+        PieControlPanel panel = (PieControlPanel) View.inflate(mContext,
                 R.layout.pie_control_panel, null);
 
         // Quick navigation bar trigger area
-        mPieControlsTrigger = new View(mContext);
-        mPieControlsTrigger.setOnTouchListener(new PieControlsTouchListener());
-        mWindowManager.addView(mPieControlsTrigger, getPieTriggerLayoutParams(mContext, gravity));
-        mWindowManager.addView(mPieDummytrigger, getDummyTriggerLayoutParams(mContext,
-            gravity==Gravity.LEFT ? Gravity.RIGHT : Gravity.LEFT));
+        View pieControlsTrigger = new View(mContext);
 
-        // Init Panel
-        mPieControlPanel.init(mHandler, this, mPieControlsTrigger, gravity);
+        // Store our views for removing / adding
+        mPieControlPanel = panel;
+        mPieControlsTrigger = pieControlsTrigger;
+
+        pieControlsTrigger.setOnTouchListener(new PieControlsTouchListener());
+        mWindowManager.addView(pieControlsTrigger, getPieTriggerLayoutParams(mContext, gravity));
+
+        panel.init(mHandler, this, pieControlsTrigger, gravity);
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -605,7 +601,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         lp.setTitle("PieControlPanel");
         lp.windowAnimations = android.R.style.Animation;
 
-        mWindowManager.addView(mPieControlPanel, lp);
+        mWindowManager.addView(panel, lp);
     }
 
     public static WindowManager.LayoutParams getPieTriggerLayoutParams(Context context, int gravity) {

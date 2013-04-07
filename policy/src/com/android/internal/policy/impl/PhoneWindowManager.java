@@ -1198,8 +1198,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mOrientationListener.setCurrentRotation(windowManager.getRotation());
         } catch (RemoteException ex) { }
 
-        mDisableOverlays = updateFlingerOptions();
-        updateHWOverlays();
         updateHybridLayout();
 
         mSettingsObserver = new SettingsObserver(mHandler);

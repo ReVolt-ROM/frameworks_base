@@ -99,11 +99,7 @@ public class KeyguardViewManager {
         @Override
         public void onChange(boolean selfChange) {
             setKeyguardParams();
-            // Update view if it has been shown atleast once, otherwise we'll
-            // load our LayoutParams when attaching the view.
-            if(mViewManager != null && mKeyguardHost != null) {
-                mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
-            }
+            mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
         }
     }
 

@@ -58,6 +58,7 @@ import android.os.IRemoteCallback;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcel;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.RemoteException;
@@ -429,6 +430,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     }
+
+    // HW overlays state
+    int mDisableOverlays = 0;
 
     private static final class PointerLocationInputEventReceiver extends InputEventReceiver {
         private final PointerLocationView mView;
@@ -1206,12 +1210,33 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mUserInterfaceObserver = new UserInterfaceObserver(mHandler);
         mUserInterfaceObserver.observe();
 
+        // SystemUI reboot
+        mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.USER_INTERFACE_STATE), false, new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean selfChange) {
+                // Return for reset triggers
+                if (Settings.System.getInt(mContext.getContentResolver(), 
+                    Settings.System.USER_INTERFACE_STATE, 0) == 0) {
+                    return;
+                }
+
+                // Update layout
+                update(true);
+                
+                // Reset trigger
+                Settings.System.putInt(mContext.getContentResolver(), Settings.System.USER_INTERFACE_STATE, 0);
+            }});
+
         // Expanded desktop
         mContext.getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.EXPANDED_DESKTOP_STATE),
                     false, new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean selfChange) {
+
+                updateHybridLayout();
+                update(false);
 
                 if (Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.EXPANDED_DESKTOP_RESTART_LAUNCHER, 1) == 1) {

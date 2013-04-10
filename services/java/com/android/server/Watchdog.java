@@ -401,7 +401,6 @@ public class Watchdog extends Thread {
                 if (mCompleted && !mForceKillSystem) {
                     // The monitors have returned.
                     waitedHalf = false;
-                    mCompleted = false;
                     continue;
                 }
 
@@ -477,7 +476,6 @@ public class Watchdog extends Thread {
             }
 
             waitedHalf = false;
-            mCompleted = false;
         }
     }
 

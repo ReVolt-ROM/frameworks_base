@@ -2328,11 +2328,6 @@ public final class Settings {
         public static final String LOCKSCREEN_SOUNDS_ENABLED = "lockscreen_sounds_enabled";
 
         /**
-         * @hide
-         */
-        public static final String MISSED_CALL_BREATH = "missed_call_breath";
-
-        /**
          * Whether the lockscreen should be completely disabled.
          * @hide
          */
@@ -3771,6 +3766,16 @@ public final class Settings {
         public static final String STATUS_BAR_COLOR = "status_bar_color";
 
         /**
+         * Low battery warning dialog and sound
+         * 0 = off
+         * 1 = dialog only
+         * 2 = sound only
+         * 3 = dialog and sound
+         * @hide
+         */
+        public static final String POWER_UI_LOW_BATTERY_WARNING_POLICY = "power_ui_low_battery_warning_policy";
+
+        /**
          * Status icon color. May include alpha
          * Format: AARRGGBB|AARRGGBB|index[|speed]
          * First color is the primary, systemwide color
@@ -3799,6 +3804,18 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
+
+        /**	
+         * Give MMS Notifications a breathing effect
+         * @hide
+         */
+        public static final String MMS_BREATH = "mms_breath";
+
+        /**	
+         * Give MMS Notifications a breathing effect
+         * @hide
+         */
+        public static final String MISSED_CALL_BREATH = "missed_call_breath";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings

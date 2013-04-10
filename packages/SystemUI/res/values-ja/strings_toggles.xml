@@ -28,7 +28,7 @@
     <string name="toggle_AIRPLANE_MODE">機内モード</string>
     <string name="toggle_BLUETOOTH">Bluetooth</string>
     <string name="toggle_SWAGGER">Swagger</string>
-    <string name="toggle_VIBRATE">バイブレート</string>
+    <string name="toggle_VIBRATE">バイブレーション</string>
     <string name="toggle_SILENT">サイレント</string>
     <string name="toggle_FCHARGE">急速充電</string>
     <string name="toggle_SYNC">同期</string>
@@ -42,4 +42,10 @@
     <string name="toggle_SOUNDSTATE">サウンド/バイブ/サイレント</string>
     <string name="toggle_NAVBARHIDE">ナビゲーションバー</string>
     <string name="toggle_QUICKRECORD">クイックレコーダー</string>
+    <string name="toggle_QUIETHOURS">サイレントタイム</string>
+    <string name="toggle_SLEEP">スリープ</string>
+    <string name="toggle_STATUSBAR">ステータスバー</string>
+    <string name="toggle_SCREENSHOT">スクリーンショット</string>
+    <string name="toggle_REBOOT">再起動</string>
+    <string name="toggle_CUSTOM">カスタム</string>
 </resources>

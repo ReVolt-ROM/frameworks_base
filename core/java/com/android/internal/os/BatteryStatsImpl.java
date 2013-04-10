@@ -4848,6 +4848,8 @@ public final class BatteryStatsImpl extends BatteryStats {
         writeSyncLocked();
         mShuttingDown = true;
     }
+
+    Parcel mPendingWrite = null;
     final ReentrantLock mWriteLock = new ReentrantLock();
 
     public void writeAsyncLocked() {
@@ -4868,30 +4870,40 @@ public final class BatteryStatsImpl extends BatteryStats {
             return;
         }
 
-        final Parcel out = Parcel.obtain();
+        Parcel out = Parcel.obtain();
         writeSummaryToParcel(out);
         mLastWriteTime = SystemClock.elapsedRealtime();
 
+        if (mPendingWrite != null) {
+            mPendingWrite.recycle();
+        }
+        mPendingWrite = out;
+
         if (sync) {
-            commitPendingDataToDisk(out);
+            commitPendingDataToDisk();
         } else {
             Thread thr = new Thread("BatteryStats-Write") {
                 @Override
                 public void run() {
                     Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-                    commitPendingDataToDisk(out);
+                    commitPendingDataToDisk();
                 }
             };
             thr.start();
         }
     }
 
-    public void commitPendingDataToDisk(Parcel next) {
-        if (next == null) {
-            return;
-        }
+    public void commitPendingDataToDisk() {
+        final Parcel next;
+        synchronized (this) {
+            next = mPendingWrite;
+            mPendingWrite = null;
+            if (next == null) {
+                return;
+            }
 
-        mWriteLock.lock();
+            mWriteLock.lock();
+        }
 
         try {
             FileOutputStream stream = new FileOutputStream(mFile.chooseForWrite());

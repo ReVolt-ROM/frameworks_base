@@ -372,6 +372,11 @@ public class PieControlPanel extends FrameLayout implements StatusBarPanel, OnNa
     };
 
     public boolean getKeyguardStatus() {
-        return mKeyguardManger.isKeyguardLocked();
+<<<<<<< HEAD
+        return mKeyguardManger.isKeyguardLocked() && mKeyguardManger.isKeyguardSecure();
     }
+=======
+        return mKeyguardManger.isKeyguardLocked();
+    } 
+>>>>>>> 5f51b6f... PIE tweak-a-roonie: remove from lockscreen
 }

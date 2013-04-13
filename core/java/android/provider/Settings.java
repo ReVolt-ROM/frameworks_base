@@ -2808,6 +2808,7 @@ public final class Settings {
          *
          * @hide
          */
+
         public static final String[] SPEN_ACTIONS = new String[] {
                 "spen_action_left",
                 "spen_action_right",
@@ -3156,6 +3157,13 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_HIDDEN = "statusbar_hidden";
+
+        /**
+         * Whether Status bar should be hiidden when there are no
+         * notifications
+         * @hide
+         */
+        public static final String AUTO_HIDE_STATUSBAR = "auto_hide_statusbar";
 
         /**
          * Whether or not hidden Statusbar can be pulled down

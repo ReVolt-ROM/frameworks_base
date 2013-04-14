@@ -1625,9 +1625,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 Settings.System.USER_UI_MODE,mStockUIMode)) {
             resetScreenHelper();
         }
-        if (NavHide != mNavBarAutoHide) {
-        	mNavBarAutoHide = NavHide;
-        	resetScreenHelper();
+        if (NavHide != mNavBarAutoHide && mUserUIMode != 1) {
+            mNavBarAutoHide = NavHide;
+            resetScreenHelper();
         }
     }
 

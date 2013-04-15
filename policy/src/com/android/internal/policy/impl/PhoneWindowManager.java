@@ -1682,6 +1682,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mNavigationBarCanMove = false;
         } else if (mSystemUiLayout == 1000) {
              // 1000dp: "tablet" UI with a single combined status & navigation bar
+             mNavBarAutoHide = false; // TabUI, No AutoHide for you!
              mHasSystemNavBar = true;
              mNavigationBarCanMove = false;
          }

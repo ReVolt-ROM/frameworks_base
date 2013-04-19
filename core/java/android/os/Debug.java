@@ -573,6 +573,7 @@ href="{@docRoot}guide/developing/tools/traceview.html">Traceview: A Graphical Lo
      *
      * @see #startAllocCounting()
      */
+    @Deprecated
     public static void stopAllocCounting() {
         VMDebug.stopAllocCounting();
     }

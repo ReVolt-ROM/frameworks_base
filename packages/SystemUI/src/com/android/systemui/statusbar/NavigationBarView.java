@@ -16,6 +16,8 @@
 
 package com.android.systemui.statusbar;
 
+import java.io.File;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
@@ -25,46 +27,42 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.ContentObserver;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.provider.Settings;
 import android.util.AttributeSet;
-import android.util.ColorUtils;
-import android.util.ExtendedPropertiesUtils;
 import android.util.Slog;
+import android.util.TypedValue;
+import android.view.animation.AccelerateInterpolator;
 import android.view.Display;
+import android.view.IWindowManager;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Surface;
 import android.view.WindowManager;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
+import android.view.WindowManagerGlobal;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.math.BigInteger;
-
 import static com.android.internal.util.aokp.AwesomeConstants.*;
+
 import com.android.internal.util.aokp.BackgroundAlphaColorDrawable;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.aokp.NavBarHelpers;
+import com.android.systemui.navbar.SysAction;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.BaseStatusBar;
+import com.android.systemui.statusbar.DelegateViewHelper;
 import com.android.systemui.TransparencyManager;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.key.ExtensibleKeyButtonView;
@@ -81,6 +79,7 @@ public class NavigationBarView extends LinearLayout {
     final static boolean ANIMATE_HIDE_TRANSITION = false; // turned off because it introduces unsightly delay when videos goes to full screen
 
     protected IStatusBarService mBarService;
+    protected IWindowManager mWindowManagerService;
     final Display mDisplay;
     View mCurrentView = null;
     View[] mRotatedViews = new View[4];
@@ -103,11 +102,6 @@ public class NavigationBarView extends LinearLayout {
     private BaseStatusBar mBar;
     private SettingsObserver mSettingsObserver;
     private Context mContext;
-
-    private Canvas mCurrentCanvas;
-    private Canvas mNewCanvas;
-    private TransitionDrawable mTransition;
-    private ColorUtils.ColorSettingInfo mLastBackgroundColor;
 
     // workaround for LayoutTransitions leaving the nav buttons in a weird state (bug 5549288)
     final static boolean WORKAROUND_INVALID_LAYOUT = true;
@@ -170,8 +164,6 @@ public class NavigationBarView extends LinearLayout {
     public static final int KEY_ARROW_RIGHT = 22;
     public static final int KEY_BACK_ALT = 1000;
 
-
-    public int mSystemUiLayout = ExtendedPropertiesUtils.getActualProperty("com.android.systemui.layout");
     private int mMenuVisbility;
     private int mMenuLocation;
 
@@ -212,6 +204,9 @@ public class NavigationBarView extends LinearLayout {
     public boolean onTouchEvent(MotionEvent event) {
         if (mDelegateHelper != null) {
             mDelegateHelper.onInterceptTouchEvent(event);
+        }
+        if (mBar != null) {
+            mBar.onBarTouchEvent(event);
         }
         return true;
     }
@@ -261,8 +256,8 @@ public class NavigationBarView extends LinearLayout {
 
     public NavigationBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         mContext = context;
+
         mHidden = false;
 
         mDisplay = ((WindowManager)context.getSystemService(
@@ -278,57 +273,6 @@ public class NavigationBarView extends LinearLayout {
 
         mBackIcon = NavBarHelpers.getIconImage(mContext, AwesomeConstant.ACTION_BACK.value());
         mBackAltIcon = ((KeyButtonView)generateKey(false, KEY_BACK_ALT)).getDrawable();
-
-        // Only watch for per app color changes when the setting is in check
-        if (ColorUtils.getPerAppColorState(mContext)) {
-
-            // Reset all colors
-            Bitmap currentBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-            mCurrentCanvas = new Canvas(currentBitmap);
-            mCurrentCanvas.drawColor(0xFF000000);
-            BitmapDrawable currentBitmapDrawable = new BitmapDrawable(currentBitmap);
-
-            Bitmap newBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-            mNewCanvas = new Canvas(newBitmap);
-            mNewCanvas.drawColor(0xFF000000);
-            BitmapDrawable newBitmapDrawable = new BitmapDrawable(newBitmap);
-
-            mTransition = new TransitionDrawable(new Drawable[]{currentBitmapDrawable, newBitmapDrawable});        
-            setBackground(mTransition);
-
-            mLastBackgroundColor = ColorUtils.getColorSettingInfo(mContext, Settings.System.NAV_BAR_COLOR);
-            updateColor();
-
-            mContext.getContentResolver().registerContentObserver(
-                Settings.System.getUriFor(Settings.System.NAV_BAR_COLOR), false, new ContentObserver(new Handler()) {
-                    @Override
-                    public void onChange(boolean selfChange) {
-                        updateColor();
-                    }});
-        }
-    }
-
-    private void updateColor() {
-        ColorUtils.ColorSettingInfo colorInfo = ColorUtils.getColorSettingInfo(mContext,
-                Settings.System.NAV_BAR_COLOR);
-
-        if (!colorInfo.lastColorString.equals(mLastBackgroundColor.lastColorString)) {
-            // Only enable crossfade for transparent backdrops
-            mTransition.setCrossFadeEnabled(!colorInfo.isLastColorOpaque);
-
-            // Clear first layer, paint current color, reset mTransition to first layer
-            mCurrentCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-            mCurrentCanvas.drawColor(mLastBackgroundColor.lastColor);
-            mTransition.resetTransition();
-
-            // Clear second layer, paint new color, start mTransition
-            mNewCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-            mNewCanvas.drawColor(colorInfo.lastColor);
-            mTransition.startTransition(colorInfo.speed);
-
-            // Remember color for later
-            mLastBackgroundColor = colorInfo;
-        }
     }
 
     public void setTransparencyManager(TransparencyManager tm) {
@@ -372,12 +316,13 @@ public class NavigationBarView extends LinearLayout {
                     v.setImageDrawable(NavBarHelpers.getIconImage(mContext, mClickActions[j]));
                     v.setTint(mClickActions[j].startsWith("**") || mColorAllIcons);
                 }
+
                 addButton(navButtonLayout, v, landscape && !mLeftyMode);
                 // if we are in LeftyMode, then we want to add to end, like Portrait
                 addLightsOutButton(lightsOut, v, landscape && !mLeftyMode, false);
 
                 if (v.getId() == R.id.back){
-                	mBackIcon = v.getDrawable();
+                    mBackIcon = v.getDrawable();
                 }
                 if (mNumberOfButtons == 3 && j != (mNumberOfButtons - 1)) {
                     // add separator view here
@@ -646,10 +591,9 @@ public class NavigationBarView extends LinearLayout {
 
             }
         }
-     // if Home is to be shown, then we hide the Searchlight.
-        getSearchLight().setVisibility((isKeyguardEnabled()&& disableHome) ? View.VISIBLE : View.GONE);
+        getSearchLight().setVisibility(isKeyguardEnabled() ? View.VISIBLE : View.GONE);
         if (mNavBarAutoHide && !isRotating) {
-            if (isKeyguardEnabled())
+            if (isKeyguardEnabled() && disableHome) // if Home is to be shown, then we hide the Searchlight.
                 mBar.setSearchLightOn(true);
             else
                 mBar.setSearchLightOn(false);
@@ -689,7 +633,7 @@ public class NavigationBarView extends LinearLayout {
 
     public void setMenuVisibility(final boolean show, final boolean force) {
 
-        if (!force && mShowMenu == show)
+    	if (!force && mShowMenu == show)
             return;
 
         if (mMenuLocation == SHOW_DONT) {
@@ -837,7 +781,7 @@ public class NavigationBarView extends LinearLayout {
 
     @Override
     public void onFinishInflate() {
-         rot0 = (FrameLayout) findViewById(R.id.rot0);
+    	 rot0 = (FrameLayout) findViewById(R.id.rot0);
          rot90 = (FrameLayout) findViewById(R.id.rot90);
 
          mRotatedViews[Surface.ROTATION_0] =
@@ -854,7 +798,6 @@ public class NavigationBarView extends LinearLayout {
              ViewGroup group = (ViewGroup) v.findViewById(R.id.nav_buttons);
              group.setMotionEventSplittingEnabled(false);
          }
-         updateColor();
          mCurrentView = mRotatedViews[Surface.ROTATION_0];
 
          // this takes care of making the buttons
@@ -876,16 +819,16 @@ public class NavigationBarView extends LinearLayout {
     }
 
     public void reorient() {
-        int rot = mDisplay.getRotation();
-        for (int i=0; i<3; i++) {
+        final int rot = mDisplay.getRotation();
+        for (int i=0; i<4; i++) {
             mRotatedViews[i].setVisibility(View.GONE);
-           }
-           if (mSystemUiLayout != 360) { // this is either a tablet of Phablet.  Need to stay at Rot_0
-               mCurrentView = mRotatedViews[Surface.ROTATION_0];
-           } else {
-               mCurrentView = mRotatedViews[rot];
-           }
-           mCurrentView.setVisibility(View.VISIBLE);
+        }
+        if (mCurrentUIMode !=0) { // this is either a tablet of Phablet.  Need to stay at Rot_0
+            mCurrentView = mRotatedViews[Surface.ROTATION_0];
+        } else {
+            mCurrentView = mRotatedViews[rot];
+        }
+        mCurrentView.setVisibility(View.VISIBLE);
 
         // force the low profile & disabled states into compliance
         setLowProfile(mLowProfile, false, true /* force */);
@@ -1036,7 +979,7 @@ public class NavigationBarView extends LinearLayout {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_COLOR), false, this);
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.NAVIGATION_BAR_ALLCOLOR), false, this);
+                    Settings.System.getUriFor(Settings.System.MENU_LOCATION), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.MENU_LOCATION), false,
                     this);
@@ -1100,11 +1043,11 @@ public class NavigationBarView extends LinearLayout {
 
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
-
+        
         mMenuLocation = Settings.System.getInt(resolver,
                 Settings.System.MENU_LOCATION, SHOW_RIGHT_MENU);
         mNavigationBarColor = Settings.System.getInt(resolver,
-                Settings.System.NAVIGATION_BAR_COLOR, -1);
+                Settings.System.NAVIGATION_BAR_COLOR, -2);
         mColorAllIcons = Settings.System.getBoolean(resolver,
                 Settings.System.NAVIGATION_BAR_ALLCOLOR, false);
         mMenuVisbility = Settings.System.getInt(resolver,

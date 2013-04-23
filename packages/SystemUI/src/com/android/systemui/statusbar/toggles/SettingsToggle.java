@@ -31,7 +31,7 @@ public class SettingsToggle extends BaseToggle {
     public boolean onLongClick(View v) {
         Intent intent = new Intent("android.intent.action.MAIN");
         intent.setComponent(ComponentName
-                .unflattenFromString("com.revolt.control/.ReVoltControlActivity"));
+                .unflattenFromString("com.aokp.romcontrol/.ROMControlActivity"));
         intent.addCategory("android.intent.category.LAUNCHER");
 
         startActivity(intent);

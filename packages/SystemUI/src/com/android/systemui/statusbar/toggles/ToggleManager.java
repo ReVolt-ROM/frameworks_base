@@ -383,9 +383,7 @@ public class ToggleManager {
         if (deviceSupportsTelephony()) {
             tiles.add(SIGNAL_TOGGLE);
         }
-        if (mContext.getResources().getBoolean(R.bool.quick_settings_show_rotation_lock)) {
-            tiles.add(ROTATE_TOGGLE);
-        }
+        tiles.add(DARK_TOGGLE);
         tiles.add(BATTERY_TOGGLE);
         tiles.add(AIRPLANE_TOGGLE);
         if (deviceSupportsBluetooth()) {

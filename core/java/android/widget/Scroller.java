@@ -400,7 +400,6 @@ public class Scroller  {
      * @param duration Duration of the scroll in milliseconds.
      */
     public void startScroll(int startX, int startY, int dx, int dy, int duration) {
-        mPm.cpuBoost(1500000);
         mMode = SCROLL_MODE;
         mFinished = false;
         mDuration = duration;
@@ -412,6 +411,7 @@ public class Scroller  {
         mDeltaX = dx;
         mDeltaY = dy;
         mDurationReciprocal = 1.0f / (float) mDuration;
+        mPm.cpuBoost(1500000);
     }
 
     /**

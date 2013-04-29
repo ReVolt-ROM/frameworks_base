@@ -53,5 +53,4 @@
     <string name="toggle_REBOOT">Reboot</string>
     <string name="toggle_CUSTOM">Custom</string>
     <string name="toggle_DARK">Dark ReVolt</string>
-    <string name="toggle_STAYAWAKE">Stay Awake</string>
 </resources>

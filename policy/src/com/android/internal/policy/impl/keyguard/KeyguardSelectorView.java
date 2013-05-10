@@ -43,6 +43,9 @@ import android.graphics.RectF;
 import android.graphics.Xfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
@@ -66,7 +69,6 @@ import com.android.internal.telephony.IccCardConstants.State;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.multiwaveview.GlowPadView;
 import com.android.internal.widget.multiwaveview.GlowPadView.OnTriggerListener;
-import com.android.internal.widget.multiwaveview.TargetDrawable;
 import com.android.internal.R;
 
 import java.util.ArrayList;
@@ -76,7 +78,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private static final String TAG = "SecuritySelectorView";
 
     private KeyguardSecurityCallback mCallback;
-    private KeyguardShortcuts mShortcuts;
     private GlowPadView mGlowPadView;
     private LinearLayout mRibbon;
     private LinearLayout ribbonView;
@@ -86,6 +87,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private LockPatternUtils mLockPatternUtils;
     private SecurityMessageDisplay mSecurityMessageDisplay;
     private Drawable mBouncerFrame;
+    private int mCreationOrientation;
     private Resources res;
 
     private boolean mGlowPadLock;
@@ -454,10 +456,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
 
     public void setKeyguardCallback(KeyguardSecurityCallback callback) {
         mCallback = callback;
-        mShortcuts = (KeyguardShortcuts) findViewById(R.id.shortcuts);
-        if(mShortcuts != null) {
-            mShortcuts.setKeyguardCallback(callback);
-        }
     }
 
     public void setLockPatternUtils(LockPatternUtils utils) {

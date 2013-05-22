@@ -1956,6 +1956,12 @@
   <!-- Lockscreen -->
   <java-symbol type="bool" name="config_disableHomeUnlockSetting" />
 
+  <!-- Profiles -->
+  <java-symbol type="xml" name="profile_default" />
+  <java-symbol type="string" name="wildcardProfile" />
+  <java-symbol type="string" name="profile_picker_title" />
+  <java-symbol type="string" name="profile_none" />
+
   <!-- From lockscreen targets -->
   <java-symbol type="drawable" name="list_selector_holo_dark" />
   <java-symbol type="drawable" name="ic_lockscreen_alarm" />

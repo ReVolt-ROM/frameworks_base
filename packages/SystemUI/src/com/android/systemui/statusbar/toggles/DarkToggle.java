@@ -22,13 +22,13 @@ public class DarkToggle extends StatefulToggle {
     @Override
     protected void doEnable() {
         Settings.Secure.putInt(mContext.getContentResolver(),
-                Settings.Secure.UI_INVERTED_MODE, 1);
+                Settings.Secure.UI_INVERTED_MODE, 2);
     }
 
     @Override
     protected void doDisable() {
         Settings.Secure.putInt(mContext.getContentResolver(),
-                Settings.Secure.UI_INVERTED_MODE, 0);
+                Settings.Secure.UI_INVERTED_MODE, 1);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class DarkToggle extends StatefulToggle {
     @Override
     protected void updateView() {
         boolean enabled = Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.UI_INVERTED_MODE, 0) == 1;
+                Settings.Secure.UI_INVERTED_MODE, 1) == 2;
         setEnabledState(enabled);
         setIcon(enabled ? R.drawable.ic_qs_dark_revolt_on : R.drawable.ic_qs_dark_revolt_off);
         setLabel(enabled ? R.string.quick_settings_dark_revolt_on_label

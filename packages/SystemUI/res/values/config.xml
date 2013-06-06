@@ -107,6 +107,6 @@
     <integer name="navigation_bar_transparency">255</integer>
 
     <!-- Should "4G" be shown instead of "LTE" when the network is NETWORK_TYPE_LTE? -->
-    <bool name="config_show4GForLTE">true</bool>
+    <bool name="config_show4GForLTE">false</bool>
 </resources>
 

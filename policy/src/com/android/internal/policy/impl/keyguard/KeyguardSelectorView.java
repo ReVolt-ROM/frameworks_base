@@ -16,9 +16,7 @@
 package com.android.internal.policy.impl.keyguard;
 
 import android.animation.ObjectAnimator;
-import android.app.ActivityManagerNative;
 import android.app.SearchManager;
-import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -48,9 +46,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.os.UserHandle;
-import android.os.Vibrator;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -107,7 +103,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private String[] targetActivities = new String[8];
     private String[] longActivities = new String[8];
     private String[] customIcons = new String[8];
-    private UnlockReceiver receiver;
+    private UnlockReceiver mUnlockReceiver;
     private IntentFilter filter;
     private boolean mReceiverRegistered = false;
 
@@ -167,7 +163,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
 
         public void onTrigger(View v, int target) {
             if (mReceiverRegistered) {
-                mContext.unregisterReceiver(receiver);
+                mContext.unregisterReceiver(mUnlockReceiver);
                 mReceiverRegistered = false;
             }
             if ((!mUsesCustomTargets) || (mTargetCounter() == 0 && mUnlockCounter() < 2)) {
@@ -189,7 +185,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
             if (!mGlowPadLock && mLongPress) {
                 mGlowPadLock = true;
                 if (mReceiverRegistered) {
-                    mContext.unregisterReceiver(receiver);
+                    mContext.unregisterReceiver(mUnlockReceiver);
                     mReceiverRegistered = false;
                 }
                 launchAction(longActivities[mTarget]);
@@ -313,8 +309,10 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         mUnlockBroadcasted = false;
         filter = new IntentFilter();
         filter.addAction(UnlockReceiver.ACTION_UNLOCK_RECEIVER);
-        receiver = new UnlockReceiver();
-        mContext.registerReceiver(receiver, filter);
+        if (mUnlockReceiver == null) {
+            mUnlockReceiver = new UnlockReceiver();
+        }
+        mContext.registerReceiver(mUnlockReceiver, filter);
         mReceiverRegistered = true;
     }
 
@@ -356,7 +354,9 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                 Settings.System.HAPTIC_FEEDBACK_ENABLED, 1, UserHandle.USER_CURRENT) != 0) {
             android.os.Vibrator vib = (android.os.Vibrator)mContext.getSystemService(
                     Context.VIBRATOR_SERVICE);
-            vib.vibrate(25);
+            if (vib != null) {
+                vib.vibrate(25);
+            }
         }
     }
 
@@ -556,6 +556,9 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     @Override
     public void onPause() {
         KeyguardUpdateMonitor.getInstance(getContext()).removeCallback(mInfoCallback);
+        if (mUnlockReceiver != null) {
+            mContext.unregisterReceiver(mUnlockReceiver);
+        }
     }
 
     @Override
@@ -595,7 +598,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                 }
             }
             if (mReceiverRegistered) {
-                mContext.unregisterReceiver(receiver);
+                mContext.unregisterReceiver(mUnlockReceiver);
                 mReceiverRegistered = false;
             }
         }

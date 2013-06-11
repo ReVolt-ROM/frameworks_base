@@ -317,7 +317,7 @@ public abstract class Ticker {
 
     private void scheduleAdvance() {
         mHandler.postDelayed(mAdvanceTicker, TICKER_SEGMENT_DELAY);
-    }    
+    }
 
     public abstract void tickerStarting();
     public abstract void tickerDone();

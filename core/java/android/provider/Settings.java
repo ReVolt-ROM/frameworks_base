@@ -2604,12 +2604,6 @@ public final class Settings {
         public static final String HALO_PAUSE = "halo_pause";
 
         /**
-         * Pie menu, should default to 1 (yes, show)
-         * @hide
-         */
-        public static final String STATUSBAR_BATTERY_BAR_STYLE = "statusbar_battery_bar_style";
-
-        /**
          * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR_ANIMATE = "statusbar_battery_bar_animate";

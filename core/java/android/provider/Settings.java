@@ -3832,6 +3832,13 @@ public final class Settings {
 
         /**
          *
+         * HALO being minimal.
+         * @hide
+         */
+        public static final String HALO_STYLE = "halo_style";
+
+        /**
+         *
          * @hide
          */
         public static final String APP_WINDOW_HIDDEN_APPS = "app_window_hidden_apps";

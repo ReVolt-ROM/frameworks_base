@@ -2560,6 +2560,12 @@ public final class Settings {
         public static final String STATUSBAR_NOTIF_COUNT = "status_bar_notif_count";
 
         /**
+         * Network speed indicator
+         * @hide
+         */
+        public static final String STATUS_BAR_TRAFFIC = "status_bar_traffic"; 
+
+        /**
          * Whether to show the battery bar
          * @hide
          */

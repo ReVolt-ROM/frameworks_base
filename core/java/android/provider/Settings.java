@@ -3528,12 +3528,6 @@ public final class Settings {
         public static final String LOCKSCREEN_AUTO_ROTATE = "lockscreen_auto_rotate";
 
         /**
-         * HALO enabled, should default to 0 (no, HALO is disabled)
-         * @hide
-         */
-        public static final String HALO_ENABLED = "halo_enabled";
-
-        /**
          * Whether power menu expanded desktop is enabled
          * @hide
          */

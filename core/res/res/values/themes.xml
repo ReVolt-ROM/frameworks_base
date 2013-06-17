@@ -218,7 +218,7 @@ please see themes_device_defaults.xml.
 
         <!-- Scrollbar attributes -->
         <item name="scrollbarFadeDuration">250</item>
-        <item name="scrollbarDefaultDelayBeforeFade">300</item> 
+        <item name="scrollbarDefaultDelayBeforeFade">300</item>
         <item name="scrollbarSize">10.0dip</item>
         <item name="scrollbarThumbHorizontal">@drawable/scrollbar_handle_holo_dark</item>
         <item name="scrollbarThumbVertical">@drawable/scrollbar_handle_holo_dark</item>

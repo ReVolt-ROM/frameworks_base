@@ -83,7 +83,12 @@ public class SbBatteryController extends LinearLayout {
     public static final int BATTERY_STYLE_CIRCLE = 5;
     public static final int BATTERY_STYLE_CIRCLE_PERCENT = 6;
     public static final int BATTERY_STYLE_DOTTED_CIRCLE_PERCENT = 7;
-    public static final int STYLE_HIDE = 8;
+    public static final int STYLE_ICON_RACING_RB = 8;
+    public static final int STYLE_ICON_GAUGE_RB = 9;
+    public static final int STYLE_ICON_PLANET_RB = 10;
+    public static final int STYLE_ICON_SLIDER_RB = 11;
+    public static final int STYLE_ICON_BRICK_RB = 12;
+    public static final int STYLE_HIDE = 13;
 
     public SbBatteryController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -159,11 +164,32 @@ public class SbBatteryController extends LinearLayout {
                  icon = plugged ? R.drawable.stat_sys_battery_charge_rush
                  : R.drawable.stat_sys_battery_rush;
                  break;
-            default:
-                 icon = plugged ? R.drawable.stat_sys_battery_charge
-                 : R.drawable.stat_sys_battery;
+            case STYLE_ICON_RACING_RB:
+                 icon = plugged ? R.drawable.stat_sys_battery_charge_racing
+                 : R.drawable.stat_sys_battery_racing;
+                 	break;
+            case STYLE_ICON_GAUGE_RB:
+              	 icon = plugged ? R.drawable.stat_sys_battery_charge_gauge
+                 : R.drawable.stat_sys_battery_gauge;
                  break;
+           case STYLE_ICON_PLANET_RB:
+          	icon = plugged ? R.drawable.stat_sys_battery_charge_planet
+		: R.drawable.stat_sys_battery_planet;
+                break;
+           case STYLE_ICON_SLIDER_RB:
+                icon = plugged ? R.drawable.stat_sys_battery_charge_slider
+                : R.drawable.stat_sys_battery_slider;
+                break;
+           case STYLE_ICON_BRICK_RB:
+                icon = plugged ? R.drawable.stat_sys_battery_charge_brick
+                : R.drawable.stat_sys_battery_brick;
+                break;
+           default:
+                icon = plugged ? R.drawable.stat_sys_battery_charge
+                : R.drawable.stat_sys_battery;
+                break;
         }
+
         int N = mIconViews.size();
         for (int i = 0; i < N; i++) {
             ImageView v = mIconViews.get(i);
@@ -297,6 +323,35 @@ public class SbBatteryController extends LinearLayout {
                 mBatteryIcon.setVisibility(View.GONE);
                 setVisibility(View.VISIBLE);
                 break;
+            case STYLE_ICON_RACING_RB:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.GONE);
+                mBatteryIcon.setVisibility(View.VISIBLE);
+                setVisibility(View.VISIBLE);
+                break;
+            case STYLE_ICON_GAUGE_RB:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.GONE);
+                mBatteryIcon.setVisibility(View.VISIBLE);
+                setVisibility(View.VISIBLE);
+                break;
+            case STYLE_ICON_PLANET_RB:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.GONE);
+                mBatteryIcon.setVisibility(View.VISIBLE);
+                setVisibility(View.VISIBLE);
+                break;
+            case STYLE_ICON_SLIDER_RB:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.GONE);
+                mBatteryIcon.setVisibility(View.VISIBLE);
+                setVisibility(View.VISIBLE);
+                break;
+            case STYLE_ICON_BRICK_RB:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.GONE);
+                mBatteryIcon.setVisibility(View.VISIBLE);
+                setVisibility(View.VISIBLE);
             case STYLE_HIDE:
                 mBatteryText.setVisibility(View.GONE);
                 mBatteryCenterText.setVisibility(View.GONE);

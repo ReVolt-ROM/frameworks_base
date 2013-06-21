@@ -390,6 +390,7 @@ public class ToggleManager {
         }
         tiles.add(DARK_TOGGLE);
         tiles.add(BATTERY_TOGGLE);
+        tiles.add(HYBRID_TOGGLE);
         tiles.add(AIRPLANE_TOGGLE);
         if (deviceSupportsBluetooth()) {
             tiles.add(BLUETOOTH_TOGGLE);

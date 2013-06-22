@@ -54,6 +54,7 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.AttributeSet;
+import android.util.ExtendedPropertiesUtils;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.BounceInterpolator;
@@ -221,6 +222,7 @@ public class PieMenu extends FrameLayout {
     private float mPieSize = SIZE_BASE;
     private boolean mOpen;
     private boolean mEnableColor;
+    private boolean mNavbarZero;
     private boolean mUseMenuAlways;
     private boolean mUseSearch;
     private boolean mUseLastApp;

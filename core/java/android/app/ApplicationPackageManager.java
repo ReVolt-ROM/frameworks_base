@@ -1312,6 +1312,7 @@ final class ApplicationPackageManager extends PackageManager {
         } catch (RemoteException e) {
             // Should never happen!
         }
+    }
 
     public void setPrivacyGuardSetting(String packageName, boolean enabled) {
         try {

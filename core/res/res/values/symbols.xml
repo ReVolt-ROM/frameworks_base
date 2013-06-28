@@ -2137,4 +2137,7 @@
   <!-- Irda Service -->
   <java-symbol type="bool" name="config_enableIrdaManagerService" />
 
+  <!-- Screenshort Trash -->
+  <java-symbol type="string" name="trash" />
+
 </resources>

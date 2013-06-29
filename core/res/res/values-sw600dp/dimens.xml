@@ -113,4 +113,7 @@
     <dimen name="notification_ribbon_padding">8dp</dimen>
     <dimen name="lockscreen_ribbon_padding">0dp</dimen>
 
+    <!-- Size of the avator on the multiuser lockscreen. -->
+    <dimen name="keyguard_avatar_size">66dp</dimen>
+
 </resources>

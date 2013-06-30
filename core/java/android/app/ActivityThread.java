@@ -1801,8 +1801,7 @@ public final class ActivityThread {
         }
         PackageInfo pi = null;
         try {
-            pi = getPackageManager().getPackageInfo(theme.getThemePackageName(),
-                    0, UserHandle.myUserId());
+            pi = getPackageManager().getPackageInfo(theme.getThemePackageName(), 0, 0);
         } catch (RemoteException e) {
         }
         if (pi != null && pi.applicationInfo != null && pi.themeInfos != null) {

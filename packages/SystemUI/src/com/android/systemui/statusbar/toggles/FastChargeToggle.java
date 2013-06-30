@@ -80,8 +80,8 @@ public class FastChargeToggle extends StatefulToggle {
     }
 
     private void setFastCharge(final boolean on) {
-        Intent fastChargeIntent = new Intent("com.aokp.romcontrol.ACTION_CHANGE_FCHARGE_STATE");
-        fastChargeIntent.setPackage("com.aokp.romcontrol");
+        Intent fastChargeIntent = new Intent("com.revolt.control.ACTION_CHANGE_FCHARGE_STATE");
+        fastChargeIntent.setPackage("com.revolt.control");
         fastChargeIntent.putExtra("newState", on);
         mContext.sendBroadcast(fastChargeIntent);
         scheduleViewUpdate();

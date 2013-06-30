@@ -12,7 +12,7 @@ import android.provider.Settings;
 import android.util.Log;
 
 public class VibrationPattern {
-    public static final String URI = "content://com.aokp.romcontrol.Vibrations/vibrations";
+    public static final String URI = "content://com.revolt.control.Vibrations/vibrations";
     public static final String FALLBACK_NAME = "FALLBACK";
     public static final String FALLBACK_PATTERN = "500,1000,1000,1000,1000";
 

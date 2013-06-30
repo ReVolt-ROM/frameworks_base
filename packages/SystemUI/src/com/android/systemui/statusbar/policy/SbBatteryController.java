@@ -45,7 +45,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.android.internal.util.aokp.StatusBarHelpers;
+
 import com.android.systemui.R;
 
 public class SbBatteryController extends LinearLayout {

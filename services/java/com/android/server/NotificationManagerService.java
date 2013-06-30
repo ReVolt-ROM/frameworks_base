@@ -1679,7 +1679,7 @@ public class NotificationManagerService extends INotificationManager.Stub
     // lock on mNotificationList
     private void updateLightsLocked()
     {
-        // Get ROMControl "flash when screen ON" flag
+        // Get ReVoltControl "flash when screen ON" flag
         boolean ledScreenOn = Settings.Secure.getInt(
                 mContext.getContentResolver(), Settings.Secure.LED_SCREEN_ON, 0) == 1;
 

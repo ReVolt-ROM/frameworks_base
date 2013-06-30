@@ -35,7 +35,7 @@ public class AwesomeConstants {
     public final static int SPEN_REMOVE = 6;
     public final static int SPEN_INSERT = 7;
 
-    /* Adding Actions here will automatically add them to NavBar actions in ROMControl.
+    /* Adding Actions here will automatically add them to NavBar actions in ReVoltControl.
      * **app** must remain the last action.  Add other actions before that final action.
      * For clarity, **null** should probably also be just before APP.  New actions
      * should be added prior to **null**

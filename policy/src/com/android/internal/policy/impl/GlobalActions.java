@@ -140,6 +140,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mEnableTorchToggle = false;
     private boolean mEnableAirplaneToggle = true;
     private boolean mEnableVolumeStateToggle = true;
+    private boolean mEnableExpandedToggle = true;
     private boolean mShowRebootOnLock = true;
     private static int rebootIndex = 0;
     private Profile mChosenProfile;
@@ -235,6 +236,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private GlobalActionsDialog createDialog() {
         mEnableVolumeStateToggle = Settings.System.getBoolean(mContext.getContentResolver(),
                 Settings.System.POWER_DIALOG_SHOW_VOLUME_STATE_TOGGLE, true);
+        mEnableExpandedToggle = Settings.System.getBoolean(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_EXPANDED_DESKTOP_ENABLED, true);
         // Simple toggle style if there's no vibrator, otherwise use a tri-state
         if (!mHasVibrator) {
             mSilentModeAction = new SilentModeToggleAction();
@@ -453,8 +456,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
         // next: expanded desktop toggle
         // only shown if enabled, disabled by default
-        if(Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.POWER_MENU_EXPANDED_DESKTOP_ENABLED, 0) == 1){
+        if(mEnableExpandedToggle){
             mItems.add(mExpandDesktopModeOn);
         }
 

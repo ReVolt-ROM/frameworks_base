@@ -143,7 +143,7 @@ public class Traffic extends TextView {
 	private void updateSettings() {
 		ContentResolver resolver = mContext.getContentResolver();
 		showTraffic = (Settings.System.getInt(resolver,
-				Settings.System.STATUS_BAR_TRAFFIC, 1) == 1);
+				Settings.System.STATUS_BAR_TRAFFIC, 1) == 0);
 		if (showTraffic && getConnectAvailable()) {
 			if (mAttached) {
 				updateTraffic();

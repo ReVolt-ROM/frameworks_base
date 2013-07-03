@@ -55,7 +55,7 @@ public class VibrationPattern {
             } catch (Exception e) {
                 Log.d(TAG, "No vibration matching, cloning default vibration");
                 VibrationPattern def = new VibrationPattern(Uri.parse(VibrationPattern
-                        .getPhoneVibration(context)), context);
+                        .getDefaultPhoneVibration(context)), context);
                 mUri = def.getUri();
                 mName = def.getName();
                 mPattern = def.getPattern();
@@ -130,6 +130,14 @@ public class VibrationPattern {
             return Settings.System.DEFAULT_VIBRATION_URI.toString();
         }
         return defVibration;
+    }
+
+    public static String getDefaultPhoneVibration(Context context) {
+        ContentResolver cr = context.getContentResolver();
+            // first time setup
+            Settings.System.putString(cr, Settings.System.PHONE_VIBRATION,
+                    Settings.System.DEFAULT_VIBRATION_URI.toString());
+            return Settings.System.DEFAULT_VIBRATION_URI.toString();
     }
 
     // If something goes wrong with the provider.

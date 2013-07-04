@@ -144,12 +144,12 @@ public class Traffic extends TextView {
 				speed = (mTrafficStats.getTotalRxBytes() - totalRxBytes) / 1024 / 3;
 				totalRxBytes = mTrafficStats.getTotalRxBytes();
 				DecimalFormat DecimalFormatfnum = new DecimalFormat("###0");
-				if (speed / 1024 >= 1) {
-					setText(DecimalFormatfnum.format(speed / 1024) + "MB/s");
-				} else if (speed <= 0.01) {
-					setText(DecimalFormatfnum.format(speed * 1024) + "B/s");
-				} else {
+				if (speed >= 1) {
 					setText(DecimalFormatfnum.format(speed) + "KB/s");
+				} else if (speed >= 1024) {
+					setText(DecimalFormatfnum.format(speed / 1024) + "MB/s");
+				} else {
+					setText(DecimalFormatfnum.format(speed * 1024) + "B/s");
 				}
 				update();
 				super.handleMessage(msg);

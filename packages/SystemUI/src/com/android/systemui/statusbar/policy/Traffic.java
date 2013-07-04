@@ -188,7 +188,7 @@ public class Traffic extends TextView {
 	private void updateSettings() {
 		ContentResolver resolver = mContext.getContentResolver();
 		showTraffic = (Settings.System.getInt(resolver,
-				Settings.System.STATUS_BAR_TRAFFIC, 0) == 0);
+				Settings.System.STATUS_BAR_TRAFFIC, 0) == 1);
 
 		mTrafficColor = Settings.System.getInt(resolver,
 			Settings.System.STATUS_ICON_COLOR,

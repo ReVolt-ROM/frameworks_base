@@ -2618,6 +2618,13 @@ public final class Settings {
         public static final String STATUS_BAR_TRAFFIC = "status_bar_traffic"; 
 
         /**
+         * statusbar signal traffic color
+         *
+         * @hide
+         */
+        public static final String STATUS_BAR_TRAFFIC_TEXT_COLOR = "status_bar_traffic_text_color";
+
+        /**
          * Whether to show the battery bar
          * @hide
          */

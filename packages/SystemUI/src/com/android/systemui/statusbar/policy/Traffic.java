@@ -77,7 +77,6 @@ public class Traffic extends TextView {
 			}
 			mLastTextColor = colorInfo;
 		}
-		updateSettings();
 	}
 
 	@Override
@@ -94,8 +93,8 @@ public class Traffic extends TextView {
 			filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 			getContext().registerReceiver(mIntentReceiver, filter, null,
 					getHandler());
+			updateSettings();
 		}
-		updateSettings();
 	}
 
 	@Override
@@ -118,7 +117,7 @@ public class Traffic extends TextView {
 				Settings.System.getUriFor(Settings.System.STATUS_BAR_TRAFFIC), false,
 				this);
 			resolver.registerContentObserver(
-				Settings.System.getUriFor(Settings.System.STATUSBAR_SIGNAL_TEXT_COLOR), false,
+				Settings.System.getUriFor(Settings.System.STATUS_BAR_TRAFFIC_TEXT_COLOR), false,
 				this);
 		}
 
@@ -144,10 +143,10 @@ public class Traffic extends TextView {
 			public void handleMessage(Message msg) {
 				speed = (mTrafficStats.getTotalRxBytes() - totalRxBytes) / 1024 / 3;
 				totalRxBytes = mTrafficStats.getTotalRxBytes();
-				DecimalFormat DecimalFormatfnum = new DecimalFormat("##0.00");
+				DecimalFormat DecimalFormatfnum = new DecimalFormat("###0");
 				if (speed / 1024 >= 1) {
 					setText(DecimalFormatfnum.format(speed / 1024) + "MB/s");
-				} else if (speed <= 0.0099) {
+				} else if (speed <= 0.01) {
 					setText(DecimalFormatfnum.format(speed * 1024) + "B/s");
 				} else {
 					setText(DecimalFormatfnum.format(speed) + "KB/s");
@@ -191,7 +190,7 @@ public class Traffic extends TextView {
 				Settings.System.STATUS_BAR_TRAFFIC, 0) == 1);
 
 		mTrafficColor = Settings.System.getInt(resolver,
-			Settings.System.STATUS_ICON_COLOR,
+			Settings.System.STATUS_BAR_TRAFFIC_TEXT_COLOR,
 			0xFF33B5E5);
 		if (mTrafficColor == Integer.MIN_VALUE) {
 		// flag to reset the color

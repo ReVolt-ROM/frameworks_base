@@ -254,6 +254,7 @@ public class CircleBattery extends ImageView {
             }
             mLastIconColor = colorInfo;
         }
+        invalidate();
     }
 
     @Override

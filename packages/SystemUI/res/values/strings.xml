@@ -508,6 +508,8 @@
     <string name="quick_settings_rssi_emergency_only">Emergency Calls Only</string>
     <!-- QuickSettings: Settings [CHAR LIMIT=NONE] -->
     <string name="quick_settings_settings_label">Settings</string>
+    <!-- QuickSettings: ReVoltControl [CHAR LIMIT=NONE] -->
+    <string name="quick_settings_revolt_label">ReVolt Control</string>
     <!-- QuickSettings: Time [CHAR LIMIT=NONE] -->
     <string name="quick_settings_time_label">Time</string>
     <!-- QuickSettings: User [CHAR LIMIT=NONE] -->

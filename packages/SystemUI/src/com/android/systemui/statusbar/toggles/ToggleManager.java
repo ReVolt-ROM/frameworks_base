@@ -66,6 +66,7 @@ public class ToggleManager {
     public static final String USER_TOGGLE = "USER";
     public static final String BRIGHTNESS_TOGGLE = "BRIGHTNESS";
     public static final String SETTINGS_TOGGLE = "SETTINGS";
+    public static final String REVOLT_TOGGLE = "REVOLT";
     public static final String WIFI_TOGGLE = "WIFI";
     public static final String SIGNAL_TOGGLE = "SIGNAL";
     public static final String ROTATE_TOGGLE = "ROTATE";
@@ -129,6 +130,7 @@ public class ToggleManager {
             toggleMap.put(USER_TOGGLE, UserToggle.class);
             toggleMap.put(BRIGHTNESS_TOGGLE, BrightnessToggle.class);
             toggleMap.put(SETTINGS_TOGGLE, SettingsToggle.class);
+            toggleMap.put(REVOLT_TOGGLE, ReVoltToggle.class);
             toggleMap.put(WIFI_TOGGLE, WifiToggle.class);
             if (deviceSupportsTelephony()) {
                 toggleMap.put(SIGNAL_TOGGLE, SignalToggle.class);
@@ -393,7 +395,6 @@ public class ToggleManager {
         tiles.add(DARK_TOGGLE);
         tiles.add(BATTERY_TOGGLE);
         tiles.add(HYBRID_TOGGLE);
-        tiles.add(AIRPLANE_TOGGLE);
         if (deviceSupportsBluetooth()) {
             tiles.add(BLUETOOTH_TOGGLE);
         }

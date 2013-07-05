@@ -23,12 +23,14 @@ public class ReVoltToggle extends BaseToggle {
             Intent intent = new Intent("android.intent.action.MAIN");
             intent.setComponent(ComponentName
                     .unflattenFromString("com.revolt.control/.ReVoltControlActivity"));
+            intent.addCategory("android.intent.category.LAUNCHER");
             intent.addFlags(Intent.FLAG_FLOATING_WINDOW);
+            collapseStatusBar();
+            dismissKeyguard();
             startActivity(intent);
         } catch(NullPointerException e) {
             // No intent found for activity component
         }
-        collapseStatusBar();
     }
 
     @Override
@@ -38,9 +40,9 @@ public class ReVoltToggle extends BaseToggle {
                 .unflattenFromString("com.revolt.control/.ReVoltControlActivity"));
         intent.addCategory("android.intent.category.LAUNCHER");
 
-        startActivity(intent);
         dismissKeyguard();
         collapseStatusBar();
+        startActivity(intent);
         return super.onLongClick(v);
     }
 

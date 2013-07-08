@@ -2726,6 +2726,12 @@ public final class Settings {
         public static final String RAM_USAGE_BAR = "ram_usage_bar";
 
         /**
+         * whether circle RAM meter is used
+         * @hide
+         */
+        public static final String RECENTS_RAM_CIRCLE = "recents_ram_circle";
+
+        /**
          * Goodbye fullscreen keyboard
          *
          * @hide

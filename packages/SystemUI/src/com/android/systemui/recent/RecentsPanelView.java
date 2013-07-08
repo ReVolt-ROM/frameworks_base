@@ -65,6 +65,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.android.systemui.R;
+import com.android.systemui.recent.CircleMemoryMeter; 
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 import com.android.systemui.statusbar.tablet.StatusBarPanel;
@@ -114,6 +115,9 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     SettingsObserver mSettingsObserver;
     ActivityManager mAm;
     ActivityManager.MemoryInfo mMemInfo;
+
+    private static boolean mCircleRam;
+    private CircleMemoryMeter mCircleMeter
 
     MemInfoReader mMemInfoReader = new MemInfoReader();
 
@@ -382,6 +386,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         sendCloseSystemWindows(mContext, BaseStatusBar.SYSTEM_DIALOG_REASON_RECENT_APPS);
 
         mShowing = show;
+        mCircleRam = Settings.System.getBoolean(mContext.getContentResolver(),
+                Settings.System.RECENTS_RAM_CIRCLE, false); 
 
         if (show) {
             // if there are no apps, bring up a "No recent apps" message
@@ -390,6 +396,11 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mRecentsNoApps.setAlpha(1f);
             mRecentsNoApps.setVisibility(noApps ? View.VISIBLE : View.INVISIBLE);
 
+                if (mCircleRam) {
+                    mCircleMeter.setVisibility(View.VISIBLE);
+                } else {
+                    mCircleMeter.setVisibility(View.GONE);
+                }
             onAnimationEnd(null);
             setFocusable(true);
             setFocusableInTouchMode(true);
@@ -495,6 +506,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
         mRecentsScrim = findViewById(R.id.recents_bg_protect);
         mRecentsNoApps = findViewById(R.id.recents_no_apps);
+
+        mCircleMeterLeft = (CircleMemoryMeter) findViewById(R.id.circle_meter);
 
         if (mRecentsScrim != null) {
             mHighEndGfx = ActivityManager.isHighEndGfx();

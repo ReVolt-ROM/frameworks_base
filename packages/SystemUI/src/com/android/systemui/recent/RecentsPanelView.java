@@ -92,7 +92,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private boolean mWaitingForWindowAnimation;
     private long mWindowAnimationStartTime;
 
-    private Button mRecentsKillAllButton;
+    private ImageView mRecentsKillAll;
+    private CircleMemoryMeter mCircleMeter;
     private LinearColorBar mRamUsageBar;
 
     private RecentTasksLoader mRecentTasksLoader;
@@ -104,6 +105,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private int mRecentItemLayoutId;
     private boolean mHighEndGfx;
     private int mAndroidDpi = DisplayMetrics.DENSITY_DEVICE;
+    boolean mCircleMeterEnabled;
     boolean ramBarEnabled;
     boolean mRecentsKillAllEnabled;
     private RecentsActivity mRecentsActivity;
@@ -115,9 +117,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     SettingsObserver mSettingsObserver;
     ActivityManager mAm;
     ActivityManager.MemoryInfo mMemInfo;
-
-    private static boolean mCircleRam;
-    private CircleMemoryMeter mCircleMeter
 
     MemInfoReader mMemInfoReader = new MemInfoReader();
 
@@ -386,8 +385,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         sendCloseSystemWindows(mContext, BaseStatusBar.SYSTEM_DIALOG_REASON_RECENT_APPS);
 
         mShowing = show;
-        mCircleRam = Settings.System.getBoolean(mContext.getContentResolver(),
-                Settings.System.RECENTS_RAM_CIRCLE, false); 
 
         if (show) {
             // if there are no apps, bring up a "No recent apps" message
@@ -396,11 +393,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mRecentsNoApps.setAlpha(1f);
             mRecentsNoApps.setVisibility(noApps ? View.VISIBLE : View.INVISIBLE);
 
-                if (mCircleRam) {
-                    mCircleMeter.setVisibility(View.VISIBLE);
-                } else {
-                    mCircleMeter.setVisibility(View.GONE);
-                }
             onAnimationEnd(null);
             setFocusable(true);
             setFocusableInTouchMode(true);
@@ -507,8 +499,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         mRecentsScrim = findViewById(R.id.recents_bg_protect);
         mRecentsNoApps = findViewById(R.id.recents_no_apps);
 
-        mCircleMeterLeft = (CircleMemoryMeter) findViewById(R.id.circle_meter);
-
         if (mRecentsScrim != null) {
             mHighEndGfx = ActivityManager.isHighEndGfx();
             if (!mHighEndGfx) {
@@ -519,11 +509,12 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             }
         }
 
+        mCircleMeter = (CircleMemoryMeter) findViewById(R.id.circle_meter);
         mRamUsageBar = (LinearColorBar) findViewById(R.id.ram_usage_bar);
         mForegroundProcessText = (TextView) findViewById(R.id.foregroundText);
         mBackgroundProcessText = (TextView) findViewById(R.id.backgroundText);
-        mRecentsKillAllButton = (Button) findViewById(R.id.recents_kill_all_button);
-        mRecentsKillAllButton.setOnClickListener(new OnClickListener() {
+        mRecentsKillAll = (ImageView) findViewById(R.id.recents_kill_all);
+        mRecentsKillAll.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 killAllRecentApps();
@@ -945,12 +936,18 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         mRecentsKillAllEnabled = Settings.System.getBoolean(
                 mContext.getContentResolver(),
                 Settings.System.RECENT_KILL_ALL_BUTTON, false);
+        mCircleMeterEnabled = Settings.System.getBoolean(
+                mContext.getContentResolver(),
+                Settings.System.RECENTS_RAM_CIRCLE, false);
 
+        if (mCircleMeter != null) {
+            mCircleMeter.setVisibility(mCircleMeterEnabled ? View.VISIBLE : View.GONE);
+        }
         if (mRamUsageBar != null) {
             mRamUsageBar.setVisibility(ramBarEnabled ? View.VISIBLE : View.GONE);
         }
-        if (mRecentsKillAllButton != null) {
-            mRecentsKillAllButton.setVisibility(mRecentsKillAllEnabled ? View.VISIBLE : View.GONE);
+        if (mRecentsKillAll != null) {
+            mRecentsKillAll.setVisibility(mRecentsKillAllEnabled ? View.VISIBLE : View.GONE);
         }
     }
 }

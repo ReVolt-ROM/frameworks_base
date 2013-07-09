@@ -69,19 +69,18 @@
                     android:layout_gravity="bottom|left" >
 
                     <com.android.systemui.recent.CircleMemoryMeter
-                        android:id="@+id/circle_meter_left"
+                        android:id="@+id/circle_meter"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
  
-                    <Button
-                        android:id="@+id/recents_kill_all_button"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginRight="5dp"
+                    <ImageView
+                        android:id="@+id/recents_kill_all"
+                        android:clickable="true"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:padding="10dp"
                         android:scaleType="fitCenter"
-                        android:text="@string/recents_kill_all_button_text"/>
+                        android:src="@drawable/ic_recents_clear" />
                 </FrameLayout> 
 
     <view class="com.android.systemui.recent.LinearColorBar"

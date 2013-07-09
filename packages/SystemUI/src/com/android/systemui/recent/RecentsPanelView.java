@@ -916,6 +916,9 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.RECENTS_RAM_CIRCLE),
+                    false, this);
+            resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.RAM_USAGE_BAR),
                     false, this);
             resolver.registerContentObserver(Settings.System
@@ -931,14 +934,15 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     }
 
     public void updateSettings() {
-        ramBarEnabled = Settings.System.getBoolean(mContext.getContentResolver(),
+        mCircleMeterEnabled = Settings.System.getBoolean(
+                mContext.getContentResolver(),
+                Settings.System.RECENTS_RAM_CIRCLE, false);
+        ramBarEnabled = Settings.System.getBoolean(
+                mContext.getContentResolver(),
                 Settings.System.RAM_USAGE_BAR, false);
         mRecentsKillAllEnabled = Settings.System.getBoolean(
                 mContext.getContentResolver(),
                 Settings.System.RECENT_KILL_ALL_BUTTON, false);
-        mCircleMeterEnabled = Settings.System.getBoolean(
-                mContext.getContentResolver(),
-                Settings.System.RECENTS_RAM_CIRCLE, false);
 
         if (mCircleMeter != null) {
             mCircleMeter.setVisibility(mCircleMeterEnabled ? View.VISIBLE : View.GONE);

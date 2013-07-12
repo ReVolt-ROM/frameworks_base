@@ -75,7 +75,6 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
     private AudioManager mAudioManager;
     private IRemoteControlDisplayWeak mIRCD;
     private boolean mMusicClientPresent = true;
-    private boolean mShouldBeShown = true;
 
     /**
      * The metadata which should be populated into the view once we've been attached
@@ -204,7 +203,6 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
         } else {
             Log.w(TAG, "onListenerDetached: no callback");
         }
-        callAppropriateCallback();
     }
 
     private void onListenerAttached() {
@@ -214,37 +212,6 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
             mTransportCallback.onListenerAttached();
         } else {
             Log.w(TAG, "onListenerAttached(): no callback");
-        callAppropriateCallback();
-    }
-
-    private void updateSettings() {
-        boolean oldShown = mShouldBeShown;
-        mShouldBeShown = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.LOCKSCREEN_MUSIC_CONTROLS, 1, UserHandle.USER_CURRENT) != 0;
-        if (DEBUG) Log.v(TAG, "updateSettings(): mShouldBeShown=" + mShouldBeShown);
-        if (oldShown != mShouldBeShown) {
-            callAppropriateCallback();
-            if (mShouldBeShown && mMusicClientPresent
-                    && mCurrentPlayState != RemoteControlClient.PLAYSTATE_NONE) {
-                // send out the play state change event that we suppressed earlier
-                mTransportCallback.onPlayStateChanged();
-            }
-        }
-    }
-
-    private void callAppropriateCallback() {
-        if (mTransportCallback == null) {
-            Log.w(TAG, "callAppropriateCallback: no callback");
-            return;
-        }
-
-        boolean shouldBeAttached = mMusicClientPresent && mShouldBeShown;
-        if (DEBUG) Log.v(TAG, "callAppropriateCallback(): shouldBeAttached=" + shouldBeAttached);
-
-        if (shouldBeAttached) {
-            mTransportCallback.onListenerAttached();
-        } else {
-            mTransportCallback.onListenerDetached();
         }
     }
 

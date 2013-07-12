@@ -203,4 +203,34 @@
     <string name="quick_settings_brightness_dialog_auto_brightness_label" msgid="5064982743784071218">"AUTO"</string>
     <string name="status_bar_help_title" msgid="1199237744086469217">"Las notificaciones aparecen aquí"</string>
     <string name="status_bar_help_text" msgid="7874607155052076323">"Desliza el dedo hacia abajo para acceder al contenido."\n"Vuelve a deslizar el dedo hacia abajo para acceder a los controles del sistema."</string>
+
+    <string name="quick_settings_screen_sleep">Bloquear</string>
+    <string name="quick_settings_ringer_on">Sonido activado</string>
+    <string name="quick_settings_ringer_off">Sonido desactivado</string>
+    <string name="quick_settings_vibration_on">Vibración activada</string>
+    <string name="quick_settings_vibration_off">Vibración desactivada</string>
+    <string name="quick_settings_label_enabled">Activado</string>
+    <string name="quick_settings_label_disabled">Desactivado</string>
+    <string name="quick_settings_ringer_normal">Sonido</string>
+    <string name="quick_settings_lockscreen">Pantalla Bloqueo</string>
+    <string name="quick_settings_network_type">Red móvil</string>
+    <string name="quick_settings_report_bug">Informar de error</string>
+    <string name="quick_settings_sync">Sincronizar</string>
+    <string name="quick_settings_torch">Linterna</string>
+
+    <!-- CYANOGENMOD EDITS START -->
+
+    <string name="accessibility_quick_settings_ringer">Sonido <xliff:g id="state" example="Apagado">%s</xliff:g>.</string>
+    <string name="accessibility_quick_settings_vibration">Vibración <xliff:g id="state" example="Apagada">%s</xliff:g>.</string>
+    <string name="bean_dream_settings_cid_title">Usar a CID</string>
+    <string name="bean_dream_settings_cid_summary">Usar el icono CID para el salvapantallas en vez del icono Jellybean</string>
+    <string name="powerwidget_screen_timeout_toast">Tiempo de pantalla establecido a: %1$d %2$s</string>
+    <string name="quick_settings_gps">GPS</string>
+
+    <string name="halo_dismiss">Descartar notificación</string>
+    <string name="halo_hide">Ocultar</string>
+    <string name="halo_clear_all">Limpiar todas las notificaciones</string>
+    <string name="halo_silence">Ocultar y silenciar hasta despertar</string>
+
+    <!-- CYANOGENMOD ADDITIONS END -->
 </resources>

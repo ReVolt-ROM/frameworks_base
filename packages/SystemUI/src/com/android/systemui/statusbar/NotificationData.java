@@ -235,20 +235,6 @@ public class NotificationData {
     }
 
     /**
-     * Return whether the entry was dismissed by the user.
-     */
-    public static boolean getUserDismissed(View row) {
-        return readBooleanTag(row, R.id.user_dismissed_tag);
-    }
-
-    /**
-     * Set whether the entry was dismissed by the user.
-     */
-    public static boolean setUserDismissed(View row) {
-        return writeBooleanTag(row, R.id.user_dismissed_tag, true);
-    }
-
-    /**
      * Return whether the entry is being touched by the user.
      */
     public static boolean getUserLocked(View row) {
@@ -260,5 +246,19 @@ public class NotificationData {
      */
     public static boolean setUserLocked(View row, boolean userLocked) {
         return writeBooleanTag(row, R.id.user_lock_tag, userLocked);
+    }
+
+    /**
+     * Return whether the entry was dismissed by the user.
+     */
+    public static boolean getUserDismissed(View row) {
+        return readBooleanTag(row, R.id.user_dismissed_tag);
+    }
+
+    /**
+     * Set whether the entry was dismissed by the user.
+     */
+    public static boolean setUserDismissed(View row) {
+        return writeBooleanTag(row, R.id.user_dismissed_tag, true);
     }
 }

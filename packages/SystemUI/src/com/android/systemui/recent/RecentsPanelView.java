@@ -542,6 +542,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         mBackgroundProcessText = (TextView) findViewById(R.id.backgroundText);
         mRecentsKillAll = (ImageView) findViewById(R.id.recents_kill_all);
         mRecentsKillAll.setOnClickListener(new OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 mRecentsContainer.removeAllViewsInLayout();

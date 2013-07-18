@@ -352,7 +352,7 @@ public class StatusBarIconView extends AnimatedImageView {
 
         void observe() {
             mContext.getContentResolver().registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUS_BAR_NOTIF_ICON_OPACITY),
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_NOTIF_COUNT),
                     false, this);
         }
 

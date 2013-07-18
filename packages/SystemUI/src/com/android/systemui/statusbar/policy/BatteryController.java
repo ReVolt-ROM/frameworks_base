@@ -25,6 +25,7 @@ import android.graphics.PorterDuff;
 import android.os.BatteryManager;
 import android.provider.Settings;
 import android.util.ColorUtils;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -45,6 +46,17 @@ public class BatteryController extends BroadcastReceiver {
     private int mLevel;
     private boolean mPlugged;
     private ColorUtils.ColorSettingInfo mColorInfo;
+
+    private static int mBatteryStyle;
+    public static final int STYLE_ICON_ONLY = 0;
+    public static final int STYLE_TEXT_ONLY = 1;
+    public static final int STYLE_ICON_TEXT = 2;
+    public static final int STYLE_ICON_CENTERED_TEXT = 3;
+    public static final int STYLE_ICON_RUSH_RB = 4;
+    public static final int BATTERY_STYLE_CIRCLE = 5;
+    public static final int BATTERY_STYLE_CIRCLE_PERCENT = 6;
+    public static final int BATTERY_STYLE_DOTTED_CIRCLE_PERCENT = 7;
+    public static final int STYLE_HIDE = 8;
 
     public interface BatteryStateChangeCallback {
         public void onBatteryLevelChanged(int level, boolean pluggedIn);
@@ -89,10 +101,21 @@ public class BatteryController extends BroadcastReceiver {
     }
 
     public void updateBatteryLevel() {
-        final int icon = mPlugged ? R.drawable.stat_sys_battery_charge 
-                : R.drawable.stat_sys_battery;
+        mBatteryStyle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_BATTERY_ICON, 0);
+        int icon;
+        switch (mBatteryStyle) {
+            case STYLE_ICON_RUSH_RB:
+                 icon = mPlugged ? R.drawable.stat_sys_battery_charge_rush
+                 : R.drawable.stat_sys_battery_rush;
+                 break;
+            default:
+                 icon = mPlugged ? R.drawable.stat_sys_battery_charge
+                 : R.drawable.stat_sys_battery;
+                 break;
+        }
         int N = mIconViews.size();
-        for (int i=0; i<N; i++) {
+        for (int i = 0; i < N; i++) {
             ImageView v = mIconViews.get(i);
             Drawable batteryBitmap = mContext.getResources().getDrawable(icon);
             if (mColorInfo.isLastColorNull) {

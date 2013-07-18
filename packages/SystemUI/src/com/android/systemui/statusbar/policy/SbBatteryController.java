@@ -130,7 +130,6 @@ public class SbBatteryController extends LinearLayout {
 
     public void setColor(ColorUtils.ColorSettingInfo colorInfo) {
         mColorInfo = colorInfo;
-        updateBatteryLevel();
     }
 
     private BroadcastReceiver mBatteryBroadcastReceiver = new BroadcastReceiver() {
@@ -147,27 +146,6 @@ public class SbBatteryController extends LinearLayout {
             }
         }
     };
-
-    private void updateBatteryLevel() {
-        int N = mIconViews.size();
-        for (int i=0; i<N; i++) {
-            ImageView v = mIconViews.get(i);
-            v.setImageLevel(mLevel);
-            v.setContentDescription(mContext.getString(R.string.accessibility_battery_level,
-                    mLevel));
-        }
-        N = mLabelViews.size();
-        for (int i=0; i<N; i++) {
-            TextView v = mLabelViews.get(i);
-            v.setText(mContext.getString(R.string.status_bar_settings_battery_meter_format,
-                    mLevel));
-        }
-
-        for (BatteryStateChangeCallback cb : mChangeCallbacks) {
-            cb.onBatteryLevelChanged(mLevel, mPlugged);
-        }
-        setBatteryIcon(mLevel, mPlugged);
-    }
 
     private void setBatteryIcon(int level, boolean plugged) {
         mLevel = level;

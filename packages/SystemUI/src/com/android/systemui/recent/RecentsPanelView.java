@@ -59,9 +59,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.PopupMenu;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.systemui.R;
@@ -74,6 +76,7 @@ import com.android.systemui.statusbar.tablet.TabletStatusBar;
 import com.android.internal.util.MemInfoReader;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 public class RecentsPanelView extends FrameLayout implements OnItemClickListener, RecentsCallback,
         StatusBarPanel, Animator.AnimatorListener {
@@ -83,6 +86,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private View mRecentsScrim;
     private View mRecentsNoApps;
     private ViewGroup mRecentsContainer;
+    public Object mScrollView;
     private StatusBarTouchProxy mStatusBarTouchProxy;
 
     private boolean mShowing;
@@ -113,10 +117,14 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     TextView mBackgroundProcessText;
     TextView mForegroundProcessText;
 
+    ImageView mClearRecents;
+
     Handler mHandler = new Handler();
     SettingsObserver mSettingsObserver;
     ActivityManager mAm;
     ActivityManager.MemoryInfo mMemInfo;
+
+    Handler mTaskHandler;
 
     MemInfoReader mMemInfoReader = new MemInfoReader();
 
@@ -291,6 +299,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
     public RecentsPanelView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mContext = context;
+        mTaskHandler = new Handler();
         updateValuesFromResources();
 
         mAm = (ActivityManager)
@@ -393,6 +403,11 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mRecentsNoApps.setAlpha(1f);
             mRecentsNoApps.setVisibility(noApps ? View.VISIBLE : View.INVISIBLE);
 
+            // if no apps found, we just hide the "Clear" button as it's not needed
+            if(mClearRecents != null){
+                mClearRecents.setVisibility(noApps ? View.GONE : View.VISIBLE);
+            } 
+
             onAnimationEnd(null);
             setFocusable(true);
             setFocusableInTouchMode(true);
@@ -481,6 +496,8 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         mFitThumbnailToXY = res.getBoolean(R.bool.config_recents_thumbnail_image_fits_to_xy);
     }
 
+    protected static ArrayList<View> mViewContainer = new ArrayList();
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -498,6 +515,16 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
 
         mRecentsScrim = findViewById(R.id.recents_bg_protect);
         mRecentsNoApps = findViewById(R.id.recents_no_apps);
+
+        mClearRecents = (ImageView) findViewById(R.id.recents_kill_all);
+        if (mClearRecents != null){
+            mClearRecents.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mRecentsContainer.removeAllViewsInLayout();
+                }
+            });
+        }
 
         if (mRecentsScrim != null) {
             mHighEndGfx = ActivityManager.isHighEndGfx();
@@ -822,6 +849,10 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         }
     }
 
+    public void setScrollView(Object scrollView){
+        mScrollView = scrollView;
+    }
+
     public void handleLongPress(
             final View selectedView, final View anchorView, final View thumbnailView) {
         thumbnailView.setSelected(true);
@@ -865,6 +896,14 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             }
         });
         popup.show();
+    }
+
+    public void addContainer(View container){
+        mViewContainer.add(container);
+    }
+
+    public void clear(){
+        mViewContainer.clear();
     }
 
     private void killAllRecentApps(){

@@ -579,9 +579,6 @@ public class PhoneStatusBar extends BaseStatusBar {
 
         mHasSettingsPanel = res.getBoolean(R.bool.config_hasSettingsPanel);
 
-        mUiModeIsToggled = Settings.Secure.getInt(mContext.getContentResolver(),
-                              Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
-
         mHasFlipSettings = res.getBoolean(R.bool.config_hasFlipSettingsPanel);
 
         mDateTimeView = mNotificationPanelHeader.findViewById(R.id.datetime);
@@ -3257,13 +3254,9 @@ public class PhoneStatusBar extends BaseStatusBar {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this, mCurrentUserId);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.CURRENT_UI_MODE), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAV_HIDE_ENABLE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAV_HIDE_TIMEOUT), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.Secure.UI_MODE_IS_TOGGLED), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.HIDE_STATUSBAR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -3406,7 +3399,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         } else {
             mClockDoubleClicked = true;
         }
-        mCurrentUIMode = Settings.System.getInt(cr,Settings.System.CURRENT_UI_MODE, 0);
         mNavBarAutoHide = Settings.System.getBoolean(cr, Settings.System.NAV_HIDE_ENABLE, false);
         mAutoHideTimeOut = Settings.System.getInt(cr, Settings.System.NAV_HIDE_TIMEOUT, mAutoHideTimeOut);
         mToggleStyle = Settings.System.getInt(cr, Settings.System.TOGGLES_STYLE,ToggleManager.STYLE_TILE);

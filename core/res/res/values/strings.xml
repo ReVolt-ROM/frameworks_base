@@ -4123,6 +4123,9 @@
     <!-- In WiFi notification -->
     <string name="notify_turn_wifi_off_title">Turn Wi-Fi off</string>
 
+    <string name="notify_turn_wifi_ap_off_title">Turn Ap Off</string>
+
+
     <!--CyanogenMod Profiles -->
     <!-- Names of default profiles. -->
     <string name="profileNameDefault">Default</string>

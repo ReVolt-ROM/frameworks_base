@@ -23,6 +23,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.view.MotionEvent;
@@ -48,6 +50,7 @@ public class RecentsActivity extends Activity {
     private IntentFilter mIntentFilter;
     private boolean mShowing;
     private boolean mForeground;
+    public static boolean mHomeForeground = false;
     protected boolean mBackPressed;
 
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
@@ -93,6 +96,7 @@ public class RecentsActivity extends Activity {
                 R.anim.recents_return_to_launcher_enter,
                 R.anim.recents_return_to_launcher_exit);
         mForeground = false;
+        mHomeForeground = false;
         super.onPause();
     }
 
@@ -106,12 +110,6 @@ public class RecentsActivity extends Activity {
     }
 
     private void updateWallpaperVisibility(boolean visible) {
-        int wpflags = visible ? WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER : 0;
-        int curflags = getWindow().getAttributes().flags
-                & WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
-        if (wpflags != curflags) {
-            getWindow().setFlags(wpflags, WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
-        }
     }
 
     public static boolean forceOpaqueBackground(Context context) {

@@ -18,11 +18,13 @@
 package com.android.systemui.recent;
 
 import android.animation.LayoutTransition;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.FloatMath;
@@ -32,6 +34,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
@@ -39,6 +42,7 @@ import com.android.systemui.R;
 import com.android.systemui.SwipeHelper;
 import com.android.systemui.recent.RecentsPanelView.TaskDescriptionAdapter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -56,6 +60,12 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
     private int mNumItemsInOneScreenful;
     private Handler mHandler;
 
+    private float mPX;
+    private int mState;
+    private boolean isTouching;
+
+    private ArrayList<View> mViews = new ArrayList<View>();
+
     public RecentsHorizontalScrollView(Context context, AttributeSet attrs) {
         super(context, attrs, 0);
         float densityScale = getResources().getDisplayMetrics().density;
@@ -64,7 +74,22 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
         mPerformanceHelper = RecentsScrollViewPerformanceHelper.create(context, attrs, this, false);
         mRecycledViews = new HashSet<View>();
         mHandler = new Handler();
+        rotate.sendEmptyMessage(0);
     }
+
+    final Handler rotate = new Handler() {
+  public void handleMessage(Message msg) {
+      float Delta = mPX - getScrollX();
+            if(!isTouching && Delta == 0) {
+                setRotationYAll(2);
+            } else if(Delta < 0) {
+            setRotationYAll(1);  
+            } else if(Delta > 0) {
+            setRotationYAll(0);
+            }
+      mPX = getScrollX();
+      rotate.sendEmptyMessageDelayed(0,150);
+  }};
 
     public void setMinSwipeAlpha(float minAlpha) {
         mSwipeHelper.setMinAlpha(minAlpha);
@@ -92,6 +117,8 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
     }
 
     private void update() {
+        mViews.clear();
+        mPX = getWidth()/2;
         for (int i = 0; i < mLinearLayout.getChildCount(); i++) {
             View v = mLinearLayout.getChildAt(i);
             addToRecycledViews(v);
@@ -159,7 +186,9 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
             final View appTitle = view.findViewById(R.id.app_label);
             appTitle.setContentDescription(" ");
             appTitle.setOnTouchListener(noOpListener);
+            view.setRotation(0.0f);
             mLinearLayout.addView(view);
+            mViews.add(view);
         }
         setLayoutTransition(transitioner);
 
@@ -186,17 +215,43 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
     @Override
     public void removeAllViewsInLayout() {
         smoothScrollTo(0, 0);
-        int count = mLinearLayout.getChildCount();
-        for (int i = 0; i < count; i++) {
-            final View child = mLinearLayout.getChildAt(i);
-            postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    dismissChild(child);
+        Thread clearAll = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int count = mLinearLayout.getChildCount();
+                if (!RecentsActivity.mHomeForeground) {
+                    count--;
                 }
-            }, i * 150);
-        }
-    }
+                
+                View[] refView = new View[count];
+                for (int i = 0; i < count; i++) {
+                    refView[i] = mLinearLayout.getChildAt(i);
+                }
+                for (int i = 0; i < count; i++) {
+                    final View child = refView[i];
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                          int[] lo = new int[2];
+                          child.getLocationOnScreen(lo);
+                          int posX = lo[0];
+                          int halfWidth = (int) (child.getWidth() * 0.5f);
+                          int screenWith = ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth();
+                          int halfScreenWidth = (int) (screenWith * 0.5f);
+                          final int scroll = posX + halfWidth - halfScreenWidth;
+                          smoothScrollBy(scroll, 0);
+                            dismissChild(child);
+                        }
+                    });
+                    try {
+                        Thread.sleep(150);
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        });
+        clearAll.start();
+     }
 
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (DEBUG) Log.v(TAG, "onInterceptTouchEvent()");
@@ -206,6 +261,10 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        if(ev.getAction() == MotionEvent.ACTION_UP||ev.getAction() == MotionEvent.ACTION_CANCEL)
+           isTouching = false;
+        else
+           isTouching = true;
         return mSwipeHelper.onTouchEvent(ev) ||
             super.onTouchEvent(ev);
     }
@@ -221,7 +280,9 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
     public void onChildDismissed(View v, boolean fromUser) {
         addToRecycledViews(v);
         mLinearLayout.removeView(v);
-        mCallback.handleSwipe(v);
+        if (mCallback != null) {
+          mCallback.handleSwipe(v);
+        }
         // Restore the alpha/translation parameters to what they were before swiping
         // (for when these items are recycled)
         View contentView = getChildContentView(v);
@@ -398,5 +459,37 @@ public class RecentsHorizontalScrollView extends HorizontalScrollView
     public void setCallback(RecentsCallback callback) {
         mCallback = callback;
         mCallback.setScrollView(this);
+    }
+
+    private void setRotationYAll(int mode) {
+
+    if(mState == mode)
+      return;
+
+    switch(mode){
+      case 0:
+        for(int i = 0;i < mViews.size();i++) {
+        ObjectAnimator rotate = ObjectAnimator.ofFloat(mViews.get(i), "rotationY", mViews.get(i).getRotationY(), -25.0f);
+          rotate.setDuration(150);
+        rotate.start();
+    }
+    break;
+  case 1:
+       for(int i = 0;i < mViews.size();i++) {
+        ObjectAnimator rotate = ObjectAnimator.ofFloat(mViews.get(i), "rotationY", mViews.get(i).getRotationY(), 25.0f);
+          rotate.setDuration(150);
+        rotate.start();
+    }
+    break;
+  case 2:
+       for(int i = 0;i < mViews.size();i++) {
+    ObjectAnimator rotate = ObjectAnimator.ofFloat(mViews.get(i), "rotationY", mViews.get(i).getRotationY(), 0.0f);
+          rotate.setDuration(150);
+        rotate.start();
+                }
+    break;
+    
+          }
+  mState = mode;
     }
 }

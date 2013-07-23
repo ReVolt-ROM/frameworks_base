@@ -676,4 +676,8 @@
     <string name="halo_tutorial2">Double-tap-drag to move it around, drag to task.</string>
     <string name="halo_tutorial3">Change behavior in the settings.</string>
 
+    <!-- MultiTask Panel -->
+    <string name="recent_apps_title">Recent apps</string>
+    <string name="avail">Available</string>
+
 </resources>

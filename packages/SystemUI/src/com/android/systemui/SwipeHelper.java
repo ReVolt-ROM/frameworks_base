@@ -18,6 +18,7 @@ package com.android.systemui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.ValueAnimator;
@@ -31,6 +32,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.animation.Animation;
 
 public class SwipeHelper implements Gefingerpoken {
     static final String TAG = "com.android.systemui.SwipeHelper";
@@ -317,10 +319,15 @@ public class SwipeHelper implements Gefingerpoken {
                 invalidateGlobalRegion(animView);
             }
         });
-        anim.start();
+        ObjectAnimator rotate = ObjectAnimator.ofFloat(animView, "rotationY", animView.getRotationY(), 0.0f);
+        rotate.setDuration(duration);
+        AnimatorSet mSet = new AnimatorSet();
+        mSet.play(anim).with(rotate);
+        mSet.start();
     }
 
     public boolean onTouchEvent(MotionEvent ev) {
+        float mDelta = 0;
         if (mLongPressSent) {
             return true;
         }
@@ -351,6 +358,8 @@ public class SwipeHelper implements Gefingerpoken {
                         }
                     }
                     setTranslation(mCurrAnimView, delta);
+                    mDelta = delta/3;
+                    mCurrAnimView.setRotationY(mDelta);
                     if (FADE_OUT_DURING_SWIPE && mCanCurrViewBeDimissed) {
                         mCurrAnimView.setAlpha(getAlphaForOffset(mCurrAnimView));
                     }

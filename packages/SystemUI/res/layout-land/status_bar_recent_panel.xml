@@ -36,9 +36,7 @@
         android:background="@drawable/status_bar_recents_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:clipToPadding="false"
-        android:clipChildren="false">
+        android:layout_centerVertical="true">
 
         <ImageView
             android:id="@+id/recents_transition_placeholder_icon"
@@ -46,28 +44,41 @@
             android:layout_height="wrap_content"
             android:visibility="invisible" />   
 
-        <com.android.systemui.recent.RecentsHorizontalScrollView android:id="@+id/recents_container"
-            android:layout_width="wrap_content"
+        <ImageView
+            android:gravity="center"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fadingEdge="horizontal"
+            android:layout_marginTop="0.0dip"
+            android:src="@drawable/status_bar_recents_background" />
+
+        <com.android.systemui.recent.RecentsHorizontalScrollView
+            android:id="@+id/recents_container"
+            android:layout_gravity="bottom|left|center"
             android:scrollbars="none"
-            android:layout_gravity="right"
-            android:fadingEdgeLength="@dimen/status_bar_recents_scroll_fading_edge_length">
+            android:fadingEdge="none"
+            android:fadingEdgeLength="0.0dip"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="0.0dip"
+            android:stackFromBottom="true"
+            android:divider="@null">
 
             <LinearLayout android:id="@+id/recents_linear_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal">
             </LinearLayout>
 
         </com.android.systemui.recent.RecentsHorizontalScrollView>
 
                 <FrameLayout
-                     android:layout_width="50dp"
-                     android:layout_height="50dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_marginBottom="2dp"
                     android:layout_marginLeft="2dp"
-                    android:layout_gravity="bottom|left" >
+                    android:layout_gravity="bottom|center" >
 
                     <com.android.systemui.recent.CircleMemoryMeter
                         android:id="@+id/circle_meter"

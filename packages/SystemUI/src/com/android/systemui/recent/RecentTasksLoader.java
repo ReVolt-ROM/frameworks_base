@@ -346,21 +346,7 @@ public class RecentTasksLoader implements View.OnTouchListener {
     boolean mPreloadingFirstTask;
     boolean mCancelPreloadingFirstTask;
     public TaskDescription getFirstTask() {
-        while(true) {
-            synchronized(mFirstTaskLock) {
-                if (mFirstTaskLoaded) {
-                    return mFirstTask;
-                } else if (!mFirstTaskLoaded && !mPreloadingFirstTask) {
-                    mFirstTask = loadFirstTask();
-                    mFirstTaskLoaded = true;
-                    return mFirstTask;
-                }
-            }
-            try {
-                Thread.sleep(3);
-            } catch (InterruptedException e) {
-            }
-        }
+      return null;
     }
 
     public TaskDescription loadFirstTask() {

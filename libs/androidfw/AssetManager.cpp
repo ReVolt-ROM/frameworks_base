@@ -20,6 +20,7 @@
 //
 
 #define LOG_TAG "asset"
+#define ATRACE_TAG ATRACE_TAG_RESOURCES
 //#define LOG_NDEBUG 0
 
 #include <androidfw/Asset.h>
@@ -33,6 +34,9 @@
 #include <utils/threads.h>
 #include <utils/Timers.h>
 #include <utils/ZipFileRO.h>
+#ifdef HAVE_ANDROID_OS
+#include <cutils/trace.h>
+#endif
 
 #include <assert.h>
 #include <dirent.h>
@@ -50,6 +54,14 @@
         _rc = (exp);                       \
     } while (_rc == -1 && errno == EINTR); \
     _rc; })
+#endif
+
+#ifdef HAVE_ANDROID_OS
+#define MY_TRACE_BEGIN(x) ATRACE_BEGIN(x)
+#define MY_TRACE_END() ATRACE_END()
+#else
+#define MY_TRACE_BEGIN(x)
+#define MY_TRACE_END()
 #endif
 
 using namespace android;
@@ -643,12 +655,78 @@ const ResTable* AssetManager::getResTable(bool required) const
         const_cast<AssetManager*>(this)->loadFileNameCacheLocked();
     mResources = rt = new ResTable();
 
-    if (rt) {
-        const size_t N = mAssetPaths.size();
-        for (size_t i=0; i<N; i++) {
-            const asset_path& ap = mAssetPaths.itemAt(i);
-            updateResTableFromAssetPath(rt, ap, (void*)(i+1));
+    const size_t N = mAssetPaths.size();
+    for (size_t i=0; i<N; i++) {
+        Asset* ass = NULL;
+        ResTable* sharedRes = NULL;
+        bool shared = true;
+        const asset_path& ap = mAssetPaths.itemAt(i);
+        MY_TRACE_BEGIN(ap.path.string());
+        Asset* idmap = openIdmapLocked(ap);
+        ALOGV("Looking for resource asset in '%s'\n", ap.path.string());
+        if (ap.type != kFileTypeDirectory) {
+            if (i == 0) {
+                // The first item is typically the framework resources,
+                // which we want to avoid parsing every time.
+                sharedRes = const_cast<AssetManager*>(this)->
+                    mZipSet.getZipResourceTable(ap.path);
+            }
+            if (sharedRes == NULL) {
+                ass = const_cast<AssetManager*>(this)->
+                    mZipSet.getZipResourceTableAsset(ap.path);
+                if (ass == NULL) {
+                    ALOGV("loading resource table %s\n", ap.path.string());
+                    ass = const_cast<AssetManager*>(this)->
+                        openNonAssetInPathLocked("resources.arsc",
+                                                 Asset::ACCESS_BUFFER,
+                                                 ap);
+                    if (ass != NULL && ass != kExcludedAsset) {
+                        ass = const_cast<AssetManager*>(this)->
+                            mZipSet.setZipResourceTableAsset(ap.path, ass);
+                    }
+                }
+                
+                if (i == 0 && ass != NULL) {
+                    // If this is the first resource table in the asset
+                    // manager, then we are going to cache it so that we
+                    // can quickly copy it out for others.
+                    ALOGV("Creating shared resources for %s", ap.path.string());
+                    sharedRes = new ResTable();
+                    sharedRes->add(ass, (void*)(i+1), false, idmap);
+                    sharedRes = const_cast<AssetManager*>(this)->
+                        mZipSet.setZipResourceTable(ap.path, sharedRes);
+                }
+            }
+        } else {
+            ALOGV("loading resource table %s\n", ap.path.string());
+            Asset* ass = const_cast<AssetManager*>(this)->
+                openNonAssetInPathLocked("resources.arsc",
+                                         Asset::ACCESS_BUFFER,
+                                         ap);
+            shared = false;
         }
+        if ((ass != NULL || sharedRes != NULL) && ass != kExcludedAsset) {
+            if (rt == NULL) {
+                mResources = rt = new ResTable();
+                updateResourceParamsLocked();
+            }
+            ALOGV("Installing resource asset %p in to table %p\n", ass, mResources);
+            if (sharedRes != NULL) {
+                ALOGV("Copying existing resources for %s", ap.path.string());
+                rt->add(sharedRes);
+            } else {
+                ALOGV("Parsing resources for %s", ap.path.string());
+                rt->add(ass, (void*)(i+1), !shared, idmap);
+            }
+
+            if (!shared) {
+                delete ass;
+            }
+        }
+        if (idmap != NULL) {
+            delete idmap;
+        }
+        MY_TRACE_END();
     }
 
     if (required && !rt) ALOGW("Unable to find resources file resources.arsc");

@@ -31,6 +31,8 @@ import android.widget.RelativeLayout;
 import com.android.systemui.R;
 
 import java.util.Random;
+import android.view.View;
+import android.widget.FrameLayout;
 
 /**
  *
@@ -39,7 +41,6 @@ public class QuickSettingsTileView extends RelativeLayout {
 
     private int mColSpan;
     private int mRowSpan;
-    private int mCellWidth;
 
     private boolean mAttached = false;
 
@@ -174,5 +175,20 @@ public class QuickSettingsTileView extends RelativeLayout {
         } else {
             setBackgroundResource(R.drawable.qs_tile_background);
         }
+    }
+}
+    @Override
+    public void setVisibility(int vis) {
+        if (QuickSettings.DEBUG_GONE_TILES) {
+            if (vis == View.GONE) {
+                vis = View.VISIBLE;
+                setAlpha(0.25f);
+                setEnabled(false);
+            } else {
+                setAlpha(1f);
+                setEnabled(true);
+            }
+        }
+        super.setVisibility(vis);
     }
 }

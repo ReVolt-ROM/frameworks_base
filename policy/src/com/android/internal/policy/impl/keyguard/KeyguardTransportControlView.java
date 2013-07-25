@@ -77,8 +77,11 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
     private int mCurrentPlayState;
     private AudioManager mAudioManager;
     private IRemoteControlDisplayWeak mIRCD;
+<<<<<<< HEAD
     private boolean mMusicClientPresent = true;
     private boolean mShouldBeShown = true;
+=======
+>>>>>>> FETCH_HEAD
 
     /**
      * The metadata which should be populated into the view once we've been attached
@@ -114,12 +117,6 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
                 break;
 
             case MSG_SET_GENERATION_ID:
-                if (msg.arg2 != 0) {
-                    // This means nobody is currently registered. Hide the view.
-                    onListenerDetached();
-                } else {
-                    onListenerAttached();
-                }
                 if (DEBUG) Log.v(TAG, "New genId = " + msg.arg1 + ", clearing = " + msg.arg2);
                 mClientGeneration = msg.arg1;
                 mClientIntent = (PendingIntent) msg.obj;
@@ -128,7 +125,6 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
             }
         }
     };
-    private KeyguardHostView.TransportCallback mTransportCallback;
 
     private ContentObserver mSettingsObserver = new ContentObserver(mHandler) {
         @Override
@@ -158,7 +154,8 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
             mLocalHandler = new WeakReference<Handler>(handler);
         }
 
-        public void setPlaybackState(int generationId, int state, long stateChangeTimeMs) {
+        public void setPlaybackState(int generationId, int state, long stateChangeTimeMs,
+                long currentPosMs, float speed) {
             Handler handler = mLocalHandler.get();
             if (handler != null) {
                 handler.obtainMessage(MSG_UPDATE_STATE, generationId, state).sendToTarget();
@@ -172,7 +169,7 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
             }
         }
 
-        public void setTransportControlFlags(int generationId, int flags) {
+        public void setTransportControlInfo(int generationId, int flags, int posCapabilities) {
             Handler handler = mLocalHandler.get();
             if (handler != null) {
                 handler.obtainMessage(MSG_SET_TRANSPORT_CONTROLS, generationId, flags)
@@ -213,6 +210,7 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
         mIRCD = new IRemoteControlDisplayWeak(mHandler);
     }
 
+<<<<<<< HEAD
     protected void onListenerDetached() {
         mMusicClientPresent = false;
         if (DEBUG) Log.v(TAG, "onListenerDetached()");
@@ -256,6 +254,8 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
         }
     }
 
+=======
+>>>>>>> FETCH_HEAD
     private void updateTransportControls(int transportControlFlags) {
         mTransportControlFlags = transportControlFlags;
     }
@@ -293,6 +293,15 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
             updateSettings();
         }
         mAttached = true;
+    }
+
+    @Override
+    protected void onSizeChanged (int w, int h, int oldw, int oldh) {
+        if (mAttached) {
+            int dim = Math.min(512, Math.max(w, h));
+            if (DEBUG) Log.v(TAG, "TCV uses bitmap size=" + dim);
+            mAudioManager.remoteControlDisplayUsesBitmapSize(mIRCD, dim, dim);
+        }
     }
 
     @Override
@@ -381,6 +390,7 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
         updatePlayPauseState(mCurrentPlayState);
     }
 
+<<<<<<< HEAD
     public boolean isMusicPlaying() {
         if (!mMusicClientPresent) {
             return false;
@@ -389,6 +399,8 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
                 || mCurrentPlayState == RemoteControlClient.PLAYSTATE_BUFFERING;
     }
 
+=======
+>>>>>>> FETCH_HEAD
     private static void setVisibilityBasedOnFlag(View view, int flags, int flag) {
         if ((flags & flag) != 0) {
             view.setVisibility(View.VISIBLE);
@@ -432,9 +444,12 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
         mBtnPlay.setImageResource(imageResId);
         mBtnPlay.setContentDescription(getResources().getString(imageDescId));
         mCurrentPlayState = state;
+<<<<<<< HEAD
         if (mShouldBeShown) {
             mTransportCallback.onPlayStateChanged();
         }
+=======
+>>>>>>> FETCH_HEAD
     }
 
     static class SavedState extends BaseSavedState {
@@ -465,28 +480,6 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
                 return new SavedState[size];
             }
         };
-    }
-
-    @Override
-    public Parcelable onSaveInstanceState() {
-        Parcelable superState = super.onSaveInstanceState();
-        SavedState ss = new SavedState(superState);
-        ss.clientPresent = mMusicClientPresent;
-        return ss;
-    }
-
-    @Override
-    public void onRestoreInstanceState(Parcelable state) {
-        if (!(state instanceof SavedState)) {
-            super.onRestoreInstanceState(state);
-            return;
-        }
-        SavedState ss = (SavedState) state;
-        super.onRestoreInstanceState(ss.getSuperState());
-        if (ss.clientPresent) {
-            if (DEBUG) Log.v(TAG, "Reattaching client because it was attached");
-            onListenerAttached();
-        }
     }
 
     public void onClick(View v) {
@@ -565,9 +558,5 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
                 Log.e(TAG, "Unknown playback state " + state + " in wasPlayingRecently()");
                 return false;
         }
-    }
-
-    public void setKeyguardCallback(KeyguardHostView.TransportCallback transportCallback) {
-        mTransportCallback = transportCallback;
     }
 }

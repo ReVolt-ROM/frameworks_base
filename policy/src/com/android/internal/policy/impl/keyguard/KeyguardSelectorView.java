@@ -150,7 +150,20 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         }
     }
 
-    OnTriggerListener mOnTriggerListener = new OnTriggerListener() {
+        public void onTrigger(View v, int target) {
+            final int resId = mGlowPadView.getResourceIdForTarget(target);
+            switch (resId) {
+                case com.android.internal.R.drawable.ic_action_assist_generic:
+                    Intent assistIntent =
+                            ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
+                            .getAssistIntent(mContext, true, UserHandle.USER_CURRENT);
+                    if (assistIntent != null) {
+                        mActivityLauncher.launchActivity(assistIntent, false, true, null, null);
+                    } else {
+                        Log.w(TAG, "Failed to get intent for assist activity");
+                    }
+                    mCallback.userActivity(0);
+                    break;
 
        final Runnable SetLongPress = new Runnable () {
             public void run() {
@@ -375,7 +388,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
             customIcons[i] = Settings.System.getString(
                     mContext.getContentResolver(), Settings.System.LOCKSCREEN_TARGETS_ICON[i]);
         }
-
         mBoolLongPress = Settings.System.getBoolean(
               mContext.getContentResolver(), Settings.System.LOCKSCREEN_TARGETS_LONGPRESS, false);
 
@@ -439,6 +451,21 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         updateResources();
     }
 
+        boolean currentUserSetup = 0 != Settings.Secure.getIntForUser(
+                mContext.getContentResolver(),
+                Settings.Secure.USER_SETUP_COMPLETE,
+                0 /*default */,
+                currentUserHandle);
+        boolean searchActionAvailable =
+                ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
+                .getAssistIntent(mContext, false, UserHandle.USER_CURRENT) != null;
+        mCameraDisabled = cameraDisabledByAdmin || disabledBySimState || !cameraTargetPresent
+                || !currentUserSetup;
+        mSearchDisabled = disabledBySimState || !searchActionAvailable || !searchTargetPresent
+                || !currentUserSetup;
+        updateResources();
+    }
+
     private int mUnlockCounter() {
         int counter = 0;
         for (int i = 0; i < 8 ; i++) {
@@ -471,13 +498,20 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         // Update the search icon with drawable from the search .apk
         Intent intent = ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
                .getAssistIntent(mContext, UserHandle.USER_CURRENT);
-        if (intent != null) {
-            ComponentName component = intent.getComponent();
-            boolean replaced = mGlowPadView.replaceTargetDrawablesIfPresent(component,
-                    ASSIST_ICON_METADATA_NAME + "_google",
-                    com.android.internal.R.drawable.ic_action_assist_generic);
-            if (!replaced && !mGlowPadView.replaceTargetDrawablesIfPresent(component,
-                        ASSIST_ICON_METADATA_NAME,
+        if (!mSearchDisabled) {
+            Intent intent = ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
+                    .getAssistIntent(mContext, false, UserHandle.USER_CURRENT);
+            if (intent != null) {
+                // XXX Hack. We need to substitute the icon here but haven't formalized
+                // the public API. The "_google" metadata will be going away, so
+                // DON'T USE IT!
+                ComponentName component = intent.getComponent();
+                boolean replaced = mGlowPadView.replaceTargetDrawablesIfPresent(component,
+                        ASSIST_ICON_METADATA_NAME + "_google",
+                        com.android.internal.R.drawable.ic_action_assist_generic);
+
+                if (!replaced && !mGlowPadView.replaceTargetDrawablesIfPresent(component,
+                            ASSIST_ICON_METADATA_NAME,
                             com.android.internal.R.drawable.ic_action_assist_generic)) {
                 Slog.w(TAG, "Couldn't grab icon from package " + component);
             }

@@ -31,6 +31,8 @@ import android.widget.RelativeLayout;
 import com.android.systemui.R;
 
 import java.util.Random;
+import android.view.View;
+import android.widget.FrameLayout;
 
 /**
  *
@@ -38,8 +40,10 @@ import java.util.Random;
 public class QuickSettingsTileView extends RelativeLayout {
 
     private int mColSpan;
-    private int mRowSpan;
+
     private int mCellWidth;
+
+    private final int mRowSpan;
 
     private boolean mAttached = false;
 
@@ -174,5 +178,4 @@ public class QuickSettingsTileView extends RelativeLayout {
         } else {
             setBackgroundResource(R.drawable.qs_tile_background);
         }
-    }
 }

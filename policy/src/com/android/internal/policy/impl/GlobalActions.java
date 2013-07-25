@@ -144,6 +144,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mShowRebootOnLock = true;
     private static int rebootIndex = 0;
     private Profile mChosenProfile;
+    private final boolean mShowSilentToggle;
 
     private static final String SYSTEM_PROFILES_ENABLED = "system_profiles_enabled";
 
@@ -178,6 +179,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 mAirplaneModeObserver);
         Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
         mHasVibrator = vibrator != null && vibrator.hasVibrator();
+
+        mShowSilentToggle = SHOW_SILENT_TOGGLE && !mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_useFixedVolume);
     }
 
     /**
@@ -461,8 +465,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
 
         // next: bug report, if enabled
-        if (Settings.Secure.getInt(mContext.getContentResolver(),
-                Settings.Secure.BUGREPORT_IN_POWER_MENU, 0) != 0) {
+        boolean showBugReport = Settings.Global.getInt(cr,
+                Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0;
+        if (showBugReport) {
             mItems.add(
                 new SinglePressAction(com.android.internal.R.drawable.stat_sys_adb,
                         R.string.global_action_bug_report) {
@@ -712,6 +717,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mAirplaneModeOn.updateState(mAirplaneState);
         mAdapter.notifyDataSetChanged();
         mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+
+        mDialog.setTitle(R.string.global_actions);
+
         if (SHOW_SILENT_TOGGLE) {
             IntentFilter filter = new IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION);
             mContext.registerReceiver(mRingerModeReceiver, filter);
@@ -729,8 +737,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     /** {@inheritDoc} */
     public void onDismiss(DialogInterface dialog) {
-        if (SHOW_SILENT_TOGGLE) {
-            mContext.unregisterReceiver(mRingerModeReceiver);
+        if (mShowSilentToggle) {
+            try {
+                mContext.unregisterReceiver(mRingerModeReceiver);
+            } catch (IllegalArgumentException ie) {
+                // ignore this
+                Log.w(TAG, ie);
+            }
         }
     }
 

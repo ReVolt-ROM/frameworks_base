@@ -180,6 +180,32 @@ public class SignalClusterView
 
     public void setColor(ColorUtils.ColorSettingInfo colorInfo) {
         mColorInfo = colorInfo;
+
+    @Override
+    public void onRtlPropertiesChanged(int layoutDirection) {
+        super.onRtlPropertiesChanged(layoutDirection);
+
+        if (mWifi != null) {
+            mWifi.setImageDrawable(null);
+        }
+        if (mWifiActivity != null) {
+            mWifiActivity.setImageDrawable(null);
+        }
+
+        if (mMobile != null) {
+            mMobile.setImageDrawable(null);
+        }
+        if (mMobileActivity != null) {
+            mMobileActivity.setImageDrawable(null);
+        }
+        if (mMobileType != null) {
+            mMobileType.setImageDrawable(null);
+        }
+
+        if(mAirplane != null) {
+            mAirplane.setImageDrawable(null);
+        }
+
         apply();
     }
 
@@ -197,6 +223,7 @@ public class SignalClusterView
             }
             mWifi.setImageDrawable(wifiBitmap);
             mWifiActivity.setImageResource(mWifiActivityId);
+
             mWifiGroup.setContentDescription(mWifiDescription);
             if (showingWiFiText){
                 mWifi.setVisibility(View.GONE);
@@ -227,9 +254,28 @@ public class SignalClusterView
                 }
                 mMobile.setImageDrawable(mobileBitmap);
             }
+            if(mMobileActivityId != 0 && showingAltCluster) {
+                Drawable mobileActivityBitmap = mContext.getResources().getDrawable(mMobileActivityId);
+                if (mColorInfo.isLastColorNull) {
+                    mobileActivityBitmap.clearColorFilter();
+                } else {
+                    mobileActivityBitmap.setColorFilter(mColorInfo.lastColor, PorterDuff.Mode.SRC_IN);
+                }
+                mMobileActivity.setImageDrawable(mobileActivityBitmap);
+            }
+            if(mMobileTypeId != 0) {
+                Drawable mobileTypeBitmap = mContext.getResources().getDrawable(mMobileTypeId);
+                if (mColorInfo.isLastColorNull) {
+                    mobileTypeBitmap.clearColorFilter();
+                } else {
+                    mobileTypeBitmap.setColorFilter(mColorInfo.lastColor, PorterDuff.Mode.SRC_IN);
+                }
+                mMobileType.setImageDrawable(mobileTypeBitmap);
+            }
             mMobile.setImageResource(mMobileStrengthId);
             mMobileActivity.setImageResource(mMobileActivityId);
             mMobileType.setImageResource(mMobileTypeId);
+
             mMobileGroup.setContentDescription(mMobileTypeDescription + " " + mMobileDescription);
             if (showingSignalText && !mIsAirplaneMode) {
                 mMobile.setVisibility(View.GONE);
@@ -253,7 +299,20 @@ public class SignalClusterView
                 }
                 mAirplane.setImageDrawable(AirplaneBitmap);
             }
+
+        if (mIsAirplaneMode) {
+            mAirplane.setVisibility(View.VISIBLE);
+            if(mAirplaneIconId != 0) {
+                Drawable AirplaneBitmap = mContext.getResources().getDrawable(mAirplaneIconId);
+                if (mColorInfo.isLastColorNull) {
+                    mAirplane.clearColorFilter();
+                } else {
+                    mAirplane.setColorFilter(mColorInfo.lastColor, PorterDuff.Mode.SRC_IN);
+                }
+                mAirplane.setImageDrawable(AirplaneBitmap);
+            }
             mAirplane.setImageResource(mAirplaneIconId);
+            mAirplane.setVisibility(View.VISIBLE);
         } else {
             mAirplane.setVisibility(View.GONE);
         }
@@ -316,4 +375,3 @@ public class SignalClusterView
         apply();
     }
 }
-

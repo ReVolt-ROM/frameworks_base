@@ -253,16 +253,15 @@ class TelephonyIcons {
               R.drawable.stat_sys_data_fully_connected_4g,
               R.drawable.stat_sys_data_fully_connected_4g }
         };
-
-    static final int[][] DATA_4G_ALT = {
-        { R.drawable.stat_sys_data_connected_4g_alt,
-          R.drawable.stat_sys_data_connected_4g_alt,
-          R.drawable.stat_sys_data_connected_4g_alt,
-          R.drawable.stat_sys_data_connected_4g_alt },
-        { R.drawable.stat_sys_data_fully_connected_4g_alt,
-          R.drawable.stat_sys_data_fully_connected_4g_alt,
-          R.drawable.stat_sys_data_fully_connected_4g_alt,
-          R.drawable.stat_sys_data_fully_connected_4g_alt }
+    // LTE branded "LTE"
+    static final int[][] DATA_LTE = {
+            { R.drawable.stat_sys_data_connected_lte,
+                    R.drawable.stat_sys_data_connected_lte,
+                    R.drawable.stat_sys_data_connected_lte,
+                    R.drawable.stat_sys_data_connected_lte },
+            { R.drawable.stat_sys_data_fully_connected_lte,
+                    R.drawable.stat_sys_data_fully_connected_lte,
+                    R.drawable.stat_sys_data_fully_connected_lte,
+                    R.drawable.stat_sys_data_fully_connected_lte }
     };
 }
-

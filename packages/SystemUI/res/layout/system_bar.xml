@@ -29,6 +29,7 @@
         android:orientation="horizontal"
         android:layout_gravity="center"
         >
+
         <!-- navigation controls -->
         <LinearLayout
                android:id="@+id/navigationArea"
@@ -49,10 +50,14 @@
             <com.android.systemui.statusbar.policy.EventHole android:id="@+id/fake_space_bar"
                 android:layout_height="match_parent"
                 android:layout_width="0dp"
-                android:paddingLeft="8dip"
-                android:paddingRight="8dip"
-                android:visibility="gone" />
-        </LinearLayout>
+                android:paddingStart="8dip"
+                android:paddingEnd="8dip"
+                android:layout_toEndOf="@+id/navigationArea"
+                android:layout_toStartOf="@+id/notificationArea"
+                android:visibility="gone"
+                />
+        </RelativeLayout>
+    </FrameLayout>
 
         <!-- notification icons & panel access -->
         <RelativeLayout

@@ -50,6 +50,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import libcore.icu.LocaleData;
+
 import com.android.internal.R;
 
 /**
@@ -166,20 +168,14 @@ public class Clock extends TextView {
 
     private final CharSequence getSmallTime() {
         Context context = getContext();
-        boolean b24 = DateFormat.is24HourFormat(context);
-        int res;
-
-        if (b24) {
-            res = R.string.twenty_four_hour_time_format;
-        } else {
-            res = R.string.twelve_hour_time_format;
-        }
+        boolean is24 = DateFormat.is24HourFormat(context);
+        LocaleData d = LocaleData.get(context.getResources().getConfiguration().locale);
 
         final char MAGIC1 = '\uEF00';
         final char MAGIC2 = '\uEF01';
 
         SimpleDateFormat sdf;
-        String format = context.getString(res);
+        String format = is24 ? d.timeFormat24 : d.timeFormat12;
         if (!format.equals(mClockFormatString)) {
             mClockFormat = sdf = new SimpleDateFormat(format);
             mClockFormatString = format;
@@ -214,7 +210,7 @@ public class Clock extends TextView {
 
         SpannableStringBuilder formatted = new SpannableStringBuilder(result);
 
-        if (!b24) {
+        if (!is24) {
             if (mAmPmStyle != AM_PM_STYLE_NORMAL) {
                 String AmPm;
                 if (format.indexOf("a")==0) {
@@ -303,4 +299,3 @@ public class Clock extends TextView {
             setVisibility(View.GONE);
     }
 }
-

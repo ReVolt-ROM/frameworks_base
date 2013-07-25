@@ -341,14 +341,45 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
             RotationPolicy.setRotationLock(mContext, mUserRotation);
             mHandler.postDelayed(checkTorch, GlowPadTorchHelper.TORCH_CHECK);
         }
+
+        boolean currentUserSetup = 0 != Settings.Secure.getIntForUser(
+                mContext.getContentResolver(),
+                Settings.Secure.USER_SETUP_COMPLETE,
+                0 /*default */,
+                currentUserHandle);
+        boolean searchActionAvailable =
+                ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
+                .getAssistIntent(mContext, false, UserHandle.USER_CURRENT) != null;
+        mCameraDisabled = cameraDisabledByAdmin || disabledBySimState || !cameraPresent
+                || !currentUserSetup;
+        mSearchDisabled = disabledBySimState || !searchActionAvailable || !searchTargetPresent
+                || !currentUserSetup;
+        updateResources();
     }
 
-    final Runnable startTorch = new Runnable () {
-        public void run() {
-            if (!mGlowTorchOn) {
-                mUserRotation = RotationPolicy.isRotationLocked(mContext);
-                RotationPolicy.setRotationLock(mContext, true);
-                mGlowTorchOn = GlowPadTorchHelper.startTorch(mContext);
+    public void updateResources() {
+        String storedVal = Settings.System.getStringForUser(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_TARGETS, UserHandle.USER_CURRENT);
+        if (storedVal == null) {
+            // Update the search icon with drawable from the search .apk
+            if (!mSearchDisabled) {
+                Intent intent = ((SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE))
+                        .getAssistIntent(mContext, false, UserHandle.USER_CURRENT);
+                if (intent != null) {
+                    // XXX Hack. We need to substitute the icon here but haven't formalized
+                    // the public API. The "_google" metadata will be going away, so
+                    // DON'T USE IT!
+                    ComponentName component = intent.getComponent();
+                    boolean replaced = mGlowPadView.replaceTargetDrawablesIfPresent(component,
+                            ASSIST_ICON_METADATA_NAME + "_google",
+                            com.android.internal.R.drawable.ic_action_assist_generic);
+
+                    if (!replaced && !mGlowPadView.replaceTargetDrawablesIfPresent(component,
+                                ASSIST_ICON_METADATA_NAME,
+                                com.android.internal.R.drawable.ic_action_assist_generic)) {
+                            Slog.w(TAG, "Couldn't grab icon from package " + component);
+                    }
+                }
             }
         }
     };

@@ -81,6 +81,7 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
     boolean mShowing;
     boolean mHasClearableNotifications = false;
     int mNotificationCount = 0;
+    NotificationPanelTitle mTitleArea;
     ImageView mSettingsButton;
     ImageView mNotificationButton;
     View mNotificationScroller;
@@ -165,6 +166,12 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
 
         mContentParent = (ViewGroup)findViewById(R.id.content_parent);
         mContentParent.bringToFront();
+
+        mTitleArea = (NotificationPanelTitle) findViewById(R.id.title_area);
+        mTitleArea.setPanel(this);
+
+        mSettingsButton = (ImageView) findViewById(R.id.settings_button);
+        mNotificationButton = (ImageView) findViewById(R.id.notification_button);
 
         mNotificationScroller = findViewById(R.id.notification_scroller);
         mContentFrame = (ViewGroup)findViewById(R.id.content_frame);
@@ -787,5 +794,15 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
         @Override
         public void setBounds(Rect bounds) {
         }
+    }
+
+    public void refreshLayout(int layoutDirection) {
+        // Force asset reloading
+        mSettingsButton.setImageDrawable(null);
+        mSettingsButton.setImageResource(R.drawable.ic_notify_settings);
+
+        // Force asset reloading
+        mNotificationButton.setImageDrawable(null);
+        mNotificationButton.setImageResource(R.drawable.ic_notifications);
     }
 }

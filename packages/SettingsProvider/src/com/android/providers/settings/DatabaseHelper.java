@@ -1987,6 +1987,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadIntegerSetting(stmt, Settings.System.POINTER_SPEED,
                     R.integer.def_pointer_speed);
+
         } finally {
             if (stmt != null) stmt.close();
         }
@@ -2101,6 +2102,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadBooleanSetting(stmt, Settings.Secure.USER_SETUP_COMPLETE,
                     R.bool.def_user_setup_complete);
+
+            loadIntegerSetting(stmt, Settings.Secure.DIALPAD_AUTOCOMPLETE,
+                    R.integer.def_dialpad_autocomplete);
         } finally {
             if (stmt != null) stmt.close();
         }

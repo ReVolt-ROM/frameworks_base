@@ -142,20 +142,21 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
         }
     }
 
+
     @Override
     public void onPageSwitched(View newPage, int newPageIndex) {
         boolean showingClock = false;
         if (newPage instanceof ViewGroup) {
             ViewGroup vg = (ViewGroup) newPage;
             if (vg.getChildAt(0) instanceof KeyguardStatusView) {
-                showingStatusWidget = true;
+                showingClock = true;
             } else if (vg.getChildAt(0) instanceof AppWidgetHostView) {
                 AppWidgetProviderInfo info =
                         ((AppWidgetHostView) vg.getChildAt(0)).getAppWidgetInfo();
                 String widgetPackage = info.provider.getPackageName();
                 for (String packageName : CLOCK_WIDGET_PACKAGES) {
                     if (packageName.equals(widgetPackage)) {
-                        showingStatusWidget = true;
+                        showingClock = true;
                         break;
                     }
                 }

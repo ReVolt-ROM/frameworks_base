@@ -1851,7 +1851,6 @@ public abstract class ActivityManagerNative extends Binder implements IActivityM
             reply.writeInt(res ? 1 : 0);
             return true;
         }
-
         case GET_TOP_ACTIVITY_EXTRAS_TRANSACTION: {
             data.enforceInterface(IActivityManager.descriptor);
             int requestType = data.readInt();
@@ -1888,7 +1887,6 @@ public abstract class ActivityManagerNative extends Binder implements IActivityM
             return true;
         }
 
->>>>>>> FETCH_HEAD
         }
 
         return super.onTransact(code, data, reply, flags);
@@ -4314,6 +4312,5 @@ class ActivityManagerProxy implements IActivityManager
         reply.recycle();
     }
 
->>>>>>> FETCH_HEAD
     private IBinder mRemote;
 }

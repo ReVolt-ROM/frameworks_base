@@ -135,7 +135,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private boolean mIsWaitingForEcmExit = false;
     private boolean mHasTelephony;
     private boolean mHasVibrator;
-<<<<<<< HEAD
     private boolean mEnableNavBarHideToggle = true;
     private boolean mEnableScreenshotToggle = false;
     private boolean mEnableTorchToggle = false;
@@ -147,9 +146,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private Profile mChosenProfile;
 
     private static final String SYSTEM_PROFILES_ENABLED = "system_profiles_enabled";
-=======
+
     private final boolean mShowSilentToggle;
->>>>>>> FETCH_HEAD
 
     /**
      * @param context everything needs a context :(
@@ -517,11 +515,11 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
 
         // last: silent mode
-<<<<<<< HEAD
         if (mEnableVolumeStateToggle) {
-=======
+            mItems.add(mSilentModeAction);
+        }
+
         if (mShowSilentToggle) {
->>>>>>> FETCH_HEAD
             mItems.add(mSilentModeAction);
         }
 

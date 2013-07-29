@@ -80,6 +80,9 @@
     <!-- Default maximum height for the widget pager in the keyguard -->
     <dimen name="keyguard_widget_pager_max_height">480dp</dimen>
 
+    <!-- Lockscreen target insets -->
+    <item type="dimen" name="lockscreen_target_inset">30dp</item>
+
     <!-- Size of lockscreen outerring on unsecure unlock LockScreen -->
     <dimen name="keyguard_lockscreen_outerring_diameter">270dp</dimen>
 

@@ -77,11 +77,8 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
     private int mCurrentPlayState;
     private AudioManager mAudioManager;
     private IRemoteControlDisplayWeak mIRCD;
-<<<<<<< HEAD
     private boolean mMusicClientPresent = true;
     private boolean mShouldBeShown = true;
-=======
->>>>>>> FETCH_HEAD
 
     /**
      * The metadata which should be populated into the view once we've been attached
@@ -210,7 +207,6 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
         mIRCD = new IRemoteControlDisplayWeak(mHandler);
     }
 
-<<<<<<< HEAD
     protected void onListenerDetached() {
         mMusicClientPresent = false;
         if (DEBUG) Log.v(TAG, "onListenerDetached()");
@@ -254,8 +250,6 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
         }
     }
 
-=======
->>>>>>> FETCH_HEAD
     private void updateTransportControls(int transportControlFlags) {
         mTransportControlFlags = transportControlFlags;
     }
@@ -390,7 +384,6 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
         updatePlayPauseState(mCurrentPlayState);
     }
 
-<<<<<<< HEAD
     public boolean isMusicPlaying() {
         if (!mMusicClientPresent) {
             return false;
@@ -399,8 +392,6 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
                 || mCurrentPlayState == RemoteControlClient.PLAYSTATE_BUFFERING;
     }
 
-=======
->>>>>>> FETCH_HEAD
     private static void setVisibilityBasedOnFlag(View view, int flags, int flag) {
         if ((flags & flag) != 0) {
             view.setVisibility(View.VISIBLE);
@@ -444,12 +435,9 @@ public class KeyguardTransportControlView extends FrameLayout implements OnClick
         mBtnPlay.setImageResource(imageResId);
         mBtnPlay.setContentDescription(getResources().getString(imageDescId));
         mCurrentPlayState = state;
-<<<<<<< HEAD
         if (mShouldBeShown) {
             mTransportCallback.onPlayStateChanged();
         }
-=======
->>>>>>> FETCH_HEAD
     }
 
     static class SavedState extends BaseSavedState {

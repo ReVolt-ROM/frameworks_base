@@ -110,7 +110,6 @@ public class WifiStateMachine extends StateMachine {
     private ConnectivityManager mCm;
 
     private final boolean mP2pSupported;
-    private boolean mIbssSupported;
     private final AtomicBoolean mP2pConnected = new AtomicBoolean(false);
     private boolean mTemporarilyDisconnectWifi = false;
     private final String mPrimaryDeviceType;
@@ -152,8 +151,6 @@ public class WifiStateMachine extends StateMachine {
     private boolean mBluetoothConnectionActive = false;
 
     private PowerManager.WakeLock mSuspendWakeLock;
-
-    private List<WifiChannel> mSupportedChannels;
 
     /**
      * Interval in milliseconds between polling for RSSI
@@ -354,15 +351,6 @@ public class WifiStateMachine extends StateMachine {
      * been disabled */
     public static final int CMD_DISABLE_P2P_REQ           = BASE + 132;
     public static final int CMD_DISABLE_P2P_RSP           = BASE + 133;
-
-    /* Is IBSS mode supported by the driver? */
-    public static final int CMD_GET_IBSS_SUPPORTED        = BASE + 134;
-
-    /* Get supported channels */
-    public static final int CMD_GET_SUPPORTED_CHANNELS    = BASE + 135;
-
-    private static final int CONNECT_MODE   = 1;
-    private static final int SCAN_ONLY_MODE = 2;
 
     public static final int CMD_BOOT_COMPLETED            = BASE + 134;
 
@@ -775,9 +763,6 @@ public class WifiStateMachine extends StateMachine {
      */
     public void setSupplicantRunning(boolean enable) {
         if (enable) {
-            WifiNative.setMode(0);
-            /* Argument is the state that is entered prior to load */
-            sendMessage(obtainMessage(CMD_LOAD_DRIVER, WIFI_STATE_ENABLING, 0));
             sendMessage(CMD_START_SUPPLICANT);
         } else {
             sendMessage(CMD_STOP_SUPPLICANT);
@@ -789,10 +774,7 @@ public class WifiStateMachine extends StateMachine {
      */
     public void setHostApRunning(WifiConfiguration wifiConfig, boolean enable) {
         if (enable) {
-            WifiNative.setMode(1);
-            /* Argument is the state that is entered prior to load */
-            sendMessage(obtainMessage(CMD_LOAD_DRIVER, WIFI_AP_STATE_ENABLING, 0));
-            sendMessage(obtainMessage(CMD_START_AP, wifiConfig));
+            sendMessage(CMD_START_AP, wifiConfig);
         } else {
             sendMessage(CMD_STOP_AP);
         }
@@ -1085,20 +1067,6 @@ public class WifiStateMachine extends StateMachine {
         return mCountryCode;
     }
 
-    public int syncIsIbssSupported(AsyncChannel channel) {
-        Message resultMsg = channel.sendMessageSynchronously(CMD_GET_IBSS_SUPPORTED);
-        int result = resultMsg.arg1;
-        resultMsg.recycle();
-        return result;
-    }
-
-    public List<WifiChannel> syncGetSupportedChannels(AsyncChannel channel) {
-        Message resultMsg = channel.sendMessageSynchronously(CMD_GET_SUPPORTED_CHANNELS);
-        List<WifiChannel> result = (List<WifiChannel>) resultMsg.obj;
-        resultMsg.recycle();
-        return result;
-    }
-
     /**
      * Set the operational frequency band
      * @param band
@@ -1323,15 +1291,7 @@ public class WifiStateMachine extends StateMachine {
         if (countryCode != null && !countryCode.isEmpty()) {
             setCountryCode(countryCode, false);
         } else {
-            // On wifi-only devices, some drivers don't find hidden SSIDs unless DRIVER COUNTRY
-            // is called. Use the default country code to ping the driver.
-            ConnectivityManager cm =
-                    (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (!cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE)) {
-                setCountryCode(mCountryCode, false);
-            }
-
-            // In other case, mcc tables from carrier do the trick of starting up the wifi driver
+            //use driver default
         }
     }
 
@@ -1978,11 +1938,7 @@ public class WifiStateMachine extends StateMachine {
                 case CMD_ADD_OR_UPDATE_NETWORK:
                 case CMD_REMOVE_NETWORK:
                 case CMD_SAVE_CONFIG:
-                case CMD_GET_IBSS_SUPPORTED:
                     replyToMessage(message, message.what, FAILURE);
-                    break;
-                case CMD_GET_SUPPORTED_CHANNELS:
-                    replyToMessage(message, message.what, (List<WifiChannel>) null);
                     break;
                 case CMD_GET_CONFIGURED_NETWORKS:
                     replyToMessage(message, message.what, (List<WifiConfiguration>) null);
@@ -2249,9 +2205,6 @@ public class WifiStateMachine extends StateMachine {
                     mWifiConfigStore.loadAndEnableAllNetworks();
                     initializeWpsDetails();
 
-                    mIbssSupported = mWifiNative.getModeCapability("IBSS");
-                    mSupportedChannels = mWifiNative.getSupportedChannels();
-
                     sendSupplicantConnectionChangedBroadcast(true);
                     transitionTo(mDriverStartedState);
                     break;
@@ -2280,8 +2233,6 @@ public class WifiStateMachine extends StateMachine {
                 case CMD_SET_FREQUENCY_BAND:
                 case CMD_START_PACKET_FILTERING:
                 case CMD_STOP_PACKET_FILTERING:
-                case CMD_GET_IBSS_SUPPORTED:
-                case CMD_GET_SUPPORTED_CHANNELS:
                     deferMessage(message);
                     break;
                 default:
@@ -2344,10 +2295,6 @@ public class WifiStateMachine extends StateMachine {
                     break;
                 case CMD_SET_OPERATIONAL_MODE:
                     mOperationalMode = message.arg1;
-                    break;
-                case CMD_GET_IBSS_SUPPORTED:
-                case CMD_GET_SUPPORTED_CHANNELS:
-                    deferMessage(message);
                     break;
                 default:
                     return NOT_HANDLED;
@@ -2556,12 +2503,11 @@ public class WifiStateMachine extends StateMachine {
                     break;
                 case CMD_SET_COUNTRY_CODE:
                     String country = (String) message.obj;
-                    String countryCode = country != null ? country.toUpperCase() : null;
-                    if (DBG) log("set country code " + countryCode);
-                    if (mWifiNative.setCountryCode(countryCode)) {
-                        mCountryCode = countryCode;
+                    if (DBG) log("set country code " + country);
+                    if (mWifiNative.setCountryCode(country.toUpperCase())) {
+                        mCountryCode = country;
                     } else {
-                        loge("Failed to set country code " + countryCode);
+                        loge("Failed to set country code " + country);
                     }
                     break;
                 case CMD_SET_FREQUENCY_BAND:
@@ -2664,12 +2610,6 @@ public class WifiStateMachine extends StateMachine {
                     } else {
                         setSuspendOptimizationsNative(SUSPEND_DUE_TO_HIGH_PERF, true);
                     }
-                    break;
-                case CMD_GET_IBSS_SUPPORTED:
-                    replyToMessage(message, message.what, mIbssSupported ? 1 : 0);
-                    break;
-                case CMD_GET_SUPPORTED_CHANNELS:
-                    replyToMessage(message, message.what, mSupportedChannels);
                     break;
                 default:
                     return NOT_HANDLED;

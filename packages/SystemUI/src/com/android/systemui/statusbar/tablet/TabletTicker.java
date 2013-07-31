@@ -107,7 +107,7 @@ public class TabletTicker
         }
 
         if (isDisabled()) {
-            mEvent.updateTicker(notification, notification.notification.tickerText.toString());
+            mEvent.updateTicker(notification, notification.getNotification().tickerText.toString());
             return;
         }
 
@@ -133,7 +133,7 @@ public class TabletTicker
 
     public void remove(IBinder key, boolean advance) {
         if (isDisabled()) {
-            mEvent.updateTicker(null);
+            if (mEvent != null) mEvent.updateTicker(null);
             return;
         }
         if (mCurrentKey == key) {

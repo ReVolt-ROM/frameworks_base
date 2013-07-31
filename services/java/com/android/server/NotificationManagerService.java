@@ -51,6 +51,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
+import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.media.IAudioService;
 import android.media.IRingtonePlayer;
@@ -66,7 +67,6 @@ import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.Vibrator;
-import android.provider.Settings;
 import android.service.notification.INotificationListener;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
@@ -81,8 +81,11 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Toast;
 
+import com.android.internal.util.FastXmlSerializer;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlSerializer;
 
 import java.io.File;
 
@@ -91,6 +94,7 @@ import com.android.internal.app.ThemeUtils;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
@@ -402,7 +406,6 @@ public class NotificationManagerService extends INotificationManager.Stub
                 mPolicyFile = new AtomicFile(new File(dir, "notification_policy.xml"));
 
                 mBlockedPackages.clear();
->>>>>>> FETCH_HEAD
 
     private int readPolicy(AtomicFile file, String lookUpTag, HashSet<String> db, String resultTag, int defaultResult) {
         int result = defaultResult;

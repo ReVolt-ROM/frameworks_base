@@ -77,9 +77,10 @@ import java.util.ArrayList;
 /**
  *
  */
-class QuickSettings {
-    static final boolean DEBUG_GONE_TILES = false;
+public class QuickSettings {
     private static final String TAG = "QuickSettings";
+
+    static final boolean DEBUG_GONE_TILES = false;
     public static final boolean SHOW_IME_TILE = false;
 
     public static final boolean LONG_PRESS_TOGGLES = true;
@@ -271,7 +272,7 @@ class QuickSettings {
     }
 
     private void collapsePanels() {
-        getService().animateCollapsePanels();
+        getService().collapse();
     }
 
     private void startSettingsActivity(Intent intent, boolean onlyProvisioned) {

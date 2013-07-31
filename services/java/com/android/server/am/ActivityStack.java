@@ -369,11 +369,19 @@ final class ActivityStack {
                     // We don't at this point know if the activity is fullscreen,
                     // so we need to be conservative and assume it isn't.
                     Slog.w(TAG, "Activity pause timeout for " + r);
+                    int pid = -1;
+                    long pauseTime = 0;
+                    String m = null;
                     synchronized (mService) {
                         if (r.app != null) {
-                            mService.logAppTooSlow(r.app, r.pauseTime,
-                                    "pausing " + r);
+                            pid = r.app.pid;
                         }
+                        pauseTime = r.pauseTime;
+                        m = "pausing " + r;
+                    }
+                    if (pid > 0) {
+                         mService.logAppTooSlow(r.app, r.launchTickTime,
+                                    "launching " + r);
                     }
 
                     activityPaused(r != null ? r.appToken : null, true);
@@ -394,11 +402,21 @@ final class ActivityStack {
                 } break;
                 case LAUNCH_TICK_MSG: {
                     ActivityRecord r = (ActivityRecord)msg.obj;
+                    int pid = -1;
+                    long launchTickTime = 0;
+                    String m = null;
                     synchronized (mService) {
                         if (r.continueLaunchTickingLocked()) {
-                            mService.logAppTooSlow(r.app, r.launchTickTime,
-                                    "launching " + r);
+                            if (r.app != null) {
+                                pid = r.app.pid;
+                            }
+                            launchTickTime = r.launchTickTime;
+                            m = "launching " + r;
                         }
+                    }
+                    if (pid > 0) {
+                         mService.logAppTooSlow(r.app, r.launchTickTime,
+                                    "launching " + r);
                     }
                 } break;
                 case DESTROY_TIMEOUT_MSG: {
@@ -1464,7 +1482,7 @@ final class ActivityStack {
 
     final boolean resumeTopActivityLocked(ActivityRecord prev, Bundle options) {
 
-        mPm.cpuBoost(1550000);
+        mPm.cpuBoost(1500000);
 
         // Find the first activity that is not finishing.
         ActivityRecord next = topRunningActivityLocked(null);
@@ -2555,7 +2573,7 @@ final class ActivityStack {
 
         int err = ActivityManager.START_SUCCESS;
 
-        mPm.cpuBoost(1550000);
+        mPm.cpuBoost(1500000);
 
         ProcessRecord callerApp = null;
 
@@ -3308,7 +3326,6 @@ final class ActivityStack {
                         } catch (InterruptedException e) {
                         }
                     } while (!outResult.timeout && outResult.who == null);
-                    mWaitingActivityLaunched.remove(outResult);
                 } else if (res == ActivityManager.START_TASK_TO_FRONT) {
                     ActivityRecord r = this.topRunningActivityLocked(null);
                     if (r.nowVisible) {
@@ -3325,7 +3342,6 @@ final class ActivityStack {
                             } catch (InterruptedException e) {
                             }
                         } while (!outResult.timeout && outResult.who == null);
-                        mWaitingActivityVisible.remove(outResult);
                     }
                 }
             }

@@ -116,10 +116,9 @@ public class HaloProperties extends FrameLayout {
         mHaloTextViewR = (TextView) mHaloTickerContent.findViewById(R.id.bubble_r);
         mHaloTextViewR.setAlpha(0f);
         mHaloTextViewL = (TextView) mHaloTickerContent.findViewById(R.id.bubble_l);
-        mHaloTextViewL.setAlpha(0f);
 
-        updateColorView();
-
+        mHaloTextViewL.setAlpha(1f);
+        mHaloTextViewR.setAlpha(1f);
         mHaloNumberView = mInflater.inflate(R.layout.halo_number, null);
         mHaloNumberContainer = (RelativeLayout)mHaloNumberView.findViewById(R.id.container);
         mHaloNumber = (TextView) mHaloNumberView.findViewById(R.id.number);
@@ -243,9 +242,11 @@ public class HaloProperties extends FrameLayout {
     }
 
     public void setHaloContentAlpha(float value) {
+        mHaloTickerContent.setAlpha(value);
+        mHaloTextViewL.setTextColor(mHaloTextViewL.getTextColors().withAlpha((int)(value * 255)));
+        mHaloTextViewR.setTextColor(mHaloTextViewR.getTextColors().withAlpha((int)(value * 255)));
+        mHaloTickerContent.invalidate();
         mHaloContentAlpha = value;
-        mHaloTextViewL.setAlpha(value);
-        mHaloTextViewR.setAlpha(value);
     }
 
     public float getHaloContentAlpha() {

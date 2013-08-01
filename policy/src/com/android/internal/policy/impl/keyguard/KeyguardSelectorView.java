@@ -86,7 +86,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         "com.android.systemui.action_assist_icon";
 
     private KeyguardSecurityCallback mCallback;
-    private KeyguardTargets mTargets;
     private GlowPadView mGlowPadView;
     private LinearLayout mRibbon;
     private LinearLayout ribbonView;
@@ -608,7 +607,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
 
     public void setKeyguardCallback(KeyguardSecurityCallback callback) {
         mCallback = callback;
-        mTargets = (KeyguardTargets) findViewById(R.id.targets);
         if(mTargets != null) {
             mTargets.setKeyguardCallback(callback);
         }

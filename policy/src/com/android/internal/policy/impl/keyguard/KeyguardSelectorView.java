@@ -607,9 +607,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
 
     public void setKeyguardCallback(KeyguardSecurityCallback callback) {
         mCallback = callback;
-        if(mTargets != null) {
-            mTargets.setKeyguardCallback(callback);
-        }
     }
 
     public void setLockPatternUtils(LockPatternUtils utils) {

@@ -343,7 +343,9 @@ final class ActivityStack {
         }
     }
 
-    final Handler mHandler = new Handler() {
+    final Handler mHandler;
+
+    final class ActivityStackHandler extends Handler {
         //public Handler() {
         //    if (localLOGV) Slog.v(TAG, "Handler started!");
         //}

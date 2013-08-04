@@ -44,10 +44,7 @@ import android.provider.Settings.SettingNotFoundException;
 import android.text.TextUtils;
 import android.util.Slog;
 
-<<<<<<< HEAD:core/java/com/android/internal/widget/LockSettingsService.java
-=======
 import com.android.internal.widget.ILockSettings;
->>>>>>> FETCH_HEAD:services/java/com/android/server/LockSettingsService.java
 import com.android.internal.widget.LockPatternUtils;
 
 import java.io.File;
@@ -55,11 +52,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
-<<<<<<< HEAD:core/java/com/android/internal/widget/LockSettingsService.java
 import java.util.ArrayList;
-=======
 import java.util.List;
->>>>>>> FETCH_HEAD:services/java/com/android/server/LockSettingsService.java
 
 /**
  * Keeps the lock pattern/password data and related settings for each user.
@@ -557,12 +551,9 @@ public class LockSettingsService extends ILockSettings.Stub {
         Secure.LOCK_PATTERN_ENABLED,
         Secure.LOCK_BIOMETRIC_WEAK_FLAGS,
         Secure.LOCK_PATTERN_VISIBLE,
-<<<<<<< HEAD:core/java/com/android/internal/widget/LockSettingsService.java
         Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED,
         Secure.LOCK_SHOW_ERROR_PATH,
-        Secure.LOCK_DOTS_VISIBLE
-        };
-=======
+        Secure.LOCK_DOTS_VISIBLE,
         Secure.LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED
     };
 
@@ -571,5 +562,4 @@ public class LockSettingsService extends ILockSettings.Stub {
         Secure.LOCK_SCREEN_OWNER_INFO_ENABLED,
         Secure.LOCK_SCREEN_OWNER_INFO
     };
->>>>>>> FETCH_HEAD:services/java/com/android/server/LockSettingsService.java
 }

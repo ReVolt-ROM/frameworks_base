@@ -804,6 +804,7 @@ class ServerThread extends Thread {
                 ServiceManager.addService("assetredirection", new AssetRedirectionManagerService(context));
             } catch (Throwable e) {
                 Slog.e(TAG, "Failure starting AssetRedirectionManager Service", e);
+            }
 
             try {
                 Slog.i(TAG, "IdleMaintenanceService");

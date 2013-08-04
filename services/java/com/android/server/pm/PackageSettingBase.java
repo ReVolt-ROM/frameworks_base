@@ -209,6 +209,7 @@ class PackageSettingBase extends GrantedPermissions {
 
     boolean isPrivacyGuard(int userId) {
         return readUserState(userId).privacyGuard;
+    }
 
     String getLastDisabledAppCaller(int userId) {
         return readUserState(userId).lastDisableAppCaller;

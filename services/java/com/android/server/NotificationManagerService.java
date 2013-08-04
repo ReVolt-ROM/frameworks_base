@@ -399,14 +399,6 @@ public class NotificationManagerService extends INotificationManager.Stub
 
     Archive mArchive = new Archive();
 
-    private void loadBlockDb() {
-        synchronized(mBlockedPackages) {
-            if (mPolicyFile == null) {
-                File dir = new File("/data/system");
-                mPolicyFile = new AtomicFile(new File(dir, "notification_policy.xml"));
-
-                mBlockedPackages.clear();
-
     private int readPolicy(AtomicFile file, String lookUpTag, HashSet<String> db, String resultTag, int defaultResult) {
         int result = defaultResult;
         FileInputStream infile = null;

@@ -9290,9 +9290,6 @@ public class PackageManagerService extends IPackageManager.Stub {
                         true,  //notLaunched
                         privacyGuard,
                         null, null);
-                if (ps.isAnyInstalled(sUserManager.getUserIds())) {
-                    // Other user still have this package installed, so all
-                        null, null, null);
                 if (!isSystemApp(ps)) {
                     if (ps.isAnyInstalled(sUserManager.getUserIds())) {
                         // Other user still have this package installed, so all

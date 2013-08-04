@@ -530,15 +530,6 @@ class ServerThread extends Thread {
             }
 
             try {
-                Slog.i(TAG, "Throttle Service");
-                throttle = new ThrottleService(context);
-                ServiceManager.addService(
-                        Context.THROTTLE_SERVICE, throttle);
-            } catch (Throwable e) {
-                reportWtf("starting ThrottleService", e);
-            }
-
-            try {
                 Slog.i(TAG, "FM receiver Service");
                 ServiceManager.addService("fm_receiver",
                         new FmReceiverService(context));

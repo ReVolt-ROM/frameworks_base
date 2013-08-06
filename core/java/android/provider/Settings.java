@@ -3062,6 +3062,12 @@ public final class Settings {
         public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
 
         /**
+         * Muting Quiet Hours
+         * @hide
+         */
+        public static final String QUIET_HOURS_MUTE = "quiet_hours_mute";
+
+        /**
          * Clock Actions 0 = single, 1 = long, 2 = double click
          *
          * @hide

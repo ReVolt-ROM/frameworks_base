@@ -1944,6 +1944,8 @@
   <java-symbol type="string" name="config_deviceKeyHandlerClass" />
   <java-symbol type="string" name="config_deviceDockBatteryHandlerClass" />
 
+  <java-symbol type="bool" name="config_hasDockBattery" />
+
   <!-- Power Menu -->
   <java-symbol type="drawable" name="ic_lock_screenshot" />
   <java-symbol type="string" name="global_action_screenshot" />

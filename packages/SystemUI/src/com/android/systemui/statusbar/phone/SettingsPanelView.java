@@ -40,6 +40,7 @@ import com.android.systemui.statusbar.policy.NetworkController;
 public class SettingsPanelView extends PanelView {
     public static final boolean DEBUG_GESTURES = true;
 
+    private QuickSettings mQS;
     private QuickSettingsContainerView mQSContainer;
 
     Drawable mHandleBar;

@@ -1297,7 +1297,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback, TabletTi
                     mNotificationText = text;
                     mLastNotificationEntry = entry;
 
-                    if (allowed && mState != State.FIRST_RUN) {
+                    if (allowed && mState != State.FIRST_START) {
                         tick(entry, text, HaloEffect.WAKE_TIME, 1000, true);
 
                         // Pop while not tasking, only if notification is certified fresh
@@ -1315,7 +1315,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback, TabletTi
                         tick(entry, text, HaloEffect.WAKE_TIME * 3, 1000, true);
 
                         // Pop while not tasking, only if notification is certified fresh
-                        if (mGesture != Gesture.TASK && mState != State.SILENT) mEffect.ping(mPaintHoloBlue, HaloEffect.WAKE_TIME * 2);
+                        if (mGesture != Gesture.TASK && mState != State.SILENT) mEffect.ping(mPaintHoloCustom, HaloEffect.WAKE_TIME * 2);
                     }
                 }
                 break;

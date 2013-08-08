@@ -159,7 +159,6 @@ public class ImageWallpaper extends WallpaperService {
             }
         }
 
-        @Override
         public DrawableEngine() {
             super();
             setFixedSizeAllowed(true);

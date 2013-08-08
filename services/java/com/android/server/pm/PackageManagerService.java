@@ -3079,7 +3079,6 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
     }
 
-    @Override
     public List<PackageInfo> getInstalledThemePackages() {
         // Returns a list of theme APKs.
         ArrayList<PackageInfo> finalList = new ArrayList<PackageInfo>();

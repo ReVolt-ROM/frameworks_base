@@ -176,7 +176,7 @@ public class QuickSettingsTileView extends RelativeLayout {
             setBackgroundResource(R.drawable.qs_tile_background);
         }
     }
-}
+
     @Override
     public void setVisibility(int vis) {
         if (QuickSettings.DEBUG_GONE_TILES) {

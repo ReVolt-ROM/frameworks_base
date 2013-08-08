@@ -207,6 +207,7 @@ public class SignalClusterView
         if(mAirplane != null) {
             mAirplane.setImageDrawable(null);
         }
+    }
 
     // Run after each indicator change.
     public void apply() {

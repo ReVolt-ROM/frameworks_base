@@ -436,14 +436,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         }
     }
 
-    protected void onAttachedToWindow () {
-        super.onAttachedToWindow();
-        final ViewRootImpl root = getViewRootImpl();
-        if (root != null) {
-            root.setDrawDuringWindowsAnimating(true);
-        }
-    }
-
     public void onUiHidden() {
         mCallUiHiddenBeforeNextReload = false;
         if (!mShowing && mRecentTaskDescriptions != null) {

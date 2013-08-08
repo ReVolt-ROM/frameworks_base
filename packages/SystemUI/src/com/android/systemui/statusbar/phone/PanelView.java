@@ -161,11 +161,7 @@ public class PanelView extends FrameLayout {
                 last = event;
                 i++;
             }
-<<<<<<< HEAD
             if (j != 0) {
-                mVX /= totalweight;
-                mVY /= totalweight;
-=======
             if (totalweight > 0) {
                 mVX /= totalweight;
                 mVY /= totalweight;
@@ -176,7 +172,6 @@ public class PanelView extends FrameLayout {
                 }
                 // so as not to contaminate the velocities with NaN
                 mVX = mVY = 0;
->>>>>>> FETCH_HEAD
             }
 
             if (FlingTracker.DEBUG) {
@@ -697,7 +692,6 @@ public class PanelView extends FrameLayout {
         }
     }
 
-<<<<<<< HEAD
 	private void setPropFactor() {
 		Display display = getDisplay();
 		if(display == null)
@@ -806,7 +800,7 @@ public class PanelView extends FrameLayout {
 	    mBrightnessSliderEnabled = Settings.System.getBoolean(cr,
 	            Settings.System.STATUSBAR_BRIGHTNESS_SLIDER, true);
 	}
-=======
+
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
         pw.println(String.format("[PanelView(%s): expandedHeight=%f fullHeight=%f closing=%s"
                 + " tracking=%s rubberbanding=%s justPeeked=%s peekAnim=%s%s timeAnim=%s%s"
@@ -822,5 +816,4 @@ public class PanelView extends FrameLayout {
                 mTimeAnimator, ((mTimeAnimator!=null && mTimeAnimator.isStarted())?" (started)":"")
         ));
     }
->>>>>>> FETCH_HEAD
 }

@@ -681,6 +681,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                         int oldLeft, int oldTop, int oldRight, int oldBottom) {
                     updateCarrierAndWifiLabelVisibility(false);
                 }});
+        }
 
         mEmergencyCallLabel = (TextView)mStatusBarWindow.findViewById(R.id.emergency_calls_only);
         if (mEmergencyCallLabel != null) {
@@ -1455,6 +1456,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.HIDDEN_STATUSBAR_PULLDOWN, 0);
                  break;
         }
+    }
 
     @Override
     protected void refreshLayout(int layoutDirection) {

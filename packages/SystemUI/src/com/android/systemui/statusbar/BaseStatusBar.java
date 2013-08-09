@@ -156,6 +156,10 @@ public abstract class BaseStatusBar extends SystemUI implements
     public static final int EXPANDED_LEAVE_ALONE = -10000;
     public static final int EXPANDED_FULL_OPEN = -10001;
 
+    protected static final boolean CLOSE_PANEL_WHEN_EMPTIED = true;
+    protected static final int COLLAPSE_AFTER_DISMISS_DELAY = 200;
+    protected static final int COLLAPSE_AFTER_REMOVE_DELAY = 400;
+
     protected CommandQueue mCommandQueue;
     protected IStatusBarService mBarService;
     protected H mHandler = createHandler();

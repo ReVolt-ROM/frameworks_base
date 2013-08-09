@@ -71,6 +71,8 @@ import com.android.systemui.R;
 import com.android.systemui.TransparencyManager;
 import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.key.ExtensibleKeyButtonView;
+import com.android.systemui.statusbar.phone.PhoneStatusBar;
+
 
 public class NavigationBarView extends LinearLayout {
     final static boolean DEBUG = false;

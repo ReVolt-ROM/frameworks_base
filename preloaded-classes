@@ -218,16 +218,13 @@ android.app.backup.BackupHelperDispatcher$Header
 android.app.backup.FileBackupHelperBase
 android.app.backup.FullBackup
 android.appwidget.AppWidgetManager
-<<<<<<< HEAD
 android.bluetooth.BluetoothSocket
 android.bluetooth.IBluetooth
 android.bluetooth.IBluetooth$Stub
 android.bluetooth.IBluetoothA2dp
 android.bluetooth.IBluetoothA2dp$Stub
-=======
 android.appwidget.AppWidgetProvider
 android.bluetooth.BluetoothUuid
->>>>>>> FETCH_HEAD
 android.content.AbstractThreadedSyncAdapter
 android.content.AbstractThreadedSyncAdapter$ISyncAdapterImpl
 android.content.AbstractThreadedSyncAdapter$SyncThread
@@ -831,14 +828,11 @@ android.provider.Settings$Secure
 android.provider.Settings$SettingNotFoundException
 android.provider.Settings$System
 android.renderscript.RenderScript
-<<<<<<< HEAD
 android.telephony.PhoneNumberUtils
-=======
 android.security.AndroidKeyPairGenerator
 android.security.AndroidKeyStore
 android.security.AndroidKeyStoreProvider
 android.telephony.Rlog
->>>>>>> FETCH_HEAD
 android.telephony.TelephonyManager
 android.text.AndroidBidi
 android.text.AndroidCharacter
@@ -945,11 +939,8 @@ android.util.Base64$Encoder
 android.util.DisplayMetrics
 android.util.EventLog
 android.util.EventLog$Event
-<<<<<<< HEAD
 android.util.ExtendedPropertiesUtils
 android.util.FinitePool
-=======
->>>>>>> FETCH_HEAD
 android.util.FloatMath
 android.util.FloatProperty
 android.util.Log
@@ -2321,11 +2312,8 @@ javax.net.ssl.X509ExtendedKeyManager
 javax.net.ssl.X509KeyManager
 javax.net.ssl.X509TrustManager
 javax.security.auth.x500.X500Principal
-<<<<<<< HEAD
-=======
 libcore.icu.AlphabeticIndex
 libcore.icu.AlphabeticIndex$ImmutableIndex
->>>>>>> FETCH_HEAD
 libcore.icu.ICU
 libcore.icu.LocaleData
 libcore.icu.NativeBreakIterator
@@ -2336,12 +2324,9 @@ libcore.icu.NativeDecimalFormat$FieldPositionIterator
 libcore.icu.NativeIDN
 libcore.icu.NativeNormalizer
 libcore.icu.NativePluralRules
-<<<<<<< HEAD
-=======
 libcore.icu.RuleBasedCollatorICU
 libcore.icu.TimeZoneNames
 libcore.icu.Transliterator
->>>>>>> FETCH_HEAD
 libcore.internal.StringPool
 libcore.io.AsynchronousCloseMonitor
 libcore.io.BlockGuardOs

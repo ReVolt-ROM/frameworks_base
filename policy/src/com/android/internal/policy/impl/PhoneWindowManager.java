@@ -5354,18 +5354,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mBootMsgDialog.show();
                 }
                 mBootMsgDialog.setMessage(msg);
-                if (currentPackageName != null) {
-                    mBootMsgDialog.setTitle(msg);
-                    mBootMsgDialog.setMessage(currentPackageName);
-                } else {
-                    Log.d(TAG, "failed; CURRENT_PACKAGE_NAME == null");
-                }
-                if (msg.equals(mContext.getResources().getString(R.string.android_upgrading_starting_apps))) {
-                    mBootMsgDialog.setTitle(R.string.android_upgrading_title);
-                    mBootMsgDialog.setMessage(mContext.getResources().getString(R.string.android_upgrading_starting_apps));
-                } else {
-                    Log.d(TAG, "not starting apps");
-                }
             }
         });
     }

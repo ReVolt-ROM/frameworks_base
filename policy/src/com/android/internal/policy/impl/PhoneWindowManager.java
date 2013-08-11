@@ -76,7 +76,6 @@ import android.service.dreams.IDreamManager;
 import android.util.DisplayMetrics;
 import android.util.ExtendedPropertiesUtils;
 import android.util.EventLog;
-import android.util.ExtendedPropertiesUtils;
 import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
@@ -5354,18 +5353,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mBootMsgDialog.show();
                 }
                 mBootMsgDialog.setMessage(msg);
-                if (currentPackageName != null) {
-                    mBootMsgDialog.setTitle(msg);
-                    mBootMsgDialog.setMessage(currentPackageName);
-                } else {
-                    Log.d(TAG, "failed; CURRENT_PACKAGE_NAME == null");
-                }
-                if (msg.equals(mContext.getResources().getString(R.string.android_upgrading_starting_apps))) {
-                    mBootMsgDialog.setTitle(R.string.android_upgrading_title);
-                    mBootMsgDialog.setMessage(mContext.getResources().getString(R.string.android_upgrading_starting_apps));
-                } else {
-                    Log.d(TAG, "not starting apps");
-                }
             }
         });
     }

@@ -85,7 +85,7 @@ public class TabletTicker
     {  
         public void updateTicker(StatusBarNotification notification);
         public void updateTicker(StatusBarNotification notification, String text);
-    }  
+    }
 
     public void setUpdateEvent(TabletTickerCallback event) {
         mEvent = event;
@@ -106,7 +106,7 @@ public class TabletTicker
                     + " mQueuePos=" + mQueuePos + " mQueue=" + Arrays.toString(mQueue));
         }
 
-        if (isDisabled()) {
+        if (isDisabled() && notification.getNotification().tickerText != null) {
             mEvent.updateTicker(notification, notification.getNotification().tickerText.toString());
             return;
         }
@@ -312,7 +312,7 @@ public class TabletTicker
                 return null;
             }
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, 
+                    ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT);
             content.addView(expanded, lp);
         } else if (n.tickerText != null) {

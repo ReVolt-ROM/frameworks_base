@@ -110,7 +110,7 @@ public class SignalClusterView
 
         mHandler = new Handler();
 
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+        SettingsObserver settingsObserver = new SettingsObserver (mHandler);
         settingsObserver.observe();
 
         apply();

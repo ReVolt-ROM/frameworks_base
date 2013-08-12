@@ -878,6 +878,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
+        if (mPieControlPanel != null) mPieControlPanel.bumpConfiguration();
         final Locale newLocale = mContext.getResources().getConfiguration().locale;
         if (! newLocale.equals(mLocale)) {
             mLocale = newLocale;
@@ -1557,7 +1558,9 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     private Bitmap createRoundIcon(StatusBarNotification notification) {
+
         Notification notif = notification.getNotification();
+
         // Construct the round icon
         final float haloSize = Settings.System.getFloat(mContext.getContentResolver(),
                 Settings.System.HALO_SIZE, 1.0f);

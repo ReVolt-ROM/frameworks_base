@@ -86,8 +86,8 @@ public class DeviceStorageMonitorService extends Binder {
     private static final long DEFAULT_DISK_FREE_CHANGE_REPORTING_THRESHOLD = 2 * 1024 * 1024; // 2MB
     private static final long DEFAULT_CHECK_INTERVAL = MONITOR_INTERVAL*60*1000;
 
-    private long mFreeMem;  // on /data
-    private long mFreeMemAfterLastCacheClear;  // on /data
+    private long mFreeMem;  // on /data/data
+    private long mFreeMemAfterLastCacheClear;  // on /data/data
     private long mLastReportedFreeMem;
     private long mLastReportedFreeMemTime;
     private boolean mLowMemFlag=false;
@@ -95,7 +95,7 @@ public class DeviceStorageMonitorService extends Binder {
     private Context mContext;
     private Context mUiContext;
     private ContentResolver mResolver;
-    private long mTotalMemory;  // on /data
+    private long mTotalMemory;  // on /data/data
     private StatFs mDataFileStats;
     private StatFs mSystemFileStats;
     private StatFs mCacheFileStats;
@@ -330,6 +330,7 @@ public class DeviceStorageMonitorService extends Binder {
                 mUiContext = null;
             }
         });
+
         //create StatFs object
         mDataFileStats = new StatFs(DATA_PATH.getAbsolutePath());
         mSystemFileStats = new StatFs(SYSTEM_PATH.getAbsolutePath());
@@ -439,7 +440,7 @@ public class DeviceStorageMonitorService extends Binder {
     /**
      * Callable from other things in the system service to obtain the low memory
      * threshold.
-     * 
+     *
      * @return low memory threshold in bytes
      */
     public long getMemoryLowThreshold() {
@@ -449,7 +450,7 @@ public class DeviceStorageMonitorService extends Binder {
     /**
      * Callable from other things in the system process to check whether memory
      * is low.
-     * 
+     *
      * @return true is memory is low
      */
     public boolean isMemoryLow() {

@@ -1970,7 +1970,7 @@ class ContextImpl extends Context {
 
                 // Load hashmap, in order to get latest properties
                 ExtendedPropertiesUtils.refreshProperties();
-  
+
                 // Try to get the context for the current thread. If something
                 // goes wrong, we throw an exception.
                 ContextImpl context = createSystemContext(thread);
@@ -1987,23 +1987,23 @@ class ContextImpl extends Context {
 
                 context.init(info, null, thread);
                 ExtendedPropertiesUtils.mContext = context;
-                
+
                 // Get default display
                 WindowManager wm = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
                 ExtendedPropertiesUtils.mDisplay = wm.getDefaultDisplay();
                 if (ExtendedPropertiesUtils.mDisplay == null) {
                     throw new NullPointerException();
                 }
-                                            
+
                 // Load package manager, so it's accessible system wide
-                ExtendedPropertiesUtils.mPackageManager = 
+                ExtendedPropertiesUtils.mPackageManager =
                     ExtendedPropertiesUtils.mContext.getPackageManager();
                 if (ExtendedPropertiesUtils.mPackageManager == null) {
                     throw new NullPointerException();
                 }
 
                 // Get package list and fetch PID
-                ExtendedPropertiesUtils.mPackageList = 
+                ExtendedPropertiesUtils.mPackageList =
                     ExtendedPropertiesUtils.mPackageManager.getInstalledPackages(0);
                 ExtendedPropertiesUtils.mGlobalHook.pid = android.os.Process.myPid();
 
@@ -2011,14 +2011,14 @@ class ContextImpl extends Context {
                     SystemProperties.getInt("ro.sf.lcd_density", DisplayMetrics.DENSITY_DEFAULT));
 
                 // After we have PID, we get app info using it
-                ExtendedPropertiesUtils.mGlobalHook.info = 
+                ExtendedPropertiesUtils.mGlobalHook.info =
                     ExtendedPropertiesUtils.getAppInfoFromPID(ExtendedPropertiesUtils.mGlobalHook.pid);
                 if (ExtendedPropertiesUtils.mGlobalHook.info != null) {
                     // If the global hook info isn't null, we load the name, package name
                     // and path for the global hook
-                    ExtendedPropertiesUtils.mGlobalHook.name = 
+                    ExtendedPropertiesUtils.mGlobalHook.name =
                         ExtendedPropertiesUtils.mGlobalHook.info.packageName;
-                    ExtendedPropertiesUtils.mGlobalHook.path = 
+                    ExtendedPropertiesUtils.mGlobalHook.path =
                         ExtendedPropertiesUtils.mGlobalHook.info.sourceDir.substring(0,
                         ExtendedPropertiesUtils.mGlobalHook.info.sourceDir.lastIndexOf("/"));
                     ExtendedPropertiesUtils.setAppConfiguration(ExtendedPropertiesUtils.mGlobalHook);
@@ -2028,12 +2028,12 @@ class ContextImpl extends Context {
                     ExtendedPropertiesUtils.mGlobalHook.path = "";
                     ExtendedPropertiesUtils.setAppConfiguration(ExtendedPropertiesUtils.mGlobalHook);
                 }
-            } catch (Exception e) { 
+            } catch (Exception e) {
                 // We use global exception to catch a lot of possible crashes.
                 // This is not a dirty workaround, but an expected behaviour
                 ExtendedPropertiesUtils.mMainThread = null;
             }
-        }        
+        }
     }
 
     final void init(LoadedApk packageInfo, IBinder activityToken, ActivityThread mainThread) {

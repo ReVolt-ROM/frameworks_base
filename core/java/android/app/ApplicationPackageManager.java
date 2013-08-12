@@ -427,18 +427,15 @@ final class ApplicationPackageManager extends PackageManager {
     /** @hide */
     @Override
     public List<PackageInfo> getInstalledPackages(int flags, int userId) {
-        // Returns a list of theme APKs.
-        ArrayList<PackageInfo> finalList = new ArrayList<PackageInfo>();
-        List<PackageInfo> installedPackagesList = getInstalledPackages(0);
-        for (PackageInfo pi : installedPackagesList) {
-            if (pi != null && pi.isThemeApk) {
-                finalList.add(pi);
-            }
-         }
-         return finalList;
-
+        try {
+            ParceledListSlice<PackageInfo> slice = mPM.getInstalledPackages(flags, userId);
+            return slice.getList();
+        } catch (RemoteException e) {
+            throw new RuntimeException("Package manager has died", e);
+        }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<PackageInfo> getPackagesHoldingPermissions(
             String[] permissions, int flags) {
@@ -452,14 +449,17 @@ final class ApplicationPackageManager extends PackageManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<PackageInfo> getInstalledThemePackages() {
-        try {
-            return mPM.getInstalledThemePackages();
-        } catch (RemoteException e) {
-            throw new RuntimeException("Package manager has died", e);
+        // Returns a list of theme APKs.
+        ArrayList<PackageInfo> finalList = new ArrayList<PackageInfo>();
+        List<PackageInfo> installedPackagesList = getInstalledPackages(0);
+        for (PackageInfo pi : installedPackagesList) {
+            if (pi != null && pi.isThemeApk) {
+                finalList.add(pi);
+            }
         }
+        return finalList;
     }
 
     @SuppressWarnings("unchecked")

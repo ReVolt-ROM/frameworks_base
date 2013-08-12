@@ -1132,7 +1132,7 @@ public class NetworkController extends BroadcastReceiver {
                 }
             } else {
                 mobileLabel
-                    = context.getString(R.string.status_bar_settings_signal_meter_disconnected);
+                    = mContext.getString(R.string.status_bar_settings_signal_meter_disconnected);
             }
 
             // Now for things that should only be shown when actually using mobile data.
@@ -1167,7 +1167,7 @@ public class NetworkController extends BroadcastReceiver {
 
         if (mWifiConnected) {
             if (mWifiSsid == null) {
-                wifiLabel = context.getString(R.string.status_bar_settings_signal_meter_wifi_nossid);
+                wifiLabel = mContext.getString(R.string.status_bar_settings_signal_meter_wifi_nossid);
                 mWifiActivityIconId = 0; // no wifis, no bits
             } else {
                 wifiLabel = mWifiSsid;
@@ -1198,7 +1198,7 @@ public class NetworkController extends BroadcastReceiver {
             if (mHasMobileDataFeature) {
                 wifiLabel = "";
             } else {
-                wifiLabel = context.getString(R.string.status_bar_settings_signal_meter_disconnected);
+                wifiLabel = mContext.getString(R.string.status_bar_settings_signal_meter_disconnected);
             }
         }
 
@@ -1234,7 +1234,7 @@ public class NetworkController extends BroadcastReceiver {
                     // let the mobile icon show "No internet connection."
                     wifiLabel = "";
                 } else {
-                    wifiLabel = context.getString(R.string.status_bar_settings_signal_meter_disconnected);
+                    wifiLabel = mContext.getString(R.string.status_bar_settings_signal_meter_disconnected);
                     combinedLabel = wifiLabel;
                 }
                 mContentDescriptionCombinedSignal = mContentDescriptionPhoneSignal;
@@ -1244,7 +1244,7 @@ public class NetworkController extends BroadcastReceiver {
         else if (!mDataConnected && !mWifiConnected && !mBluetoothTethered && !mWimaxConnected && !ethernetConnected) {
             // pretty much totally disconnected
 
-            combinedLabel = context.getString(R.string.status_bar_settings_signal_meter_disconnected);
+            combinedLabel = mContext.getString(R.string.status_bar_settings_signal_meter_disconnected);
             // On devices without mobile radios, we want to show the wifi icon
             combinedSignalIconId =
                 mHasMobileDataFeature ? mDataSignalIconId : mWifiIconId;

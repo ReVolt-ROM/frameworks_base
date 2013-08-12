@@ -121,6 +121,9 @@ public abstract class KeyguardActivityLauncher {
         boolean allWidgets = Settings.System.getBoolean(getContext().getContentResolver(),
                                Settings.System.LOCKSCREEN_ALL_WIDGETS, false);
         Intent pickIntent = new Intent(AppWidgetManager.ACTION_KEYGUARD_APPWIDGET_PICK);
+        boolean homeScreenWidgets = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.HOME_SCREEN_WIDGETS, 0) == 1;
+
         if (allWidgets) {
             pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             pickIntent.putExtra(AppWidgetManager.EXTRA_CUSTOM_SORT, false);
@@ -140,10 +143,12 @@ public abstract class KeyguardActivityLauncher {
             pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
             pickIntent.putExtra(AppWidgetManager.EXTRA_CUSTOM_SORT, false);
             pickIntent.putExtra(AppWidgetManager.EXTRA_CATEGORY_FILTER,
+                    homeScreenWidgets ? AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN :
                     AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD);
 
             Bundle options = new Bundle();
             options.putInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY,
+                    homeScreenWidgets ? AppWidgetProviderInfo.WIDGET_CATEGORY_HOME_SCREEN :
                     AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD);
             pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_OPTIONS, options);
             pickIntent.addFlags(
@@ -192,7 +197,7 @@ public abstract class KeyguardActivityLauncher {
         boolean isSecure = lockPatternUtils.isSecure();
         if (!isSecure || showsWhileLocked) {
             if (!isSecure) {
-                getCallback().dismiss(false);
+                dismissKeyguardOnNextActivity();
             }
             try {
                 if (DEBUG) Log.d(TAG, String.format("Starting activity for intent %s at %s",

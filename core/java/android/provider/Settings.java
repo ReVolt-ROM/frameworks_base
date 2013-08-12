@@ -3421,6 +3421,13 @@ public final class Settings {
         public static final String NAVIGATION_BAR_TINT = "navigation_bar_tint";
 
         /**
+         * Allows lockscreen to show homescreen widgets
+         * The value is boolean (1 or 0).
+         * @hide
+         */
+        public static final String HOME_SCREEN_WIDGETS = "home_screen_widgets";
+
+        /**
          * Whether or not to launch default music player when headset is connected
          * @hide
          */
@@ -4223,6 +4230,12 @@ public final class Settings {
          * @hide
          */
         public static final String SHADE_COLLAPSE_ALL = "shade_collapse_all";
+
+        /**
+         * Enable longpress on expand challenge handle to unlock device
+         * @hide
+         */
+        public static final String LOCKSCREEN_LONGPRESS_CHALLENGE = "lockscreen_longpress_challenge";
 
         /**
          * enable and disable fast toggle in settings

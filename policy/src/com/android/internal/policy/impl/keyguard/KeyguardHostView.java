@@ -39,8 +39,11 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.RemoteControlClient;
 import android.os.Looper;
 import android.os.Parcel;
@@ -124,11 +127,6 @@ public class KeyguardHostView extends KeyguardViewBase {
 
     private boolean mUserSetupCompleted;
 
-     /*package*/ interface TransportCallback {
-        void onListenerDetached();
-        void onListenerAttached();
-        void onPlayStateChanged();
-    }
     // User for whom this host view was created.  Final because we should never change the
     // id without reconstructing an instance of KeyguardHostView. See note below...
     private final int mUserId;
@@ -179,7 +177,6 @@ public class KeyguardHostView extends KeyguardViewBase {
             mCameraDisabled = dpm.getCameraDisabled(null);
         }
 
-        cleanupAppWidgetIds();
         mSafeModeEnabled = LockPatternUtils.isSafeModeEnabled();
 
         // These need to be created with the user context...
@@ -240,7 +237,6 @@ public class KeyguardHostView extends KeyguardViewBase {
             mCleanupAppWidgetsOnBootCompleted = true;
             return;
         }
-
         if (!mSafeModeEnabled && !widgetsDisabledByDpm()) {
             // Clean up appWidgetIds that are bound to lockscreen, but not actually used
             // This is only to clean up after another bug: we used to not call
@@ -249,9 +245,22 @@ public class KeyguardHostView extends KeyguardViewBase {
             // that are triggered by deleteAppWidgetId, which is why we're doing this
             int[] appWidgetIdsInKeyguardSettings = mLockPatternUtils.getAppWidgets();
             int[] appWidgetIdsBoundToHost = mAppWidgetHost.getAppWidgetIds();
+            int fallbackWidgetId = mLockPatternUtils.getFallbackAppWidgetId();
             for (int i = 0; i < appWidgetIdsBoundToHost.length; i++) {
                 int appWidgetId = appWidgetIdsBoundToHost[i];
                 if (!contains(appWidgetIdsInKeyguardSettings, appWidgetId)) {
+                    if (appWidgetId == fallbackWidgetId) {
+                        if (widgetsDisabledByDpm()) {
+                            // Ignore attempts to delete the fallback widget when widgets
+                            // are disabled
+                            continue;
+                        } else {
+                            // Reset fallback widget id in the event that widgets have been
+                            // enabled, and fallback widget is being deleted
+                            mLockPatternUtils.writeFallbackAppWidgetId(
+                                    AppWidgetManager.INVALID_APPWIDGET_ID);
+                        }
+                    }
                     Log.d(TAG, "Found a appWidgetId that's not being used by keyguard, deleting id "
                             + appWidgetId);
                     mAppWidgetHost.deleteAppWidgetId(appWidgetId);
@@ -433,28 +442,13 @@ public class KeyguardHostView extends KeyguardViewBase {
 
         mExpandChallengeView = (View) findViewById(R.id.expand_challenge_handle);
         if (mExpandChallengeView != null) {
-            mExpandChallengeView.setOnLongClickListener(mFastUnlockClickListener);
+            if (Settings.System.getBoolean(getContext().getContentResolver(),
+                Settings.System.LOCKSCREEN_LONGPRESS_CHALLENGE, false)) {
+                mExpandChallengeView.setOnLongClickListener(mFastUnlockClickListener);
+            }
         }
 
         minimizeChallengeIfNeeded();
-    }
-
-    private void setBackButtonEnabled(boolean enabled) {
-        if (mContext instanceof Activity) return;  // always enabled in activity mode
-        setSystemUiVisibility(enabled ?
-                getSystemUiVisibility() & ~View.STATUS_BAR_DISABLE_BACK :
-                getSystemUiVisibility() | View.STATUS_BAR_DISABLE_BACK);
-    }
-
-    private boolean shouldEnableAddWidget() {
-        mUnlimitedWidgets = Settings.System.getBoolean(getContext().getContentResolver(),
-                                  Settings.System.LOCKSCREEN_UNLIMITED_WIDGETS, false);
-        if (mUnlimitedWidgets) {
-            MAX_WIDGETS = numWidgets() + 1;
-        } else {
-            MAX_WIDGETS = 5;
-        }
-        return numWidgets() < MAX_WIDGETS && mUserSetupCompleted;
     }
 
     private final OnLongClickListener mFastUnlockClickListener = new OnLongClickListener() {
@@ -478,9 +472,10 @@ public class KeyguardHostView extends KeyguardViewBase {
             return;
         }
 
+        Drawable back = null;
         if (!background.isEmpty()) {
             try {
-                setBackgroundColor(Integer.parseInt(background));
+                back = new ColorDrawable(Integer.parseInt(background));
             } catch(NumberFormatException e) {
                 Log.e(TAG, "Invalid background color " + background);
             }
@@ -489,11 +484,33 @@ public class KeyguardHostView extends KeyguardViewBase {
                 Context settingsContext = getContext().createPackageContext("com.android.settings", 0);
                 String wallpaperFile = settingsContext.getFilesDir() + "/lockwallpaper";
                 Bitmap backgroundBitmap = BitmapFactory.decodeFile(wallpaperFile);
-                setBackgroundDrawable(new BitmapDrawable(backgroundBitmap));
+                back = new BitmapDrawable(getContext().getResources(), backgroundBitmap);
             } catch (NameNotFoundException e) {
-            // Do nothing here
+                // Do nothing here
             }
         }
+        if (back != null) {
+            back.setColorFilter(BACKGROUND_COLOR, PorterDuff.Mode.SRC_ATOP);
+            setBackground(back);
+        }
+    }
+
+    private void setBackButtonEnabled(boolean enabled) {
+        if (mContext instanceof Activity) return;  // always enabled in activity mode
+        setSystemUiVisibility(enabled ?
+                getSystemUiVisibility() & ~View.STATUS_BAR_DISABLE_BACK :
+                getSystemUiVisibility() | View.STATUS_BAR_DISABLE_BACK);
+    }
+
+    private boolean shouldEnableAddWidget() {
+        mUnlimitedWidgets = Settings.System.getBoolean(getContext().getContentResolver(),
+                                  Settings.System.LOCKSCREEN_UNLIMITED_WIDGETS, false);
+        if (mUnlimitedWidgets) {
+            MAX_WIDGETS = numWidgets() + 1;
+        } else {
+            MAX_WIDGETS = 5;
+        }
+        return numWidgets() < MAX_WIDGETS && mUserSetupCompleted;
     }
 
     private int getDisabledFeatures(DevicePolicyManager dpm) {
@@ -584,8 +601,7 @@ public class KeyguardHostView extends KeyguardViewBase {
             if (deletePermanently) {
                 final int appWidgetId = ((KeyguardWidgetFrame) v).getContentAppWidgetId();
                 if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID &&
-                        appWidgetId != LockPatternUtils.ID_DEFAULT_STATUS_WIDGET &&
-                        appWidgetId != mLockPatternUtils.getFallbackAppWidgetId()) {
+                        appWidgetId != LockPatternUtils.ID_DEFAULT_STATUS_WIDGET) {
                     mAppWidgetHost.deleteAppWidgetId(appWidgetId);
                 }
             }
@@ -792,15 +808,26 @@ public class KeyguardHostView extends KeyguardViewBase {
      * @param turningOff true if the device is being turned off
      */
     void showPrimarySecurityScreen(boolean turningOff) {
-        SecurityMode securityMode = mSecurityModel.getSecurityMode();
-        if (DEBUG) Log.v(TAG, "showPrimarySecurityScreen(turningOff=" + turningOff + ")");
-        if (!turningOff &&
-                KeyguardUpdateMonitor.getInstance(mContext).isAlternateUnlockEnabled()) {
-            // If we're not turning off, then allow biometric alternate.
-            // We'll reload it when the device comes back on.
-            securityMode = mSecurityModel.getAlternateFor(securityMode);
+        final boolean lockBeforeUnlock = Settings.Secure.getIntForUser(mContext.getContentResolver(),
+                Settings.Secure.LOCK_BEFORE_UNLOCK, 0, UserHandle.USER_CURRENT) == 1;
+        final boolean isSimOrAccount = mCurrentSecuritySelection == SecurityMode.SimPin
+                || mCurrentSecuritySelection == SecurityMode.SimPuk
+                || mCurrentSecuritySelection == SecurityMode.Account
+                || mCurrentSecuritySelection == SecurityMode.Invalid;
+
+        if (lockBeforeUnlock && !isSimOrAccount) {
+            showSecurityScreen(SecurityMode.None);
+        } else {
+            SecurityMode securityMode = mSecurityModel.getSecurityMode();
+            if (DEBUG) Log.v(TAG, "showPrimarySecurityScreen(turningOff=" + turningOff + ")");
+            if (!turningOff &&
+                    KeyguardUpdateMonitor.getInstance(mContext).isAlternateUnlockEnabled()) {
+                // If we're not turning off, then allow biometric alternate.
+                // We'll reload it when the device comes back on.
+                securityMode = mSecurityModel.getAlternateFor(securityMode);
+            }
+            showSecurityScreen(securityMode);
         }
-        showSecurityScreen(securityMode);
     }
 
     /**
@@ -1619,33 +1646,17 @@ public class KeyguardHostView extends KeyguardViewBase {
     }
 
     private void enableUserSelectorIfNecessary() {
-        if (!UserManager.supportsMultipleUsers()) {
-            return; // device doesn't support multi-user mode
-        }
+        if (!UserManager.supportsMultipleUsers()) return; // device doesn't support multi-user mode
+
         final UserManager um = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
-        if (um == null) {
-            Throwable t = new Throwable();
-            t.fillInStackTrace();
-            Log.e(TAG, "user service is null.", t);
-            return;
-        }
+        if (um == null) return;
 
         // if there are multiple users, we need to enable to multi-user switcher
         final List<UserInfo> users = um.getUsers(true);
-        if (users == null) {
-            Throwable t = new Throwable();
-            t.fillInStackTrace();
-            Log.e(TAG, "list of users is null.", t);
-            return;
-        }
+        if (users == null) return;
 
         final View multiUserView = findViewById(R.id.keyguard_user_selector);
-        if (multiUserView == null) {
-            Throwable t = new Throwable();
-            t.fillInStackTrace();
-            Log.e(TAG, "can't find user_selector in layout.", t);
-            return;
-        }
+        if (multiUserView == null) return;
 
         if (users.size() > 1) {
             if (multiUserView instanceof KeyguardMultiUserSelectorView) {

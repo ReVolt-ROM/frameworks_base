@@ -61,6 +61,7 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
         "com.google.android.apps.dashclock",
         "net.nurik.roman.dashclock"
     };
+
     private static final int FLAG_HAS_LOCAL_HOUR = 0x1;
     private static final int FLAG_HAS_LOCAL_MINUTE = 0x2;
 
@@ -141,7 +142,6 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
             mViewStateManager.onPageSwitching(newPage, newPageIndex);
         }
     }
-
 
     @Override
     public void onPageSwitched(View newPage, int newPageIndex) {
@@ -528,7 +528,8 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
     protected void screenScrolled(int screenCenter) {
         mScreenCenter = screenCenter;
         updatePageAlphaValues(screenCenter);
-        for (int i = 0; i < getChildCount(); i++) {
+        int count = getChildCount();
+        for (int i = 0; i < count; i++) {
             KeyguardWidgetFrame v = getWidgetPageAt(i);
             if (v == mDragView) continue;
             if (v != null) {
@@ -620,7 +621,7 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
             if (i != mCurrentPage) {
                 if (!Settings.System.getBoolean(getContext().getContentResolver(),
                         Settings.System.LOCKSCREEN_HIDE_INITIAL_PAGE_HINTS, false)) {
-                    child.setBackgroundAlpha(KeyguardWidgetFrame.OUTLINE_ALPHA_MULTIPLIER);
+                    child.setBackgroundAlpha(sidePageAlpha);
                 }
                 child.setContentAlpha(0f);
             } else {

@@ -682,7 +682,7 @@ public class KeyguardUpdateMonitor {
      */
     private void handleBatteryUpdate(BatteryStatus status) {
         if (DEBUG) Log.d(TAG, "handleBatteryUpdate");
-        final boolean batteryUpdateInteresting = isBatteryUpdateInteresting(mBatteryStatus, status);
+        final boolean batteryUpdateInteresting = isBatteryUpdateInteresting(mBatteryStatus, status, mContext);
         mBatteryStatus = status;
         if (batteryUpdateInteresting) {
             for (int i = 0; i < mCallbacks.size(); i++) {
@@ -767,7 +767,7 @@ public class KeyguardUpdateMonitor {
         return mSwitchingUser;
     }
 
-    private static boolean isBatteryUpdateInteresting(BatteryStatus old, BatteryStatus current) {
+    private static boolean isBatteryUpdateInteresting(BatteryStatus old, BatteryStatus current, Context context) {
         final boolean nowPluggedIn = current.isPluggedIn();
         final boolean wasPluggedIn = old.isPluggedIn();
         final boolean stateChangedWhilePluggedIn =

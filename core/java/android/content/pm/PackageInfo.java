@@ -337,7 +337,6 @@ public class PackageInfo implements Parcelable {
         dest.writeInt((drmProtectedThemeApk)? 1 : 0);
         dest.writeTypedArray(themeInfos, parcelableFlags);
         dest.writeString(lockedZipFilePath);
-
     }
 
     public static final Parcelable.Creator<PackageInfo> CREATOR
@@ -376,15 +375,14 @@ public class PackageInfo implements Parcelable {
         configPreferences = source.createTypedArray(ConfigurationInfo.CREATOR);
         reqFeatures = source.createTypedArray(FeatureInfo.CREATOR);
         installLocation = source.readInt();
+        requiredForAllUsers = source.readInt() != 0;
+        restrictedAccountType = source.readString();
+        requiredAccountType = source.readString();
 
         /* Theme-specific. */
         isThemeApk = (source.readInt() != 0);
         drmProtectedThemeApk = (source.readInt() != 0);
+        themeInfos = source.createTypedArray(ThemeInfo.CREATOR);
         lockedZipFilePath = source.readString();
-
-        requiredForAllUsers = source.readInt() != 0;
-        restrictedAccountType = source.readString();
-        requiredAccountType = source.readString();
     }
 }
-

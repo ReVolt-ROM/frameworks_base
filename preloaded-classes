@@ -933,6 +933,7 @@ android.util.Base64$Encoder
 android.util.DisplayMetrics
 android.util.EventLog
 android.util.EventLog$Event
+android.util.ExtendedPropertiesUtils
 android.util.FloatMath
 android.util.FloatProperty
 android.util.Log

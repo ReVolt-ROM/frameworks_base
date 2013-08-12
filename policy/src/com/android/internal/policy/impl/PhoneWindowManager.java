@@ -5360,7 +5360,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 if (currentPackageName != null) {
                     mBootMsgDialog.setTitle(msg);
                     mBootMsgDialog.setMessage(currentPackageName);
-                    if (DEBUG_BOOTMSG) Log.d(TAG, "setTitle: " + msg + " setMessage: " + currentPackageName)
+                    if (DEBUG_BOOTMSG) Log.d(TAG, "setTitle: " + msg + " setMessage: " + currentPackageName);
                 } else {
                     if (DEBUG_BOOTMSG) Log.d(TAG, "failed; CURRENT_PACKAGE_NAME == null");
                 }

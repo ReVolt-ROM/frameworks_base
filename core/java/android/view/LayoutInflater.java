@@ -61,7 +61,7 @@ import java.util.HashMap;
  * @see Context#getSystemService
  */
 public abstract class LayoutInflater {
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
 
     /**
      * This field should be made private, so it is hidden from the SDK.

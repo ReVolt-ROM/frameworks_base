@@ -136,9 +136,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     static final String TAG = "WindowManager";
     static final boolean DEBUG = false;
     static final boolean localLOGV = false;
-    static final boolean DEBUG_LAYOUT = false;
-    static final boolean DEBUG_INPUT = false;
-    static final boolean DEBUG_STARTING_WINDOW = false;
+    static final boolean DEBUG_LAYOUT = true;
+    static final boolean DEBUG_INPUT = true;
+    static final boolean DEBUG_STARTING_WINDOW = true;
     static final boolean SHOW_STARTING_ANIMATIONS = true;
     static final boolean SHOW_PROCESSES_ON_ALT_MENU = false;
 
@@ -5305,7 +5305,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     // debugging 'Android is upgrading...' ProgressDialog
-    final boolean DEBUG_BOOTMSG = false;
+    final boolean DEBUG_BOOTMSG = true;
 
     // this method is called to create, if needed, and update boot ProgressDialog
     // see @link frameworks/base/services/java/com/android/server/pm/

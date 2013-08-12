@@ -780,8 +780,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             mSettingsContainer = (QuickSettingsContainerView)
                     mStatusBarWindow.findViewById(R.id.quick_settings_container);
 
-            android.util.Log.d("PARANOID", "mSettingsContainer="+mSettingsContainer);
-
             mAokpSwipeRibbonBottom = new AokpSwipeRibbon(mContext,null,"bottom");
             mAokpSwipeRibbonLeft = new AokpSwipeRibbon(mContext,null,"left");
             mAokpSwipeRibbonRight = new AokpSwipeRibbon(mContext,null,"right");

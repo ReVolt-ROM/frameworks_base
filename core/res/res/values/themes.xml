@@ -216,15 +216,6 @@ please see themes_device_defaults.xml.
         <item name="panelMenuIsCompact">false</item>
         <item name="panelMenuListWidth">296dip</item>
 
-        <!-- Scrollbar attributes -->
-        <item name="scrollbarFadeDuration">250</item>
-        <item name="scrollbarDefaultDelayBeforeFade">300</item> 
-        <item name="scrollbarSize">10.0dip</item>
-        <item name="scrollbarThumbHorizontal">@drawable/scrollbar_handle_holo_dark</item>
-        <item name="scrollbarThumbVertical">@drawable/scrollbar_handle_holo_dark</item>
-        <item name="scrollbarTrackHorizontal">@null</item>
-        <item name="scrollbarTrackVertical">@null</item>
-
         <!-- Text selection handle attributes -->
         <item name="textSelectHandleLeft">@android:drawable/text_select_handle_left</item>
         <item name="textSelectHandleRight">@android:drawable/text_select_handle_right</item>

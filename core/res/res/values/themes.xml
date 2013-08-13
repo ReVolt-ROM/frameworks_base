@@ -259,7 +259,7 @@ please see themes_device_defaults.xml.
         <item name="ratingBarStyleIndicator">@android:style/Widget.RatingBar.Indicator</item>
         <item name="ratingBarStyleSmall">@android:style/Widget.RatingBar.Small</item>
         <item name="radioButtonStyle">@android:style/Widget.CompoundButton.RadioButton</item>
-        <item name="scrollViewStyle">@style/Widget.Holo.ScrollView</item>
+        <item name="scrollViewStyle">@android:style/Widget.ScrollView</item>
         <item name="horizontalScrollViewStyle">@android:style/Widget.HorizontalScrollView</item>
         <item name="spinnerStyle">@android:style/Widget.Spinner</item>
         <item name="dropDownSpinnerStyle">@android:style/Widget.Spinner.DropDown</item>
@@ -370,10 +370,10 @@ please see themes_device_defaults.xml.
         <!-- DatePicker style -->
         <item name="datePickerStyle">@style/Widget.DatePicker</item>
 
-        <item name="fastScrollThumbDrawable">@drawable/fastscroll_thumb_holo</item>
-        <item name="fastScrollTrackDrawable">@drawable/fastscroll_track_holo_dark</item>
-        <item name="fastScrollPreviewBackgroundRight">@drawable/fastscroll_label_right_holo_dark</item>
-        <item name="fastScrollPreviewBackgroundLeft">@drawable/fastscroll_label_left_holo_dark</item>
+        <item name="fastScrollThumbDrawable">@android:drawable/fastscroll_thumb_holo</item>
+        <item name="fastScrollTrackDrawable">@android:drawable/fastscroll_track_holo_dark</item>
+        <item name="fastScrollPreviewBackgroundRight">@android:drawable/fastscroll_label_right_holo_dark</item>
+        <item name="fastScrollPreviewBackgroundLeft">@android:drawable/fastscroll_label_left_holo_dark</item>
         <item name="fastScrollOverlayPosition">atThumb</item>
         <item name="fastScrollTextColor">@android:color/primary_text_dark</item>
 

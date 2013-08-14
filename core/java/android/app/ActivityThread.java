@@ -130,6 +130,10 @@ import libcore.io.EventLogger;
 import libcore.io.IoUtils;
 
 import dalvik.system.CloseGuard;
+import dalvik.system.VMRuntime;
+import android.os.SystemProperties;
+import java.lang.*;
+
 
 final class SuperNotCalledException extends AndroidRuntimeException {
     public SuperNotCalledException(String msg) {

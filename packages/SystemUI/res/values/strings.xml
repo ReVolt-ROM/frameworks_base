@@ -558,13 +558,13 @@
     <!-- Body of help text shown when the notification panel is pulled down for the very first time. [CHAR LIMIT=NONE] -->
     <string name="status_bar_help_text">Access them anytime by swiping down.\nSwipe down again for system controls.</string>
 
-    <!--  AOKP Strings can go here... -->
-
-    <!--  App window Strings -->
-    <string name="close">Close</string>
-    <string name="app_window">Applications</string>
-    <string name="toggles">Toggles</string>
-    <string name="ribbon">Ribbon</string>
+    <string name="halo_dismiss">Dismiss notification</string>
+    <string name="halo_hide">Hide</string>
+    <string name="halo_clear_all">Clear all notifications</string>
+    <string name="halo_silence">Hide and silence until woken</string>
+    <string name="halo_tutorial1">This is HALO</string>
+    <string name="halo_tutorial2">Move me: 2x-tap &amp; drag</string>
+    <string name="halo_tutorial3">Horizontal drag to task</string>
 
     <!--  Target/Action Strings -->
     <string name="shortcut_label">AOKP Actions</string>
@@ -670,13 +670,5 @@
 
     <string name="powerwidget_screen_timeout_toast">Screen timeout set to: %1$d %2$s</string>
     <string name="brightness_label">Brightness</string>
-
-    <string name="halo_dismiss">Dismiss notification</string>
-    <string name="halo_hide">Hide</string>
-    <string name="halo_clear_all">Clear all notifications</string>
-    <string name="halo_silence">Hide and silence until woken</string>
-    <string name="halo_tutorial1">This is HALO.</string>
-    <string name="halo_tutorial2">Double-tap-drag to move it around, drag to task.</string>
-    <string name="halo_tutorial3">Change behavior in the settings.</string>
 
 </resources>

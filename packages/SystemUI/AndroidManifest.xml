@@ -105,12 +105,7 @@
 
         <service android:name=".screenshot.TakeScreenshotService"
             android:process=":screenshot"
-            android:permission="android.permission.SCREENSHOT"
-            android:exported="false">
-            <intent-filter>
-               <android name="android.intent.action.SCREENSHOT"/>
-            </intent-filter>
-        </service>
+            android:exported="false" />
 
         <service android:name=".LoadAverageService"
                 android:exported="true" />

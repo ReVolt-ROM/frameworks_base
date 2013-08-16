@@ -2822,6 +2822,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         lp.packageName = mContext.getPackageName();
 
         makeStatusBarView();
+        mStatusBarContainer.addView(mStatusBarWindow);
         mWindowManager.addView(mStatusBarWindow, lp);
     }
 

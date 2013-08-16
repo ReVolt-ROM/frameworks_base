@@ -361,32 +361,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             mSubLayer = mPolicy.subWindowTypeToLayerLw(a.type);
             mAttachedWindow = attachedWindow;
             if (WindowManagerService.DEBUG_ADD_REMOVE) Slog.v(TAG, "Adding " + this + " to " + mAttachedWindow);
-
-            int children_size = mAttachedWindow.mChildWindows.size();
-            if (children_size == 0) {
-                mAttachedWindow.mChildWindows.add(this);
-            } else {
-                for (int i = 0; i < children_size; i++) {
-                    WindowState child = (WindowState)mAttachedWindow.mChildWindows.get(i);
-                    if (this.mSubLayer < child.mSubLayer) {
-                        mAttachedWindow.mChildWindows.add(i, this);
-                        break;
-                    } else if (this.mSubLayer > child.mSubLayer) {
-                        continue;
-                    }
-
-                    if (this.mBaseLayer <= child.mBaseLayer) {
-                        mAttachedWindow.mChildWindows.add(i, this);
-                        break;
-                    } else {
-                        continue;
-                    }
-                }
-                if (children_size == mAttachedWindow.mChildWindows.size()) {
-                    mAttachedWindow.mChildWindows.add(this);
-                }
-            }
-
+            mAttachedWindow.mChildWindows.add(this);
             mLayoutAttached = mAttrs.type !=
                     WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
             mIsImWindow = attachedWindow.mAttrs.type == TYPE_INPUT_METHOD
@@ -590,7 +565,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             mCompatFrame.scale(mInvGlobalScale);
         }
 
-        if (mIsWallpaper && (fw != frame.width() || fh != frame.height())) {
+        if (mIsWallpaper) {
             final DisplayInfo displayInfo = mDisplayContent.getDisplayInfo();
             mService.updateWallpaperOffsetLocked(this, displayInfo.appWidth, displayInfo.appHeight,
                     false);

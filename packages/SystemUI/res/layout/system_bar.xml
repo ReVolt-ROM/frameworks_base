@@ -21,15 +21,14 @@
     android:background="@drawable/system_bar_background"
     android:layout_height="@*android:dimen/system_bar_height"
     >
-    
+
     <LinearLayout
         android:id="@+id/bar_contents"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="@*android:dimen/system_bar_height"
         android:orientation="horizontal"
         android:layout_gravity="center"
         >
-
         <!-- navigation controls -->
         <LinearLayout
                android:id="@+id/navigationArea"
@@ -42,7 +41,7 @@
                     android:layout_height="match_parent"/>
          </LinearLayout>
 
-        <!-- fake space bar zone -->
+         <!-- fake space bar zone -->
         <LinearLayout
             android:layout_height="match_parent"
             android:layout_width="0dp"
@@ -50,14 +49,10 @@
             <com.android.systemui.statusbar.policy.EventHole android:id="@+id/fake_space_bar"
                 android:layout_height="match_parent"
                 android:layout_width="0dp"
-                android:paddingStart="8dip"
-                android:paddingEnd="8dip"
-                android:layout_toEndOf="@+id/navigationArea"
-                android:layout_toStartOf="@+id/notificationArea"
-                android:visibility="gone"
-                />
-        </RelativeLayout>
-    </FrameLayout>
+                android:paddingLeft="8dip"
+                android:paddingRight="8dip"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <!-- notification icons & panel access -->
         <RelativeLayout

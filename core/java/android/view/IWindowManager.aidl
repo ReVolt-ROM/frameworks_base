@@ -284,14 +284,10 @@ interface IWindowManager
      * @param windowToken The unique window token.
      * @return The magnification spec if such or null.
      */
-<<<<<<< HEAD
-    void showAssistant();
-=======
     MagnificationSpec getCompatibleMagnificationSpecForWindow(in IBinder windowToken);
 
     /**
      * Update the application display metrics
      */
     void updateDisplayMetrics();
->>>>>>> 9be4951... Merge tag 'android-4.3_r2.1' into HEAD
 }

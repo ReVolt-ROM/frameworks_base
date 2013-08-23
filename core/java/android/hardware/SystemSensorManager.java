@@ -315,28 +315,6 @@ public class SystemSensorManager extends SensorManager {
         protected abstract void removeSensorEvent(Sensor sensor);
     }
 
-<<<<<<< HEAD
-    /** @hide */
-    @Override
-    protected void unregisterListenerImpl(SensorEventListener listener, Sensor sensor) {
-        synchronized (sListeners) {
-            final int size = sListeners.size();
-            for (int i=0 ; i<size ; i++) {
-                ListenerDelegate l = sListeners.get(i);
-                if (l.getListener() == listener) {
-                    if (sensor == null) {
-                        sListeners.remove(i);
-                        // disable all sensors for this listener
-                        for (Sensor s : l.getSensors()) {
-                            disableSensorLocked(s);
-                        }
-                    // Check if the ListenerDelegate has the sensor it is trying to unregister.
-                    } else if (l.hasSensor(sensor) && l.removeSensor(sensor) == 0) {
-                        // if we have no more sensors enabled on this listener,
-                        // take it off the list.
-                        sListeners.remove(i);
-                        disableSensorLocked(sensor);
-=======
     static final class SensorEventQueue extends BaseEventQueue {
         private final SensorEventListener mListener;
         private final SparseArray<SensorEvent> mSensorsEvents = new SparseArray<SensorEvent>();
@@ -390,7 +368,6 @@ public class SystemSensorManager extends SensorManager {
                         mFirstEvent.put(handle, true);
                         mListener.onAccuracyChanged(
                                 t.sensor, SENSOR_STATUS_ACCURACY_HIGH);
->>>>>>> 9be4951... Merge tag 'android-4.3_r2.1' into HEAD
                     }
                     break;
             }

@@ -39,6 +39,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -473,6 +474,7 @@ public class KeyguardHostView extends KeyguardViewBase {
             return;
         }
 
+        Drawable back = null;
         if (!background.isEmpty()) {
             try {
                 setBackgroundColor(Integer.parseInt(background));

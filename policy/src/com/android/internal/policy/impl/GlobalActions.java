@@ -463,11 +463,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         if(mEnableExpandedToggle){
             mItems.add(mExpandDesktopModeOn);
         }
-
         // next: bug report, if enabled
-        boolean showBugReport = Settings.Global.getInt(cr,
-                Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0;
-        if (showBugReport) {
+        if (Settings.Global.getInt(mContext.getContentResolver(),
+                Settings.Global.BUGREPORT_IN_POWER_MENU, 0) != 0) {
             mItems.add(
                 new SinglePressAction(com.android.internal.R.drawable.stat_sys_adb,
                         R.string.global_action_bug_report) {
@@ -717,9 +715,6 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mAirplaneModeOn.updateState(mAirplaneState);
         mAdapter.notifyDataSetChanged();
         mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
-
-        mDialog.setTitle(R.string.global_actions);
-
         if (SHOW_SILENT_TOGGLE) {
             IntentFilter filter = new IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION);
             mContext.registerReceiver(mRingerModeReceiver, filter);

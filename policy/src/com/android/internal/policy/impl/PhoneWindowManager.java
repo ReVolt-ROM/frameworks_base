@@ -81,8 +81,6 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.telephony.ITelephony;
 import com.android.internal.widget.PointerLocationView;
 import com.android.internal.app.ThemeUtils;
-import com.android.internal.os.DeviceKeyHandler;
-import com.android.internal.os.IDeviceHandler;
 
 import android.service.dreams.DreamService;
 import android.service.dreams.IDreamManager;
@@ -3321,6 +3319,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // For purposes of putting out fake window up to steal focus, we will
             // drive nav being hidden only by whether it is requested.
             boolean navVisible = (mLastSystemUiFlags&View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0;
+            int navWidth = mNavigationBarWidthForRotation[displayRotation];
+            int navHeight = mNavigationBarHeightForRotation[displayRotation];
 
             // When the navigation bar isn't visible, we put up a fake
             // input window to catch all touch events.  This way we can
@@ -3649,24 +3649,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         pf.right = df.right = of.right = mOverscanScreenLeft + mOverscanScreenWidth;
                         pf.bottom = df.bottom = of.bottom = mOverscanScreenTop
                                 + mOverscanScreenHeight;
-                    } else if (shouldHideNavigationBarLw(sysUiFl)
-                            && attrs.type >= WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW
-                            && attrs.type <= WindowManager.LayoutParams.LAST_SUB_WINDOW) {
-                        // Asking for layout as if the nav bar is hidden, lets the
-                        // application extend into the unrestricted overscan screen area.  We
-                        // only do this for application windows to ensure no window that
-                        // can be above the nav bar can do this.
-                        pf.left = df.left = mOverscanScreenLeft;
-                        pf.top = df.top = mOverscanScreenTop;
-                        pf.right = df.right = mOverscanScreenLeft + mOverscanScreenWidth;
-                        pf.bottom = df.bottom = mOverscanScreenTop + mOverscanScreenHeight;
-                        // We need to tell the app about where the frame inside the overscan
-                        // is, so it can inset its content by that amount -- it didn't ask
-                        // to actually extend itself into the overscan region.
-                        of.left = mUnrestrictedScreenLeft;
-                        of.top = mUnrestrictedScreenTop;
-                        of.right = mUnrestrictedScreenLeft + mUnrestrictedScreenWidth;
-                        of.bottom = mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
                     } else {
                         pf.left = df.left = mRestrictedOverscanScreenLeft;
                         pf.top = df.top = mRestrictedOverscanScreenTop;
@@ -3791,22 +3773,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             = mOverscanScreenLeft + mOverscanScreenWidth;
                     pf.bottom = df.bottom = of.bottom = cf.bottom
                             = mOverscanScreenTop + mOverscanScreenHeight;
-                } else if (shouldHideNavigationBarLw(sysUiFl)
-                        && attrs.type >= WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW
-                        && attrs.type <= WindowManager.LayoutParams.LAST_SUB_WINDOW) {
-                    // Asking for layout as if the nav bar is hidden, lets the
-                    // application extend into the unrestricted screen area.  We
-                    // only do this for application windows to ensure no window that
-                    // can be above the nav bar can do this.
-                    // XXX This assumes that an app asking for this will also
-                    // ask for layout in only content.  We can't currently figure out
-                    // what the screen would be if only laying out to hide the nav bar.
-                    pf.left = df.left = of.left = cf.left = mUnrestrictedScreenLeft;
-                    pf.top = df.top = of.top = cf.top = mUnrestrictedScreenTop;
-                    pf.right = df.right = of.right = cf.right = mUnrestrictedScreenLeft
-                            + mUnrestrictedScreenWidth;
-                    pf.bottom = df.bottom = of.bottom = cf.bottom = mUnrestrictedScreenTop
-                            + mUnrestrictedScreenHeight;
                 } else {
                     pf.left = df.left = of.left = cf.left = mRestrictedScreenLeft;
                     pf.top = df.top = of.top = cf.top = mRestrictedScreenTop;

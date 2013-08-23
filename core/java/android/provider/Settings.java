@@ -3603,6 +3603,11 @@ public final class Settings {
         public static final String SWAP_VOLUME_KEYS = "swap_volume_keys";
 
         /**
+         * @hide
+         */
+        public static final String VOLUME_KEYS_CONTROL_RING_STREAM = "volume_keys_control_ring_stream";
+
+        /**
          * whether to hide the signal barss
          *
          * @hide

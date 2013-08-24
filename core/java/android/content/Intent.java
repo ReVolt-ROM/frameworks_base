@@ -7089,7 +7089,7 @@ public class Intent implements Parcelable, Cloneable {
             return null;
         }
 
-        type = type.trim().toLowerCase(Locale.ROOT);
+        type = type.trim().toLowerCase(Locale.US);
 
         final int semicolonIndex = type.indexOf(';');
         if (semicolonIndex != -1) {

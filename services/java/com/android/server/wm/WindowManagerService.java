@@ -292,8 +292,6 @@ public class WindowManagerService extends IWindowManager.Stub
 
     private final boolean mHeadless;
 
-    private static final float THUMBNAIL_ANIMATION_DECELERATE_FACTOR = 1.5f;
-
     private BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             mUiContext = null;
@@ -323,7 +321,7 @@ public class WindowManagerService extends IWindowManager.Stub
 
     final boolean mLimitedAlphaCompositing;
 
-    final WindowManagerPolicy mPolicy = PolicyManager.makeNewWindowManager();
+    final WindowManagerPolicy mPolicy;
 
     final IActivityManager mActivityManager;
 
@@ -776,8 +774,7 @@ public class WindowManagerService extends IWindowManager.Stub
                 com.android.internal.R.bool.config_sf_limitedAlpha);
         mDisplayManagerService = displayManager;
         mHeadless = displayManager.isHeadless();
-
-        mPolicy = PolicyManager.makeNewWindowManager(device);
+        mPolicy = PolicyManager.makeNewWindowManager();
         mDisplaySettings = new DisplaySettings(context);
         mDisplaySettings.readSettingsLocked();
 
@@ -1599,8 +1596,9 @@ public class WindowManagerService extends IWindowManager.Stub
         boolean targetChanged = false;
 
         // TODO(multidisplay): Wallpapers on main screen only.
-        final int dw = mPolicy.getWallpaperWidth(mRotation);
-        final int dh = mPolicy.getWallpaperHeight(mRotation);
+        final DisplayInfo displayInfo = getDefaultDisplayContentLocked().getDisplayInfo();
+        final int dw = displayInfo.appWidth;
+        final int dh = displayInfo.appHeight;
 
         // First find top-most window that has asked to be on top of the
         // wallpaper; all wallpapers go behind it.
@@ -1827,6 +1825,7 @@ public class WindowManagerService extends IWindowManager.Stub
             while (curWallpaperIndex > 0) {
                 curWallpaperIndex--;
                 WindowState wallpaper = token.windows.get(curWallpaperIndex);
+
                 if (visible) {
                     updateWallpaperOffsetLocked(wallpaper, dw, dh, false);
                 }
@@ -1990,8 +1989,10 @@ public class WindowManagerService extends IWindowManager.Stub
     }
 
     void updateWallpaperOffsetLocked(WindowState changingTarget, boolean sync) {
-        final int dw = mPolicy.getWallpaperWidth(mRotation);
-        final int dh = mPolicy.getWallpaperHeight(mRotation);
+        final DisplayContent displayContent = changingTarget.mDisplayContent;
+        final DisplayInfo displayInfo = displayContent.getDisplayInfo();
+        final int dw = displayInfo.appWidth;
+        final int dh = displayInfo.appHeight;
 
         WindowState target = mWallpaperTarget;
         if (target != null) {
@@ -4957,11 +4958,6 @@ public class WindowManagerService extends IWindowManager.Stub
                 mAnimatorDurationScale };
     }
 
-    @Override
-    public void reboot(String reason) {
-        ShutdownThread.reboot(getUiContext(), reason, false);
-    }
-
     // Called by window manager policy. Not exposed externally.
     @Override
     public int getLidState() {
@@ -4999,14 +4995,20 @@ public class WindowManagerService extends IWindowManager.Stub
 
     // Called by window manager policy.  Not exposed externally.
     @Override
-    public void rebootTile() {
-        ShutdownThread.reboot(mContext, null, true);
-    }
-
-    // Called by window manager policy. Not exposed externally.
-    @Override
     public void rebootSafeMode(boolean confirm) {
         ShutdownThread.rebootSafeMode(getUiContext(), confirm);
+    }
+
+    // Called by window manager policy.  Not exposed externally.
+    @Override
+    public void reboot(boolean confirm) {
+        reboot(null, confirm);
+    }
+
+    // Called by window manager policy.  Not exposed externally.
+    @Override
+    public void reboot(String reason, boolean confirm) {
+        ShutdownThread.reboot(mContext, reason, confirm);
     }
 
     @Override
@@ -6427,6 +6429,77 @@ public class WindowManagerService extends IWindowManager.Stub
         return sw;
     }
 
+    private static class ApplicationDisplayMetrics {
+        boolean rotated;
+        int dh;
+        int dw;
+        int appWidth;
+        int appHeight;
+    }
+
+    private ApplicationDisplayMetrics calculateDisplayMetrics(DisplayContent displayContent) {
+        ApplicationDisplayMetrics dm = new ApplicationDisplayMetrics();
+
+        dm.rotated = (mRotation == Surface.ROTATION_90 || mRotation == Surface.ROTATION_270);
+        final int realdw = dm.rotated ?
+                displayContent.mBaseDisplayHeight : displayContent.mBaseDisplayWidth;
+        final int realdh = dm.rotated ?
+                displayContent.mBaseDisplayWidth : displayContent.mBaseDisplayHeight;
+
+        dm.dw = realdw;
+        dm.dh = realdh;
+
+        if (mAltOrientation) {
+            if (realdw > realdh) {
+                // Turn landscape into portrait.
+                int maxw = (int)(realdh/1.3f);
+                if (maxw < realdw) {
+                    dm.dw = maxw;
+                }
+            } else {
+                // Turn portrait into landscape.
+                int maxh = (int)(realdw/1.3f);
+                if (maxh < realdh) {
+                    dm.dh = maxh;
+                }
+            }
+        }
+
+        return dm;
+    }
+
+    private ApplicationDisplayMetrics updateApplicationDisplayMetricsLocked(
+            DisplayContent displayContent) {
+        if (!mDisplayReady) {
+            return null;
+        }
+
+        final ApplicationDisplayMetrics m = calculateDisplayMetrics(displayContent);
+        final DisplayInfo displayInfo = displayContent.getDisplayInfo();
+
+        m.appWidth = mPolicy.getNonDecorDisplayWidth(m.dw, m.dh, mRotation);
+        m.appHeight = mPolicy.getNonDecorDisplayHeight(m.dw, m.dh, mRotation);
+
+        synchronized(displayContent.mDisplaySizeLock) {
+            displayInfo.rotation = mRotation;
+            displayInfo.logicalWidth = m.dw;
+            displayInfo.logicalHeight = m.dh;
+            displayInfo.logicalDensityDpi = displayContent.mBaseDisplayDensity;
+            displayInfo.appWidth = m.appWidth;
+            displayInfo.appHeight = m.appHeight;
+            displayInfo.getLogicalMetrics(mRealDisplayMetrics, null);
+            displayInfo.getAppMetrics(mDisplayMetrics, null);
+            mDisplayManagerService.setDisplayInfoOverrideFromWindowManager(
+                    displayContent.getDisplayId(), displayInfo);
+        }
+
+        if (false) {
+            Slog.i(TAG, "Set app display size: " + m.appWidth + " x " + m.appHeight);
+        }
+
+        return m;
+    }
+
     boolean computeScreenConfigurationLocked(Configuration config) {
         if (!mDisplayReady) {
             return false;
@@ -6434,6 +6507,14 @@ public class WindowManagerService extends IWindowManager.Stub
 
         // TODO(multidisplay): For now, apply Configuration to main screen only.
         final DisplayContent displayContent = getDefaultDisplayContentLocked();
+
+       // Update application display metrics.
+        final ApplicationDisplayMetrics appDm = updateApplicationDisplayMetricsLocked(
+                displayContent);
+
+        if (appDm == null) {
+            return false;
+        }
 
         // Use the effective "visual" dimensions based on current rotation
         final boolean rotated = (mRotation == Surface.ROTATION_90
@@ -6481,7 +6562,6 @@ public class WindowManagerService extends IWindowManager.Stub
             displayInfo.getAppMetrics(mDisplayMetrics, null);
             mDisplayManagerService.setDisplayInfoOverrideFromWindowManager(
                     displayContent.getDisplayId(), displayInfo);
-            mAnimator.setDisplayDimensions(dw, dh, appWidth, appHeight);
         }
         if (false) {
             Slog.i(TAG, "Set app display size: " + appWidth + " x " + appHeight);
@@ -9907,11 +9987,6 @@ public class WindowManagerService extends IWindowManager.Stub
     }
 
     @Override
-    public boolean hasMenuKeyEnabled() {
-        return mPolicy.hasMenuKeyEnabled();
-    }
-
-    @Override
     public void lockNow(Bundle options) {
         mPolicy.lockNow(options);
     }
@@ -9929,6 +10004,31 @@ public class WindowManagerService extends IWindowManager.Stub
             return;
         }
         mPolicy.showAssistant();
+    }
+
+    public void updateDisplayMetrics() {
+        long origId = Binder.clearCallingIdentity();
+        boolean changed = false;
+
+        synchronized (mWindowMap) {
+            final DisplayContent displayContent = getDefaultDisplayContentLocked();
+            final DisplayInfo displayInfo =
+                    displayContent != null ? displayContent.getDisplayInfo() : null;
+            final int oldWidth = displayInfo != null ? displayInfo.appWidth : -1;
+            final int oldHeight = displayInfo != null ? displayInfo.appHeight : -1;
+            final ApplicationDisplayMetrics metrics =
+                    updateApplicationDisplayMetricsLocked(displayContent);
+
+            if (metrics != null && oldWidth >= 0 && oldHeight >= 0) {
+                changed = oldWidth != metrics.appWidth || oldHeight != metrics.appHeight;
+            }
+        }
+
+        if (changed) {
+            mH.sendEmptyMessage(H.SEND_NEW_CONFIGURATION);
+        }
+
+        Binder.restoreCallingIdentity(origId);
     }
 
     void dumpPolicyLocked(PrintWriter pw, String[] args, boolean dumpAll) {

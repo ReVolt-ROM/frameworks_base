@@ -30,8 +30,8 @@ import android.util.Slog;
 import android.view.View;
 
 import com.android.systemui.R;
-import com.android.systemui.statusbar.policy.ToggleSlider;
-import com.android.systemui.statusbar.policy.ToggleSlider.Listener;
+import com.android.systemui.settings.ToggleSlider;
+import com.android.systemui.settings.ToggleSlider.Listener;
 import com.android.systemui.statusbar.policy.CurrentUserTracker;
 
 public class BrightnessSlider implements ToggleSlider.Listener {

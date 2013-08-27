@@ -178,4 +178,5 @@ public class QuickSettingsTileView extends RelativeLayout {
         } else {
             setBackgroundResource(R.drawable.qs_tile_background);
         }
+    }
 }

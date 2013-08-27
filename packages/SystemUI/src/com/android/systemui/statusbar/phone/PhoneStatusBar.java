@@ -95,8 +95,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.internal.statusbar.StatusBarIcon;
-import com.android.internal.statusbar.StatusBarNotification;
-import com.android.internal.util.pie.PiePosition;
+import android.service.notification.StatusBarNotification;
 import com.android.systemui.EventLogTags;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.BaseStatusBar;
@@ -1442,6 +1441,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.HIDDEN_STATUSBAR_PULLDOWN, 0);
                  break;
         }
+    }
 
     @Override
     protected void refreshLayout(int layoutDirection) {

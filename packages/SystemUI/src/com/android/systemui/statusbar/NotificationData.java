@@ -16,21 +16,16 @@
 
 package com.android.systemui.statusbar;
 
-<<<<<<< HEAD
+
 import android.app.Notification;
 import android.graphics.Bitmap;
-=======
-import android.service.notification.StatusBarNotification;
->>>>>>> 9be4951... Merge tag 'android-4.3_r2.1' into HEAD
 import android.os.IBinder;
 import android.view.View;
 import android.widget.ImageView;
 
-<<<<<<< HEAD
+import android.service.notification.StatusBarNotification;
+
 import com.android.systemui.statusbar.BaseStatusBar.NotificationClicker;
-import com.android.internal.statusbar.StatusBarNotification;
-=======
->>>>>>> 9be4951... Merge tag 'android-4.3_r2.1' into HEAD
 import com.android.systemui.R;
 
 import java.util.Comparator;
@@ -85,10 +80,10 @@ public class NotificationData {
             return NotificationData.getUserExpanded(row);
         }
         /**
-         * Return whether the entry has been manually cleared by the user.
+         * Return whether the entry has been manually dismissed by the user.
          */
-        public boolean userCleared() {
-            return NotificationData.getUserCleared(row);
+        public boolean userDismissed() {
+            return NotificationData.getUserDismissed(row);
         }
         /**
          * Set the flag indicating that this was manually expanded by the user.
@@ -251,19 +246,5 @@ public class NotificationData {
      */
     public static boolean setUserLocked(View row, boolean userLocked) {
         return writeBooleanTag(row, R.id.user_lock_tag, userLocked);
-    }
-
-    /**
-     * Return whether the entry was cleared by the user.
-     */
-    public static boolean getUserCleared(View row) {
-        return readBooleanTag(row, R.id.user_cleared_tag);
-    }
-
-    /**
-     * Set whether the entry is being touched by the user.
-     */
-    public static boolean setUserCleared(View row) {
-        return writeBooleanTag(row, R.id.user_cleared_tag, true);
     }
 }

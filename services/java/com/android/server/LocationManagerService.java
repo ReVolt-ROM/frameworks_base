@@ -59,13 +59,11 @@ import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.WorkSource;
 import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Slog;
 import com.android.internal.content.PackageMonitor;
 import com.android.internal.location.ProviderProperties;
 import com.android.internal.location.ProviderRequest;
-import com.android.server.location.BtGpsLocationProvider;
 import com.android.server.location.GeocoderProxy;
 import com.android.server.location.GeofenceProxy;
 import com.android.server.location.GeofenceManager;
@@ -197,9 +195,6 @@ public class LocationManagerService extends ILocationManager.Stub {
 
     // current active user on the device - other users are denied location data
     private int mCurrentUserId = UserHandle.USER_OWNER;
-
-    // reference for original internal gps location provider
-    private GpsLocationProvider mInternalGpsLocationProvider;
 
     public LocationManagerService(Context context) {
         super();
@@ -357,15 +352,11 @@ public class LocationManagerService extends ILocationManager.Stub {
             if ("0".equals(device)) {
                 if (!GpsLocationProvider.isSupported())
                     return;
-
-                GpsLocationProvider gpsProvider = mInternalGpsLocationProvider;
-
                 mGpsStatusProvider = gpsProvider.getGpsStatusProvider();
                 mNetInitiatedListener = gpsProvider.getNetInitiatedListener();
                 addProviderLocked(gpsProvider);
                 mRealProviders.put(LocationManager.GPS_PROVIDER, gpsProvider);
             } else {
-                BtGpsLocationProvider gpsProvider = new BtGpsLocationProvider(mContext, this);
                 mGpsStatusProvider = gpsProvider.getGpsStatusProvider();
                 mNetInitiatedListener = gpsProvider.getNetInitiatedListener();
                 addProviderLocked(gpsProvider);
@@ -391,7 +382,6 @@ public class LocationManagerService extends ILocationManager.Stub {
             addProviderLocked(gpsProvider);
             mRealProviders.put(LocationManager.GPS_PROVIDER, gpsProvider);
         }
-        setGpsSource(btDevice);
 
         /*
         Load package name(s) containing location provider support.
@@ -2129,13 +2119,12 @@ public class LocationManagerService extends ILocationManager.Stub {
     public void removeTestProvider(String provider) {
         checkMockPermissionsSafe();
         synchronized (mLock) {
-            MockProvider mockProvider = mMockProviders.get(provider);
+            MockProvider mockProvider = mMockProviders.remove(provider);
             if (mockProvider == null) {
                 throw new IllegalArgumentException("Provider \"" + provider + "\" unknown");
             }
             long identity = Binder.clearCallingIdentity();
             removeProviderLocked(mProvidersByName.get(provider));
-            mMockProviders.remove(mockProvider);
 
             if (mGeoFencer != null) {
                 mGeoFencerEnabled = true;

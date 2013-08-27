@@ -3019,6 +3019,18 @@ public final class Settings {
          */
         public static final String QUIET_HOURS_ENABLED = "quiet_hours_enabled";
 
+
+        /**
+         * @hide
+         */
+        public static final String QUIET_HOURS_MUTE = "quiet_hours_mute";
+
+
+        /**
+         * @hide
+         */
+        public static final String QUIET_HOURS_HAPTIC = "quiet_hours_haptic";
+
         /**
          * Sets when quiet hours starts. This is stored in minutes from the start of the day.
          * @hide

@@ -339,33 +339,6 @@ public class LocationManagerService extends ILocationManager.Stub {
                 + "partition. The fallback must also be marked coreApp=\"true\" in the manifest");
     }
 
-    public void setGpsSource(String device) {
-        synchronized (mLock) {
-            LocationProviderInterface gpsLocationProvider = mRealProviders.get(LocationManager.GPS_PROVIDER);
-            if (gpsLocationProvider != null && mProvidersByName.containsKey(gpsLocationProvider.getName())) {
-                Slog.i(TAG, "Disable and removing provider " + gpsLocationProvider.getName());
-                Settings.Secure.setLocationProviderEnabled(mContext.getContentResolver(), LocationManager.GPS_PROVIDER, false);
-                removeProviderLocked(gpsLocationProvider);
-                mRealProviders.put(LocationManager.GPS_PROVIDER, null);
-            }
-
-            if ("0".equals(device)) {
-                if (!GpsLocationProvider.isSupported())
-                    return;
-                mGpsStatusProvider = gpsProvider.getGpsStatusProvider();
-                mNetInitiatedListener = gpsProvider.getNetInitiatedListener();
-                addProviderLocked(gpsProvider);
-                mRealProviders.put(LocationManager.GPS_PROVIDER, gpsProvider);
-            } else {
-                mGpsStatusProvider = gpsProvider.getGpsStatusProvider();
-                mNetInitiatedListener = gpsProvider.getNetInitiatedListener();
-                addProviderLocked(gpsProvider);
-                mRealProviders.put(LocationManager.GPS_PROVIDER, gpsProvider);
-            }
-            updateProvidersLocked();
-        }
-    }
-
     private void loadProvidersLocked() {
         // create a passive location provider, which is always enabled
         PassiveProvider passiveProvider = new PassiveProvider(this);
@@ -2119,12 +2092,13 @@ public class LocationManagerService extends ILocationManager.Stub {
     public void removeTestProvider(String provider) {
         checkMockPermissionsSafe();
         synchronized (mLock) {
-            MockProvider mockProvider = mMockProviders.remove(provider);
+            MockProvider mockProvider = mMockProviders.get(provider);
             if (mockProvider == null) {
                 throw new IllegalArgumentException("Provider \"" + provider + "\" unknown");
             }
             long identity = Binder.clearCallingIdentity();
             removeProviderLocked(mProvidersByName.get(provider));
+            mMockProviders.remove(mockProvider);
 
             if (mGeoFencer != null) {
                 mGeoFencerEnabled = true;

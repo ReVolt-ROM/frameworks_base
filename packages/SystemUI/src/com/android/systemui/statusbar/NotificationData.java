@@ -80,12 +80,6 @@ public class NotificationData {
             return NotificationData.getUserExpanded(row);
         }
         /**
-         * Return whether the entry has been manually dismissed by the user.
-         */
-        public boolean userDismissed() {
-            return NotificationData.getUserDismissed(row);
-        }
-        /**
          * Set the flag indicating that this was manually expanded by the user.
          */
         public boolean setUserExpanded(boolean userExpanded) {

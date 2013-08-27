@@ -173,7 +173,7 @@ public class NotificationRowLayout
             veto.performClick();
         }
         if (fromUser) {
-            NotificationData.setUserCleared(v);
+            NotificationData.setUserDismissed(v);
         }
     }
 

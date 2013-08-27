@@ -1585,7 +1585,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         // If we have a bona fide avatar here stretching at least over half the size of our
         // halo-bubble, we'll use that one and cut it round
-        if (notification.getNotification.largeIcon != null
+        if (notif.largeIcon != null
                 && largeIconWidth >= iconSize / 2) {
             Paint smoothingPaint = new Paint();
             smoothingPaint.setAntiAlias(true);
@@ -1640,10 +1640,10 @@ public abstract class BaseStatusBar extends SystemUI implements
         prepareHaloNotification(entry, notification, false);
         entry.hide = entry.notification.getPackageName().equals("com.paranoid.halo");
 
-        final PendingIntent contentIntent = notification.notification.contentIntent;
+        final PendingIntent contentIntent = notification.getNotification().contentIntent;
         if (contentIntent != null) {
             entry.floatingIntent = makeClicker(contentIntent,
-                    notification.pkg, notification.tag, notification.id);
+                   notification.getPackageName(), notification.getTag(), notification.getId());
             entry.floatingIntent.makeFloating(true);
         }
 
@@ -1793,7 +1793,7 @@ public abstract class BaseStatusBar extends SystemUI implements
                             notification.getPackageName(), notification.getTag(), notification.getId());
                     oldEntry.content.setOnClickListener(listener);
                     oldEntry.floatingIntent = makeClicker(contentIntent,
-                            notification.pkg, notification.tag, notification.id);
+                            notification.getPackageName(), notification.getTag(), notification.getId());
                     oldEntry.floatingIntent.makeFloating(true);
                 } else {
                     oldEntry.content.setOnClickListener(null);

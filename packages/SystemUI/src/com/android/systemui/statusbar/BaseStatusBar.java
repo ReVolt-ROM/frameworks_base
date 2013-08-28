@@ -38,6 +38,7 @@ import android.app.ActivityOptions;
 import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
+import android.app.Notification;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -310,12 +311,12 @@ public abstract class BaseStatusBar extends SystemUI implements
             }
         }
     };
-        //0: normal; 1: never expand; 2: always expand; 3: revert to old
-        int notificationsBehaviour = 0;
-        private ContentObserver SettingsObserver = new ContentObserver(new Handler()) {
+    //0: normal; 1: never expand; 2: always expand; 3: revert to old
+    int notificationsBehaviour = 0;
+    private ContentObserver SettingsObserver = new ContentObserver(new Handler()) {
         @Override
         public void onChange(boolean selfChange) {
-                        notificationsBehaviour = Settings.Secure.getInt(
+            notificationsBehaviour = Settings.Secure.getInt(
                     mContext.getContentResolver(), Settings.Secure.NOTIFICATIONS_BEHAVIOUR, 0);
         }
     };
@@ -407,7 +408,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         mDisplay = mWindowManager.getDefaultDisplay();
 
         mProvisioningObserver.onChange(false); // set up
-                SettingsObserver.onChange(false);
+        SettingsObserver.onChange(false);
         mContext.getContentResolver().registerContentObserver(
                 Settings.Global.getUriFor(Settings.Global.DEVICE_PROVISIONED), true,
                 mProvisioningObserver);
@@ -601,7 +602,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         mContext.getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.HALO_SIZE), false, new ContentObserver(new Handler()) {
             @Override
-            public void onChange(boolean selfChange) {                
+            public void onChange(boolean selfChange) {
                 restartHalo();
             }});
 
@@ -654,7 +655,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         if (mHaloActive) {
             if (mHalo == null) {
                 LayoutInflater inflater = (LayoutInflater) mContext
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE); 
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 mHalo = (Halo)inflater.inflate(R.layout.halo_trigger, null);
                 mHalo.setLayerType (View.LAYER_TYPE_HARDWARE, null);
                 WindowManager.LayoutParams params = mHalo.getWMParams();
@@ -1343,7 +1344,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         View row = inflater.inflate(R.layout.status_bar_notification_row, parent, false);
 
         // for blaming (see SwipeHelper.setLongPressListener)
-        row.setTag(sbn.getPackageName());
+        row.setTag(entry);
 
         workAroundBadLayerDrawableOpacity(row);
         View vetoButton = updateNotificationVetoButton(row, sbn);
@@ -1412,10 +1413,11 @@ public abstract class BaseStatusBar extends SystemUI implements
         entry.row = row;
         entry.content = content;
         entry.expanded = expandedOneU;
-                if (notificationsBehaviour != 3)
-                {
-                entry.setLargeView(expandedLarge);
-                }
+
+        if (notificationsBehaviour != 3) {
+            entry.setLargeView(expandedLarge);
+        }
+
         return true;
     }
 
@@ -1594,7 +1596,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             canvas.drawCircle(iconSize / 2, iconSize / 2, iconSize / 2.3f, smoothingPaint);
             smoothingPaint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
             final int newWidth = iconSize;
-            final int newHeight = largeIconWidth / largeIconHeight * iconSize;
+            final int newHeight = iconSize * largeIconWidth / largeIconHeight;
             Bitmap scaledBitmap = Bitmap.createScaledBitmap(notif.largeIcon, newWidth, newHeight, true);
             canvas.drawBitmap(scaledBitmap, null, new Rect(0, 0,
                     iconSize, iconSize), smoothingPaint);
@@ -1666,10 +1668,10 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     protected boolean expandView(NotificationData.Entry entry, boolean expand) {
-        int rowHeight =
-                mContext.getResources().getDimensionPixelSize(R.dimen.notification_row_min_height);
+        int rowHeight = mContext.getResources().getDimensionPixelSize(R.dimen.notification_row_min_height);
         ViewGroup.LayoutParams lp = entry.row.getLayoutParams();
-        if (entry.expandable() && notificationsBehaviour != 3 && notificationsBehaviour != 1 && (expand || notificationsBehaviour == 2)) {
+        if (entry.expandable() && notificationsBehaviour != 3 && notificationsBehaviour != 1
+                && (expand || notificationsBehaviour == 2)) {
             if (DEBUG) Slog.d(TAG, "setting expanded row height to WRAP_CONTENT");
             lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
         } else {
@@ -1774,8 +1776,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         boolean updateTicker = notification.getNotification().tickerText != null
                 && !TextUtils.equals(notification.getNotification().tickerText,
-                        oldEntry.notification.getNotification().tickerText);
-
+                        oldEntry.notification.getNotification().tickerText) || mHaloActive;
         boolean isTopAnyway = isTopNotification(rowParent, oldEntry);
         if (contentsUnchanged && bigContentsUnchanged && (orderUnchanged || isTopAnyway)) {
             if (DEBUG) Slog.d(TAG, "reusing notification for key: " + key);

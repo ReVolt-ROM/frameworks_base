@@ -681,7 +681,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                         @Override
                         public void onLayoutChange(View v, int left, int top, int right, int bottom,
                             int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        updateCarrierLabelVisibility(false);
                         }});
             }
         }
@@ -880,6 +879,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     @Override
     protected WindowManager.LayoutParams getRecentsLayoutParams(LayoutParams layoutParams) {
+        boolean opaque = false;
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                 layoutParams.width,
                 layoutParams.height,
@@ -904,6 +904,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     @Override
     protected WindowManager.LayoutParams getSearchLayoutParams(LayoutParams layoutParams) {
+        boolean opaque = false;
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                 LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT,
@@ -2780,87 +2781,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     @Override
-    public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
-        synchronized (mQueueLock) {
-            pw.println("Current Status Bar state:");
-            pw.println("  mExpandedVisible=" + mExpandedVisible
-                    + ", mTrackingPosition=" + mTrackingPosition);
-            pw.println("  mTicking=" + mTicking);
-            pw.println("  mTracking=" + mTracking);
-            pw.println("  mDisplayMetrics=" + mDisplayMetrics);
-            pw.println("  mPile: " + viewInfo(mPile));
-            pw.println("  mTickerView: " + viewInfo(mTickerView));
-            pw.println("  mScrollView: " + viewInfo(mScrollView)
-                    + " scroll " + mScrollView.getScrollX() + "," + mScrollView.getScrollY());
-        }
-
-        pw.print("  mNavigationBarView=");
-        if (mNavigationBarView == null) {
-            pw.println("null");
-        } else {
-            mNavigationBarView.dump(fd, pw, args);
-        }
-
-        pw.println("  Panels: ");
-        if (mNotificationPanel != null) {
-            pw.println("    mNotificationPanel=" +
-                mNotificationPanel + " params=" + mNotificationPanel.getLayoutParams().debug(""));
-            pw.print  ("      ");
-            mNotificationPanel.dump(fd, pw, args);
-        }
-        if (mSettingsPanel != null) {
-            pw.println("    mSettingsPanel=" +
-                mSettingsPanel + " params=" + mSettingsPanel.getLayoutParams().debug(""));
-            pw.print  ("      ");
-            mSettingsPanel.dump(fd, pw, args);
-        }
-
-        if (DUMPTRUCK) {
-            synchronized (mNotificationData) {
-                int N = mNotificationData.size();
-                pw.println("  notification icons: " + N);
-                for (int i=0; i<N; i++) {
-                    NotificationData.Entry e = mNotificationData.get(i);
-                    pw.println("    [" + i + "] key=" + e.key + " icon=" + e.icon);
-                    StatusBarNotification n = e.notification;
-                    pw.println("         pkg=" + n.getPackageName() + " id=" + n.getId() + " score=" + n.getScore());
-                    pw.println("         notification=" + n.getNotification());
-                    pw.println("         tickerText=\"" + n.getNotification().tickerText + "\"");
-                }
-            }
-
-            int N = mStatusIcons.getChildCount();
-            pw.println("  system icons: " + N);
-            for (int i=0; i<N; i++) {
-                StatusBarIconView ic = (StatusBarIconView) mStatusIcons.getChildAt(i);
-                pw.println("    [" + i + "] icon=" + ic);
-            }
-
-            if (false) {
-                pw.println("see the logcat for a dump of the views we have created.");
-                // must happen on ui thread
-                mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mStatusBarView.getLocationOnScreen(mAbsPos);
-                            Slog.d(TAG, "mStatusBarView: ----- (" + mAbsPos[0] + "," + mAbsPos[1]
-                                    + ") " + mStatusBarView.getWidth() + "x"
-                                    + getStatusBarHeight());
-                            mStatusBarView.debug();
-                        }
-                    });
-            }
-        }
-
-        if (DEBUG_GESTURES) {
-            pw.print("  status bar gestures: ");
-            mGestureRec.dump(fd, pw, args);
-        }
-
-        mNetworkController.dump(fd, pw, args);
-    }
-
-    @Override
     public void createAndAddWindows() {
         addStatusBarWindow();
     }
@@ -3565,7 +3485,7 @@ public class PhoneStatusBar extends BaseStatusBar {
             if(ent != null
                     && ent.notification != null
                     && notificationIsForCurrentUser(ent.notification)) {
-                switch(ent.notification.id) {
+                switch(ent.notification.getId()) {
                     // ignore adb icon
                     case com.android.internal.R.drawable.stat_sys_adb:
                         continue;

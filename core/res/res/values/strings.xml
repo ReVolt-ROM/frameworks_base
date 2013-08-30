@@ -1490,7 +1490,7 @@
     <!-- Description of an application permission, listed so the user can choose whether they want t o allow the application to do this. -->
     <string name="permdesc_sendMockSms">Allows the app to send mock SMS messages.
         This allows an app send SMS to trusted applications. Malicious apps could send messages.
-    <string>
+    </string>
 
     <string name="permdesc_fm_radio_transmitter">Allows the application to control
         the FM transmitter.</string>

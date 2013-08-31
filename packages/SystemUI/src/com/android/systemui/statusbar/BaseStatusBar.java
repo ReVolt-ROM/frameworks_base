@@ -953,13 +953,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                 if (packageNameF == null) return false;
                 if (v.getWindowToken() == null) return false;
 
-                //Long click menu broken on PIE mode...pop up menu is useless (auto-launch on long click)
-                if (expanded) {
-                    launchFloating(contentIntent);
-                    animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_NONE);
-                    return true;
-                }
-
                 mNotificationBlamePopup = new PopupMenu(mContext, v);
                 mNotificationBlamePopup.getMenuInflater().inflate(
                         R.menu.notification_popup_menu,
@@ -968,9 +961,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                     public boolean onMenuItemClick(MenuItem item) {
                         if (item.getItemId() == R.id.notification_inspect_item) {
                             startApplicationDetailsActivity(packageNameF);
-                            animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_NONE);
-                        } else if (item.getItemId() == R.id.notification_floating_item) {
-                            launchFloating(contentIntent);
                             animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_NONE);
                         } else {
                             return false;

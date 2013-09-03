@@ -17,6 +17,8 @@
 
 package com.android.internal.policy.impl.keyguard;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.appwidget.AppWidgetManager;
@@ -203,7 +205,7 @@ public class KeyguardViewManager {
                 | WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
                 | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
 
-        if (!allowSeeThrough) {
+        if (!allowSeeThrough && !new File(KeyguardViewBase.WALLPAPER_IMAGE_PATH).exists()) {
             flags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
         }
         if (!mNeedsInput) {

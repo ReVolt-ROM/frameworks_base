@@ -4660,6 +4660,12 @@ public final class Settings {
         public static final String MISSED_CALL_BREATH = "missed_call_breath";
 
         /**
+         * Give SMS Notifications a breathing effect
+         * @hide
+         */
+        public static final String SMS_BREATH = "pref_key_sms_breath";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

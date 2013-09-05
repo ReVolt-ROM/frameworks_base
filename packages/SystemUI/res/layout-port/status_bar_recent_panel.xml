@@ -68,30 +68,30 @@
 
         </com.android.systemui.recent.RecentsVerticalScrollView>
 
-    <FrameLayout android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginBottom="2dp"
-            android:layout_marginLeft="2dp"
-            android:layout_gravity="bottom|left" >
+	<FrameLayout android:layout_width="50dp"
+	    android:layout_height="50dp"
+	    android:layout_marginBottom="2dp"
+	    android:layout_marginLeft="2dp"
+	    android:layout_gravity="bottom|left" >
 
-    <com.android.systemui.recent.CircleMemoryMeter
-            android:id="@+id/circle_meter"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
- 
-    <ImageView android:id="@+id/recents_kill_all"
-            android:clickable="true"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="10dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_recents_clear" />
+	<com.android.systemui.recent.CircleMemoryMeter
+	    android:id="@+id/circle_meter"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" />
+
+	<ImageView android:id="@+id/recents_kill_all"
+	    android:clickable="true"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:padding="10dp"
+	    android:scaleType="fitCenter"
+	    android:src="@drawable/ic_recents_clear" />
+
+	</FrameLayout>
 
     <include layout="@layout/aokp_recents_rambar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-
-    </FrameLayout>
 
     </FrameLayout>
 

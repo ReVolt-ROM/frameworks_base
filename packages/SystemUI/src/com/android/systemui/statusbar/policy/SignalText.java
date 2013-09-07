@@ -1,4 +1,3 @@
-
 package com.android.systemui.statusbar.policy;
 
 import java.lang.ref.WeakReference;
@@ -21,8 +20,8 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.CharacterStyle;
 import android.text.style.RelativeSizeSpan;
-import android.util.ColorUtils;
 import android.util.AttributeSet;
+import android.util.ColorUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -42,7 +41,7 @@ public class SignalText extends TextView {
     private int style;
     private Handler mHandler;
     private Context mContext;
-    protected int mSignalColor = com.android.internal.R.color.holo_blue_light;
+    protected int mSignalColor;
     private PhoneStateIntentReceiver mPhoneStateReceiver;
 
     private SignalText mSignalText;
@@ -155,6 +154,7 @@ public class SignalText extends TextView {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_SIGNAL_TEXT_COLOR), false,
                     this);
+            updateSettings();
         }
 
         @Override
@@ -164,15 +164,14 @@ public class SignalText extends TextView {
     }
 
     private void updateSettings() {
+        int newColor = 0;
         ContentResolver resolver = getContext().getContentResolver();
-        mSignalColor = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_SIGNAL_TEXT_COLOR,
-                0xFF33B5E5);
-        if (mSignalColor == Integer.MIN_VALUE) {
-            // flag to reset the color
-            mSignalColor = 0xFF33B5E5;
+        newColor = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_SIGNAL_TEXT_COLOR,mSignalColor);
+        if (newColor < 0 && newColor != mSignalColor) {
+            mSignalColor = newColor;
+            setTextColor(mSignalColor);
         }
-        setTextColor(mSignalColor);
         updateSignalText();
     }
 

@@ -234,11 +234,10 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback, TabletTi
         public void onChange(boolean selfChange) {
             ContentResolver cr = mContext.getContentResolver();
 
-            mEnableColor = Settings.System.getInt(cr,
-                   Settings.System.HALO_COLORS, 0) == 1;
-
-            mInteractionReversed = Settings.System.getInt(cr, Settings.System.HALO_REVERSED, 1) == 1;
-            mHideTicker = Settings.System.getInt(cr, Settings.System.HALO_HIDE, 0) == 1;
+            mEnableColor =          Settings.System.getInt(cr, Settings.System.HALO_COLORS, 0) == 1;
+            mInteractionReversed =  Settings.System.getInt(cr, Settings.System.HALO_REVERSED, 1) == 1;
+            mHideTicker =           Settings.System.getInt(cr, Settings.System.HALO_HIDE, 0) == 1;
+            mNinjaMode =            Settings.System.getInt(cr, Settings.System.HALO_NINJA, 0) == 1;
 
             if (!selfChange) {
                 //mEffect.wake();
@@ -251,6 +250,34 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback, TabletTi
                 mEffect.nap(HaloEffect.SNAP_TIME + 1000);
                 if (mHideTicker) mEffect.sleep(HaloEffect.SNAP_TIME + HaloEffect.NAP_TIME + 2500, HaloEffect.SLEEP_TIME, false);
             }
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+
+        if (!mAttached) {
+            mAttached = true;
+            mSettingsObserver = new SettingsObserver(new Handler());
+            mSettingsObserver.observe();
+            mSettingsObserver.onChange(true);
+        }
+        mHandler.postDelayed(new Runnable() {
+            public void run() {
+                final int c = getHaloMsgCount()-getHidden() < 0 ? 0 : getHaloMsgCount()-getHidden();
+                mEffect.animateHaloBatch(0, c, false, 500, HaloProperties.MessageType.MESSAGE);
+            }
+        }, 2500);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        if (mAttached) {
+            mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
+            mAttached = false;
         }
     }
 
@@ -327,34 +354,6 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback, TabletTi
         mWindowManager.addView(mEffect, lp);
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        if (!mAttached) {
-            mAttached = true;
-            mSettingsObserver = new SettingsObserver(new Handler());
-            mSettingsObserver.observe();
-            mSettingsObserver.onChange(true);
-        }
-        mHandler.postDelayed(new Runnable() {
-            public void run() {
-                final int c = getHaloMsgCount()-getHidden() < 0 ? 0 : getHaloMsgCount()-getHidden();
-                mEffect.animateHaloBatch(0, c, false, 500, HaloProperties.MessageType.MESSAGE);
-            }
-        }, 2500);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        if (mAttached) {
-            mContext.getContentResolver().unregisterContentObserver(mSettingsObserver);
-            mAttached = false;
-        }
-    }
-
     private void initControl() {
         if (mInitialized) return;
 
@@ -389,7 +388,7 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback, TabletTi
             }
 
             if (mState == State.HIDDEN || mState == State.SILENT) {
-               if (mNinjaMode && getHaloMsgCount()-getHidden() < 1) {
+                if (mNinjaMode && getHaloMsgCount()-getHidden() < 1) {
                     mEffect.setHaloX((mTickerLeft ? -mIconSize : mScreenWidth));
                 } else {
                     mEffect.setHaloX((int)(mTickerLeft ? -mIconSize*0.8f : mScreenWidth - mIconSize*0.2f));
@@ -709,10 +708,6 @@ public class Halo extends FrameLayout implements Ticker.TickerCallback, TabletTi
                     // Clear all notifications
                     playSoundEffect(SoundEffectConstants.CLICK);
 
-                    if (getHaloMsgCount()-getHidden() < 1) {
-                        mEffect.nap(1500);
-                        if (mHideTicker) mEffect.sleep(HaloEffect.NAP_TIME + 3000, HaloEffect.SLEEP_TIME, false);
-                    }
                     try {
                         mDismissDelay = 0;
                         mBar.getStatusBarService().onClearAllNotifications();

@@ -162,8 +162,6 @@ public class HaloProperties extends FrameLayout implements BatteryStateChangeCal
         mEnableColor = Settings.System.getInt(cr,
                Settings.System.HALO_COLORS, 0) == 1;
 
-        mInflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
         mHaloDismiss = mContext.getResources().getDrawable(R.drawable.halo_dismiss);
         mHaloBackL = mContext.getResources().getDrawable(R.drawable.halo_back_left);
         mHaloBackR = mContext.getResources().getDrawable(R.drawable.halo_back_right);
@@ -219,7 +217,7 @@ public class HaloProperties extends FrameLayout implements BatteryStateChangeCal
 
         mHaloOverlayAnimator = new CustomObjectAnimator(this);
 
-       mContext.registerReceiver(mBatteryReceiver,
+        mContext.registerReceiver(mBatteryReceiver,
                 new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
         NetworkController controller = new NetworkController(mContext);
@@ -451,7 +449,7 @@ public class HaloProperties extends FrameLayout implements BatteryStateChangeCal
 
             // Fade out number batch
             if (overlay != Overlay.NONE) {
-            msgNumberAlphaAnimator.animate(ObjectAnimator.ofFloat(mHaloNumberContainer, "alpha", 0f).setDuration(100),
+                msgNumberAlphaAnimator.animate(ObjectAnimator.ofFloat(mHaloNumberContainer, "alpha", 0f).setDuration(100),
                         new DecelerateInterpolator(), null);
             }
         }
@@ -676,7 +674,7 @@ public class HaloProperties extends FrameLayout implements BatteryStateChangeCal
                 ? mobileSignalIconId
                 : R.drawable.ic_qs_signal_no_signal;
 
-        dataContentDescription = enabled && (dataTypeContentDescriptionId != null)
+        dataContentDescription = enabled && (dataTypeContentDescriptionId != null) // NullPointerException: && mCm.getMobileDataEnabled()
                 ? dataTypeContentDescriptionId
                 : mContext.getResources().getString(R.string.accessibility_no_data);
         mLabel = enabled

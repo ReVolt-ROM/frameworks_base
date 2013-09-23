@@ -4417,6 +4417,13 @@ public final class Settings {
         public static final String QUICK_TEXT_COLOR = "quick_text_color";
 
         /**
+         * Enable and disable launching toggles in a floating window
+         *
+         * @hide
+         */
+        public static final String TOGGLES_FLOATING_WINDOW = "toggles_floating_window";
+
+        /**
          * Whether electronic beam animation is enabled or not
          * @hide
          */

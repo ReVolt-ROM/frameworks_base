@@ -3490,15 +3490,29 @@ public final class Settings {
          * Screenshot toggle delay
          * @hide
          */
-<<<<<<< HEAD
         public static final String SCREENSHOT_TOGGLE_DELAY = "screenshot_toggle_delay";
 
-    	  /**
-=======
+        /**
+         * @hide
+         */
+        public static final String START_SCREEN_STATE_SERVICE = "start_screen_state_service";
+
+        /**
+         * @hide
+         */
+        public static final String SCREEN_STATE_TWOG = "screen_state_twog";
+
+        /**
+         * @hide
+         */
+        public static final String SCREEN_STATE_GPS = "screen_state_gps";
+
+        /**
+         * @hide
+         */
         public static final String SCREEN_STATE_MOBILE_DATA = "screen_state_mobile_data";
 
-         /**
->>>>>>> 19d194a... wakelock blocking (1/2)
+    	  /**
          * Show the NavBar dialog in Power menu
          * @hide
          */
@@ -5243,7 +5257,7 @@ public final class Settings {
         /**
          * @hide
          */
-        public static final String WAKELOCK_BLOCKING_LIST = "wakelock_blocking_list";
+        public static final String WAKELOCK_BLOCKING_LIST = "wakelock_blocking_list"; 
 
         /**
          * @hide

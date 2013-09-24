@@ -564,24 +564,17 @@
     <bool name="config_enable_emergency_call_while_sim_locked">true</bool>
 
     <!-- Control the behavior when the user long presses the home button.
-            0 - Nothing
-            1 - Menu key
-            2 - Recent apps view in SystemUI
-            3 - Launch assist intent
-            4 - Voice Search
-            5 - In-app Search
+            LONG_PRESS_HOME_NOTHING = 0
+            LONG_PRESS_HOME_RECENT_SYSTEM_UI = 1
+            LONG_PRESS_HOME_ASSIST = 2
          This needs to match the constants in
          policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
     -->
-    <integer name="config_longPressOnHomeBehavior">2</integer>
+    <integer name="config_longPressOnHomeBehavior">1</integer>
 
     <!-- Control the behavior when the user double-taps the home button.
-            0 - Nothing
-            1 - Menu
-            2 - Recent apps view in SystemUI
-            3 - Launch assist intent
-            4 - Voice Search
-            5 - In-app Search
+            DOUBLE_TAP_HOME_NOTHING = 0;
+            DOUBLE_TAP_HOME_RECENT_SYSTEM_UI = 1;
          This needs to match the constants in
          policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
     -->

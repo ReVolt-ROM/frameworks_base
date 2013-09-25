@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 import android.net.Uri;
 import android.os.Handler;
@@ -57,6 +58,7 @@ public abstract class PowerButton {
 
     protected int mIcon;
     protected int mState;
+    protected int mBackgroundColor = Color.TRANSPARENT;
     protected View mView;
     protected String mType = BUTTON_UNKNOWN;
 
@@ -76,6 +78,7 @@ public abstract class PowerButton {
         public void handleMessage(Message msg) {
             if (mIconView != null) {
                 mIconView.setImageResource(mIcon);
+                mIconView.setBackgroundColor(mBackgroundColor);
             }
         }
     };

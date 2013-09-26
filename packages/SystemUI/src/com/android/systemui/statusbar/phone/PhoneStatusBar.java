@@ -220,8 +220,6 @@ public class PhoneStatusBar extends BaseStatusBar {
     // right-hand icons
     LinearLayout mSystemIconArea;
     
-    // left-hand icons 
-    LinearLayout mStatusIcons;
     // layout for center clock
     LinearLayout mCenterClockLayout;
     // the icons themselves

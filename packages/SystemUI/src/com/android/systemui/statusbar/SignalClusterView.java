@@ -257,8 +257,15 @@ public class SignalClusterView
             }
             mMobile.setImageResource(mMobileStrengthId);
             mMobileActivity.setImageResource(mMobileActivityId);
-            mMobileType.setImageResource(mMobileTypeId);
-
+            if(mMobileTypeId != 0) {
+                Drawable mobileTypeBitmap = mContext.getResources().getDrawable(mMobileTypeId);
+                if (mColorInfo.isLastColorNull) {
+                    mobileTypeBitmap.clearColorFilter();
+                } else {
+                    mobileTypeBitmap.setColorFilter(mColorInfo.lastColor, PorterDuff.Mode.SRC_IN);
+                }
+                mMobileType.setImageDrawable(mobileTypeBitmap);
+            }
             mMobileGroup.setContentDescription(mMobileTypeDescription + " " + mMobileDescription);
             if (showingSignalText && !mIsAirplaneMode) {
                 mMobile.setVisibility(View.GONE);

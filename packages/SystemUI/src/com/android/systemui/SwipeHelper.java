@@ -270,10 +270,6 @@ public class SwipeHelper implements Gefingerpoken {
      * @param velocity The desired pixels/second speed at which the view should move
      */
     public void dismissChild(final View view, float velocity) {
-        dismissChild(view, velocity, false);
-    }
-
-    private void dismissChild(final View view, float velocity, final boolean fromUser) {
         final View animView = mCallback.getChildContentView(view);
         final boolean canAnimViewBeDismissed = mCallback.canChildBeDismissed(view);
         float newPos;
@@ -388,7 +384,7 @@ public class SwipeHelper implements Gefingerpoken {
 
                     if (dismissChild) {
                         // flingadingy
-                        dismissChild(mCurrView, childSwipedFastEnough ? velocity : 0f, true);
+                        dismissChild(mCurrView, childSwipedFastEnough ? velocity : 0f);
                     } else {
                         // snappity
                         mCallback.onDragCancelled(mCurrView);

@@ -97,8 +97,6 @@ public class ActiveDisplayView extends FrameLayout {
 
     private static final int MAX_OVERFLOW_ICONS = 8;
 
-    private static final long DISPLAY_TIMEOUT = 8000L;
-
     private static final int HIDE_NOTIFICATIONS_BELOW_SCORE = Notification.PRIORITY_LOW;
 
     // Targets
@@ -150,6 +148,7 @@ public class ActiveDisplayView extends FrameLayout {
     private boolean mHideLowPriorityNotifications = false;
     private boolean mPocketModeEnabled = false;
     private long mRedisplayTimeout = 0;
+    private long mDisplayActiveTimeout = 10000L;
     private float mInitialBrightness = 1f;
     private int mBrightnessMode = -1;
     private int mUserBrightnessLevel = -1;
@@ -279,6 +278,8 @@ public class ActiveDisplayView extends FrameLayout {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACTIVE_DISPLAY_REDISPLAY), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ACTIVE_DISPLAY_DISPLAYACTIVE), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACTIVE_DISPLAY_BRIGHTNESS), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACTIVE_DISPLAY_SUNLIGHT_MODE), false, this);
@@ -316,6 +317,8 @@ public class ActiveDisplayView extends FrameLayout {
                     resolver, Settings.System.ACTIVE_DISPLAY_POCKET_MODE, 0) == 1;
             mRedisplayTimeout = Settings.System.getLong(
                     resolver, Settings.System.ACTIVE_DISPLAY_REDISPLAY, 0L);
+            mDisplayActiveTimeout = Settings.System.getLong(
+                    resolver, Settings.System.ACTIVE_DISPLAY_DISPLAYACTIVE, 10000L);
             mInitialBrightness = Settings.System.getInt(
                     resolver, Settings.System.ACTIVE_DISPLAY_BRIGHTNESS, 100) / 100f;
             mSunlightModeEnabled = Settings.System.getInt(
@@ -1141,7 +1144,7 @@ public class ActiveDisplayView extends FrameLayout {
         } catch (Exception e) {
         }
         Calendar time = Calendar.getInstance();
-        time.setTimeInMillis(System.currentTimeMillis() + DISPLAY_TIMEOUT);
+        time.setTimeInMillis(System.currentTimeMillis() + mDisplayActiveTimeout);
         am.set(AlarmManager.RTC, time.getTimeInMillis(), pi);
     }
 

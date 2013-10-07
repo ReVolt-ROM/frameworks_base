@@ -161,34 +161,34 @@ public class SbBatteryController extends LinearLayout {
         int icon;
         switch (mBatteryStyle) {
             case STYLE_ICON_RUSH_RB:
-                 icon = plugged ? R.drawable.stat_sys_battery_charge_rush
-                 : R.drawable.stat_sys_battery_rush;
-                 break;
-            case STYLE_ICON_RACING_RB:
-                 icon = plugged ? R.drawable.stat_sys_battery_charge_racing
-                 : R.drawable.stat_sys_battery_racing;
-                 	break;
-            case STYLE_ICON_GAUGE_RB:
-              	 icon = plugged ? R.drawable.stat_sys_battery_charge_gauge
-                 : R.drawable.stat_sys_battery_gauge;
-                 break;
-           case STYLE_ICON_PLANET_RB:
-          	icon = plugged ? R.drawable.stat_sys_battery_charge_planet
-		: R.drawable.stat_sys_battery_planet;
+                icon = plugged ? R.drawable.stat_sys_battery_charge_rush
+                : R.drawable.stat_sys_battery_rush;
                 break;
-           case STYLE_ICON_SLIDER_RB:
+            case STYLE_ICON_RACING_RB:
+                icon = plugged ? R.drawable.stat_sys_battery_charge_racing
+                : R.drawable.stat_sys_battery_racing;
+                break;
+            case STYLE_ICON_GAUGE_RB:
+                icon = plugged ? R.drawable.stat_sys_battery_charge_gauge
+                : R.drawable.stat_sys_battery_gauge;
+                break;
+            case STYLE_ICON_PLANET_RB:
+                icon = plugged ? R.drawable.stat_sys_battery_charge_planet
+                : R.drawable.stat_sys_battery_planet;
+                break;
+            case STYLE_ICON_SLIDER_RB:
                 icon = plugged ? R.drawable.stat_sys_battery_charge_slider
                 : R.drawable.stat_sys_battery_slider;
                 break;
-           case STYLE_ICON_BRICK_RB:
+            case STYLE_ICON_BRICK_RB:
                 icon = plugged ? R.drawable.stat_sys_battery_charge_brick
                 : R.drawable.stat_sys_battery_brick;
                 break;
-           default:
+            default:
                 icon = plugged ? R.drawable.stat_sys_battery_charge
                 : R.drawable.stat_sys_battery;
                 break;
-        }
+    }
 
         int N = mIconViews.size();
         for (int i = 0; i < N; i++) {
@@ -352,6 +352,7 @@ public class SbBatteryController extends LinearLayout {
                 mBatteryCenterText.setVisibility(View.GONE);
                 mBatteryIcon.setVisibility(View.VISIBLE);
                 setVisibility(View.VISIBLE);
+                break;
             case STYLE_HIDE:
                 mBatteryText.setVisibility(View.GONE);
                 mBatteryCenterText.setVisibility(View.GONE);

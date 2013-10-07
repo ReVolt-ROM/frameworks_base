@@ -60,7 +60,12 @@ public class BatteryController extends BroadcastReceiver {
     public static final int BATTERY_STYLE_CIRCLE = 5;
     public static final int BATTERY_STYLE_CIRCLE_PERCENT = 6;
     public static final int BATTERY_STYLE_DOTTED_CIRCLE_PERCENT = 7;
-    public static final int STYLE_HIDE = 8;
+    public static final int STYLE_ICON_RACING_RB = 8;
+    public static final int STYLE_ICON_GAUGE_RB = 9;
+    public static final int STYLE_ICON_PLANET_RB = 10;
+    public static final int STYLE_ICON_SLIDER_RB = 11;
+    public static final int STYLE_ICON_BRICK_RB = 12;
+    public static final int STYLE_HIDE = 13;
 
     public interface BatteryStateChangeCallback {
         public void onBatteryLevelChanged(int level, boolean pluggedIn);
@@ -132,6 +137,26 @@ public class BatteryController extends BroadcastReceiver {
             case STYLE_ICON_RUSH_RB:
                  icon = mPlugged ? R.drawable.stat_sys_battery_charge_rush
                  : R.drawable.stat_sys_battery_rush;
+                 break;
+            case STYLE_ICON_RACING_RB:
+                 icon = mPlugged ? R.drawable.stat_sys_battery_charge_racing
+                 : R.drawable.stat_sys_battery_racing;
+                 break;
+            case STYLE_ICON_GAUGE_RB:
+                 icon = mPlugged ? R.drawable.stat_sys_battery_charge_gauge
+                 : R.drawable.stat_sys_battery_gauge;
+                 break;
+            case STYLE_ICON_PLANET_RB:
+                 icon = mPlugged ? R.drawable.stat_sys_battery_charge_planet
+                 : R.drawable.stat_sys_battery_planet;
+                 break;
+            case STYLE_ICON_SLIDER_RB:
+                 icon = mPlugged ? R.drawable.stat_sys_battery_charge_slider
+                 : R.drawable.stat_sys_battery_slider;
+                 break;
+            case STYLE_ICON_BRICK_RB:
+                 icon = mPlugged ? R.drawable.stat_sys_battery_charge_brick
+                 : R.drawable.stat_sys_battery_brick;
                  break;
             default:
                  icon = mPlugged ? R.drawable.stat_sys_battery_charge

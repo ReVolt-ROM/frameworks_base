@@ -22,6 +22,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.app.AlarmManager;
+import android.annotation.ChaosLab;
+import android.annotation.ChaosLab.Classification;
 import android.app.ActivityManager;
 import android.app.ActivityManagerNative;
 import android.app.Notification;
@@ -503,6 +505,7 @@ public class TabletStatusBar extends BaseStatusBar implements
         return mNotificationPanel.mSettingsContainer;
     }
 
+    @ChaosLab(name="GestureAnywhere", classification=Classification.CHANGE_CODE)
     protected View makeStatusBarView() {
         final Context context = mContext;
 
@@ -677,8 +680,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         context.registerReceiver(mBroadcastReceiver, filter);
 
-        addActiveDisplayView();
-
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
         updateSettings();
@@ -686,6 +687,12 @@ public class TabletStatusBar extends BaseStatusBar implements
         mTransparencyManager.setStatusbar(mStatusBarView);
         mTransparencyManager.setNavbar(mNavBarView);
         mTransparencyManager.update();
+
+            addActiveDisplayView();
+            /* ChaosLab: GestureAnywhere - BEGIN */
+            addGestureAnywhereView();
+            /* ChaosLab: GestureAnywhere - END */
+        }
         return sb;
     }
 

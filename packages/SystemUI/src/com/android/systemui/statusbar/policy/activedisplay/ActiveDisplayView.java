@@ -970,26 +970,16 @@ public class ActiveDisplayView extends FrameLayout {
         try {
             Context pkgContext = mContext.createPackageContext(sbn.getPackageName(), Context.CONTEXT_RESTRICTED);
             mNotificationDrawable = pkgContext.getResources().getDrawable(sbn.getNotification().icon);
-            TargetDrawable centerDrawable = new TargetDrawable(getResources(),createCenterDrawable(mNotificationDrawable));
-            centerDrawable.setScaleX(0.9f);
-            centerDrawable.setScaleY(0.9f);
-            mGlowPadView.setCenterDrawable(centerDrawable);
-            setHandleText(sbn);
-            mNotification = sbn;
-            mGlowPadView.post(new Runnable() {
-                @Override
-                public void run() {
-                    updateResources();
-                    mGlowPadView.invalidate();
-                    if (updateOthers) updateOtherNotifications();
-                }
-            });
         } catch (NameNotFoundException nnfe) {
             mNotificationDrawable = mContext.getResources().getDrawable(R.drawable.ic_ad_unknown_icon);
         } catch (Resources.NotFoundException nfe) {
             mNotificationDrawable = mContext.getResources().getDrawable(R.drawable.ic_ad_unknown_icon);
+
         }
-        mCurrentNotificationIcon.setImageDrawable(mNotificationDrawable);
+        TargetDrawable centerDrawable = new TargetDrawable(getResources(),createCenterDrawable(mNotificationDrawable));
+        centerDrawable.setScaleX(0.9f);
+        centerDrawable.setScaleY(0.9f);
+        mGlowPadView.setCenterDrawable(centerDrawable);
         setHandleText(sbn);
         mNotification = sbn;
         mGlowPadView.post(new Runnable() {
@@ -1072,15 +1062,25 @@ public class ActiveDisplayView extends FrameLayout {
                     mProximityIsFar = isFar;
                     if (isFar) {
                         if (!isScreenOn() && mPocketModeEnabled && !isOnCall()) {
+                            mWakedByPocketMode = true;
                             if (mNotification == null) {
                                 mNotification = getNextAvailableNotification();
                             }
                             if (mNotification != null) showNotification(mNotification, true);
                         }
+                    } else {
+                        if (isScreenOn() && mPocketModeEnabled && !isOnCall() && mWakedByPocketMode) { 
+                            mWakedByPocketMode = false;
+
+                            restoreBrightness();
+                            cancelTimeoutTimer();
+                            turnScreenOff();
+                        }
                     }
                 }
             } else if (event.sensor.equals(mLightSensor)) {
                 boolean isBright = mIsInBrightLight;
+                mWakedByPocketMode = false;
                 final float max = mLightSensor.getMaximumRange();
                 // we don't want the display switching back and forth so there is a region
                 // between 50% and 80% max that we will not toggle the bright light condition

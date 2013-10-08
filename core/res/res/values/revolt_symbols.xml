@@ -145,4 +145,7 @@
 
   <!-- WiFi turn off notification -->
   <java-symbol type="string" name="notify_turn_wifi_off_title" />
+
+   <!-- Gesture Sensor -->
+   <java-symbol type="bool" name="config_enableGestureService" />
 </resources>

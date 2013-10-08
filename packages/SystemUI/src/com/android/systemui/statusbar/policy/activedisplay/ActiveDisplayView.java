@@ -974,7 +974,7 @@ public class ActiveDisplayView extends FrameLayout {
             mNotificationDrawable = mContext.getResources().getDrawable(R.drawable.ic_ad_unknown_icon);
         } catch (Resources.NotFoundException nfe) {
             mNotificationDrawable = mContext.getResources().getDrawable(R.drawable.ic_ad_unknown_icon);
-
+        } catch (NullPointerException npe) {
         }
         TargetDrawable centerDrawable = new TargetDrawable(getResources(),createCenterDrawable(mNotificationDrawable));
         centerDrawable.setScaleX(0.9f);

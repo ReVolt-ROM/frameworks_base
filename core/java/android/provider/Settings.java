@@ -3516,6 +3516,12 @@ public final class Settings {
         public static final String STATUSBAR_HIDDEN = "statusbar_hidden";
 
         /**
+         * Whether or not to show circle battery around the lockscreen ring
+         * @hide
+         */
+        public static final String BATTERY_AROUND_LOCKSCREEN_RING = "battery_around_lockscreen_ring";
+
+        /**
          * Whether Status bar should be hiidden when there are no
          * notifications
          * @hide

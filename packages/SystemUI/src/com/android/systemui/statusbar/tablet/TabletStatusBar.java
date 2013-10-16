@@ -692,7 +692,7 @@ public class TabletStatusBar extends BaseStatusBar implements
             /* ChaosLab: GestureAnywhere - BEGIN */
             addGestureAnywhereView();
             /* ChaosLab: GestureAnywhere - END */
-        }
+
         return sb;
     }
 

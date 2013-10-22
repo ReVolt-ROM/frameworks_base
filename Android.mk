@@ -26,15 +26,12 @@ LOCAL_PATH := $(call my-dir)
 # TODO: find a more appropriate way to do this.
 framework_res_source_path := APPS/framework-res_intermediates/src
 
-# the library
-# ============================================================
-#
 # These will be included in framework2 to avoid issues with the limit
 # on the number of classes/dex
 SECONDARY_FRAMEWORKS_SUBDIRS := \
         core/java/android/test \
-        core/java/android/gesture \
         core/java/android/speech/srec \
+        core/java/com/android/internal/http/multipart \
         media/java/android/media/videoeditor \
         media/java/android/media/audiofx \
         media/mca/effect/java/android/media/effect \
@@ -823,6 +820,8 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := ext
 
 LOCAL_DX_FLAGS := --core-library
+
+include $(BUILD_JAVA_LIBRARY)
 
 include $(CLEAR_VARS)
 

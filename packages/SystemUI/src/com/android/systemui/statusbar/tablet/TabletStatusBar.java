@@ -651,8 +651,6 @@ public class TabletStatusBar extends BaseStatusBar implements
         }
 >>>>>>> 2440722... Telephony(MSIM): Add StatusBar support for MultiSim.
 
-        // The navigation buttons
-        mBackButton = (ImageView)sb.findViewById(R.id.back);
         mNavigationArea = (ViewGroup) sb.findViewById(R.id.navigationArea);
         mNavBarView = (NavigationBarView) sb.findViewById(R.id.navigationBar);
         mNavBarView.setDisabledFlags(mDisabled);

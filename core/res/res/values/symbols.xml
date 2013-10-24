@@ -2202,4 +2202,7 @@
   <java-symbol type="id" name="key8" />
   <java-symbol type="id" name="key9" />
 
+  <!-- SMS RIL_REQUEST_SEND_SMS_EXPECT_MORE -->
+  <java-symbol type="bool" name="config_smsUseExpectMore" />
+
 </resources>

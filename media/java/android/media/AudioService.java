@@ -4520,7 +4520,6 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
             (voice2CallState == AudioManager.CALL_ACTIVE ) ||
             (volteCallState == AudioManager.CALL_ACTIVE ) ||
             (qchatCallState == AudioManager.CALL_ACTIVE )) {
->>>>>>> dc8d9ac... frameworks/base: Add support for QCHAT concurrencies.
             return false;
         }
         else {

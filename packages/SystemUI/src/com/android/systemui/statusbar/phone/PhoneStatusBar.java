@@ -795,7 +795,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                     }
                 });
             }
-            }
         }
 
         mWifiLabel = (TextView)mStatusBarWindow.findViewById(R.id.wifi_text);

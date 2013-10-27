@@ -611,6 +611,8 @@ public class TabletStatusBar extends BaseStatusBar implements
         mBluetoothController.addIconView((ImageView)sb.findViewById(R.id.bluetooth));
 
         mBatteryController = new BatteryController(mContext);
+        
+        mBarView = (ViewGroup) mStatusBarView;
 
         if (MSimTelephonyManager.getDefault().isMultiSimEnabled()) {
             final MSimSignalClusterView mSimSignalCluster =

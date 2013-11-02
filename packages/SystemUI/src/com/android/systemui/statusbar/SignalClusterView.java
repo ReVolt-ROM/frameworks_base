@@ -71,6 +71,7 @@ public class SignalClusterView
     ViewGroup mWifiGroup, mMobileGroup;
     ImageView mWifi, mMobile, mWifiActivity, mMobileActivity, mMobileType, mAirplane, mNoSimSlot;
     TextView mMobileText,mWiFiText;
+    View mSpacer;
 
     private ColorUtils.ColorSettingInfo mColorInfo;
 

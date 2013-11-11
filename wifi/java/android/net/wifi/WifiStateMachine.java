@@ -273,9 +273,6 @@ public class WifiStateMachine extends StateMachine {
     /* Tracks current frequency mode */
     private AtomicInteger mFrequencyBand = new AtomicInteger(WifiManager.WIFI_FREQUENCY_BAND_AUTO);
 
-    /* Tracks current country code */
-    private String mCountryCode = "GB";
-
     /* Tracks if we are filtering Multicast v4 packets. Default is to filter. */
     private AtomicBoolean mFilteringMulticastV4Packets = new AtomicBoolean(true);
 
@@ -1474,15 +1471,6 @@ public class WifiStateMachine extends StateMachine {
      * @param persist {@code true} if the setting should be remembered.
      */
     public void setCountryCode(String countryCode, boolean persist) {
-
-        String countryCodeUser = Settings.Global.getString(mContext.getContentResolver(),
-                Settings.Global.WIFI_COUNTRY_CODE_USER);
-        if (countryCodeUser != null && countryCodeUser != countryCode) {
-            persist = true;
-            countryCode = countryCodeUser;
-            mCountryCode = countryCode;
-        }
-
         if (persist) {
             mPersistedCountryCode = countryCode;
             Settings.Global.putString(mContext.getContentResolver(),
@@ -1491,13 +1479,6 @@ public class WifiStateMachine extends StateMachine {
         }
         sendMessage(CMD_SET_COUNTRY_CODE, countryCode);
         mWifiP2pChannel.sendMessage(WifiP2pService.SET_COUNTRY_CODE, countryCode);
-    }
-
-    /**
-     * Returns the operational country code
-     */
-    public String getCountryCode() {
-        return mCountryCode;
     }
 
     /**
@@ -1731,7 +1712,6 @@ public class WifiStateMachine extends StateMachine {
                 Settings.Global.WIFI_COUNTRY_CODE);
         if (countryCode != null && !countryCode.isEmpty()) {
             setCountryCode(countryCode, false);
-            mCountryCode = countryCode;
         } else {
             //use driver default
         }

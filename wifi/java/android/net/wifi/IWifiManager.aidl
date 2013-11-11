@@ -63,8 +63,6 @@ interface IWifiManager
 
     void setCountryCode(String country, boolean persist);
 
-    String getCountryCode();
-
     void setFrequencyBand(int band, boolean persist);
 
     int getFrequencyBand();

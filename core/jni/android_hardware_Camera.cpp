@@ -384,7 +384,11 @@ void JNICameraContext::postMetadata(JNIEnv *env, int32_t msgType, camera_frame_m
         env->SetIntField(rect, fields.rect_right, metadata->faces[i].rect[2]);
         env->SetIntField(rect, fields.rect_bottom, metadata->faces[i].rect[3]);
         env->SetObjectField(face, fields.face_rect, rect);
+#ifdef FIX_FACE_DETECTION_SCORE
+        env->SetIntField(face, fields.face_score, (metadata->faces[i].score ? 0 : 100));
+#else
         env->SetIntField(face, fields.face_score, metadata->faces[i].score);
+#endif
 
         jobject point1 = env->NewObject(mPointClass, fields.point_constructor);
         env->SetIntField(point1, fields.point_x, metadata->faces[i].left_eye[0]);

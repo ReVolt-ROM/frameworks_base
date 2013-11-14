@@ -17,8 +17,6 @@
  */
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-
-    <!--ScreenShot Trash-->
-    <string name="delete">Delete</string>
-
+    <!--Screenshot delete -->
+    <string name="screenshot_delete_action">Delete</string>
 </resources>

@@ -92,6 +92,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.internal.statusbar.StatusBarIcon;
+import com.android.systemui.BatteryMeterView;
+import com.android.systemui.BatteryCircleMeterView;
 import com.android.systemui.DemoMode;
 import com.android.systemui.EventLogTags;
 import com.android.systemui.R;
@@ -206,6 +208,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     IconMerger mNotificationIcons;
     // [+>
     View mMoreIcon;
+
+    private BatteryMeterView mBattery;
+    private BatteryCircleMeterView mCircleBattery;
 
     // expanded notifications
     NotificationPanelView mNotificationPanel; // the sliding/resizing panel within the notification window
@@ -352,6 +357,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
         }
     };
+
+    private void updateBatteryIcons() {
+        if (mBattery != null && mCircleBattery != null) {
+            mBattery.updateSettings();
+            mCircleBattery.updateSettings();
+        }
+    }
 
     private int mInteractingWindows;
     private boolean mAutohideSuspended;
@@ -701,6 +713,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         resetUserSetupObserver();
 
         mNetworkController.setListener(this);
+        mBattery = (BatteryMeterView) mStatusBarView.findViewById(R.id.battery);
+        mCircleBattery = (BatteryCircleMeterView) mStatusBarView.findViewById(R.id.circle_battery);
 
         return mStatusBarView;
     }
@@ -2985,7 +2999,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
-    @Override
+        @Override
     public void destroy() {
         super.destroy();
         if (mStatusBarWindow != null) {
@@ -3074,6 +3088,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.REVOLT.ENABLE_NAVIGATION_BAR), false, this);
             resolver.registerContentObserver(Settings.REVOLT.getUriFor(
                     Settings.REVOLT.ENABLE_NAVRING), false, this);
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.STATUS_BAR_BATTERY_STYLE), false, this);
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.HIDE_BATTERY_ICON), false, this);
         }
 
         @Override
@@ -3084,6 +3102,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         @Override
         public void onChange(boolean selfChange, Uri uri) {
             updateSettings();
+            updateBatteryIcons();
             toggleNavigationBarOrNavRing(mWantsNavigationBar, mEnableNavring);
             if(uri != null && uri.equals(Settings.REVOLT.getUriFor(Settings.REVOLT.TOGGLES_STYLE))) {
                 recreateStatusBar();
@@ -3091,7 +3110,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
-    private void updateSettings() {
+    public void updateSettings() {
         ContentResolver cr = mContext.getContentResolver();
         mToggleStyle = Settings.System.getInt(cr, Settings.REVOLT.TOGGLES_STYLE,ToggleManager.STYLE_TILE);
         if(mToggleManager != null) {

@@ -150,6 +150,10 @@ LOCAL_SRC_FILES:= \
 	android_animation_PropertyValuesHolder.cpp \
 	com_android_internal_net_NetworkStatsFactory.cpp
 
+ifeq ($(call is-vendor-board-platform,QCOM),true)
+LOCAL_SRC_FILES += com_android_internal_app_ActivityTrigger.cpp
+endif
+
 LOCAL_C_INCLUDES += \
 	$(JNI_H_INCLUDE) \
 	$(LOCAL_PATH)/android/graphics \
@@ -160,6 +164,7 @@ LOCAL_C_INCLUDES += \
 	$(call include-path-for, libhardware_legacy)/hardware_legacy \
 	$(TOP)/frameworks/av/include \
 	$(TOP)/system/media/camera/include \
+	external/e2fsprogs/lib \
 	external/skia/src/core \
 	external/skia/src/pdf \
 	external/skia/src/images \
@@ -181,6 +186,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libmemtrack \
 	libandroidfw \
 	libexpat \
+	libext2_blkid \
 	libnativehelper \
 	liblog \
 	libcutils \

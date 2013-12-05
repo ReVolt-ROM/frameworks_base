@@ -2055,9 +2055,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadIntegerSetting(stmt, Settings.System.POINTER_SPEED,
                     R.integer.def_pointer_speed);
-
-            loadIntegerSetting(stmt, Settings.System.UI_FORCE_OVERFLOW_BUTTON,
-                    R.integer.def_force_overflow_button);
         } finally {
             if (stmt != null) stmt.close();
         }
@@ -2091,9 +2088,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private void loadRevoltSettings(SQLiteDatabase db) {
         SQLiteStatement stmt = null;
         try {
-            //stmt = db.compileStatement("INSERT OR IGNORE INTO revolt(name,value)"
-            //        + " VALUES(?,?);");
-            // TODO: Preload any required default values
+            stmt = db.compileStatement("INSERT OR IGNORE INTO revolt(name,value)"
+                    + " VALUES(?,?);");
+
+            loadIntegerSetting(stmt, Settings.REVOLT.UI_FORCE_OVERFLOW_BUTTON,
+                    R.integer.def_force_overflow_button);
         } finally {
             if (stmt != null) stmt.close();
         }

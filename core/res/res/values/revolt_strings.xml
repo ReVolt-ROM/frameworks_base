@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /**
- * Copyright (c) 2013, The Android Open Kang Project
+ * Copyright (c) 2013, ReVolt ROM Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,18 @@
  */
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- reboot options -->
-    <string-array name="reboot_options">
-        <item>@string/reboot</item>
-        <item>@string/reboot_recovery</item>
-        <item>@string/reboot_bootloader</item>
-    </string-array>
+    <!-- Reboot -->
+    <string name="reboot">Reboot</string>
 
-    <!-- reboot values -->
-    <string-array name="reboot_values">
-        <item></item>
-        <item>recovery</item>
-        <item>bootloader</item>
-    </string-array>
+    <!-- Reboot recovery option -->
+    <string name="reboot_recovery">Recovery</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_download">Download</string>
+
+    <!-- Reboot recovery option -->
+    <string name="reboot_bootloader">Bootloader</string>
+
+    <!-- Rebooting message -->
+    <string name="reboot_progress">Your device is rebooting</string>
 </resources>

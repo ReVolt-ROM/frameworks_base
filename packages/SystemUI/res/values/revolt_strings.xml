@@ -19,4 +19,37 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!--Screenshot delete -->
     <string name="screenshot_delete_action">Delete</string>
+
+    <!-- Quick Settings Wi-Fi Back Tile Tethering label -->
+    <string name="quick_settings_wifi_tethering_label">Tethering</string>
+
+    <!-- Quick Settings Bluetooth Not Discoverable label -->
+    <string name="quick_settings_bluetooth_not_discoverable_label">Not discoverable</string>
+
+    <!-- Quick Settings Bluetooth Discoverable label -->
+    <string name="quick_settings_bluetooth_discoverable_label">Discoverable</string>
+
+    <!-- Quick Settings Bluetooth Not Connected -->
+    <string name="quick_settings_bluetooth_disabled">Disabled</string>
+
+    <!-- Quick Settings Bluetooth Number of Paired Devices -->
+    <string name="quick_settings_bluetooth_number_paired"><xliff:g id="number">%d</xliff:g> Devices paired</string>
+
+    <!-- Screenrecord Notification Ticker -->
+    <string name="screenrecord_notif_ticker">Screen is being recorded</string>
+
+    <!-- Screenrecord notification title -->
+    <string name="screenrecord_notif_title">Recording screen</string>
+
+    <!-- Screenrecord notification action: Stop -->
+    <string name="screenrecord_notif_stop">Stop</string>
+
+    <!-- Screenrecord notification action: Toggle pointer -->
+    <string name="screenrecord_notif_pointer">Toggle pointer</string>
+
+    <!-- Screen record notification error title -->
+    <string name="screenrecord_notif_error">Unable to record screen</string>
+
+    <!-- Content description of the data connection type HSPA+ for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <string name="accessibility_data_connection_HP">HSPA+</string>
 </resources>

@@ -52,4 +52,8 @@
 
     <!-- Content description of the data connection type HSPA+ for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_data_connection_HP">HSPA+</string>
+
+    <!-- Battery percent format -->
+    <string name="battery_percent_format"><xliff:g id="number">%d%%</xliff:g></string>
+
 </resources>

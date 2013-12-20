@@ -824,7 +824,7 @@ public class PanelView extends FrameLayout {
     private class SettingsObserver extends ContentObserver {
 
         private final Uri USE_SLIDER_URI =
-                Settings.AOKP.getUriFor(Settings.AOKP.STATUSBAR_ENABLE_BRIGHTNESS_SLIDER);
+                Settings.REVOLT.getUriFor(Settings.REVOLT.STATUSBAR_ENABLE_BRIGHTNESS_SLIDER);
         private final Uri BRIGHTNESS_MODE_URI =
                 Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS_MODE);
 
@@ -881,7 +881,7 @@ public class PanelView extends FrameLayout {
     }
 
     private void updateUseSlider() {
-        mStatusBarSliderEnabled = Settings.AOKP.getInt(mContext.getContentResolver(),
-                Settings.AOKP.STATUSBAR_ENABLE_BRIGHTNESS_SLIDER, 1) != 0;
+        mStatusBarSliderEnabled = Settings.REVOLT.getInt(mContext.getContentResolver(),
+                Settings.REVOLT.STATUSBAR_ENABLE_BRIGHTNESS_SLIDER, 1) != 0;
     }
 }

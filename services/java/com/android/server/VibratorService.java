@@ -616,14 +616,14 @@ public class VibratorService extends IVibratorService.Stub
     };
 
     private boolean inQuietHours() {
-        boolean quietHoursEnabled = Settings.AOKP.getInt(mContext.getContentResolver(),
-                Settings.AOKP.QUIET_HOURS_ENABLED, 0) != 0;
-        int quietHoursStart = Settings.AOKP.getInt(mContext.getContentResolver(),
-                Settings.AOKP.QUIET_HOURS_START, 0);
-        int quietHoursEnd = Settings.AOKP.getInt(mContext.getContentResolver(),
-                Settings.AOKP.QUIET_HOURS_END, 0);
-        boolean quietHoursVibrate = Settings.AOKP.getInt(mContext.getContentResolver(),
-                Settings.AOKP.QUIET_HOURS_STILL, 0) != 0;
+        boolean quietHoursEnabled = Settings.REVOLT.getInt(mContext.getContentResolver(),
+                Settings.REVOLT.QUIET_HOURS_ENABLED, 0) != 0;
+        int quietHoursStart = Settings.REVOLT.getInt(mContext.getContentResolver(),
+                Settings.REVOLT.QUIET_HOURS_START, 0);
+        int quietHoursEnd = Settings.REVOLT.getInt(mContext.getContentResolver(),
+                Settings.REVOLT.QUIET_HOURS_END, 0);
+        boolean quietHoursVibrate = Settings.REVOLT.getInt(mContext.getContentResolver(),
+                Settings.REVOLT.QUIET_HOURS_STILL, 0) != 0;
         if (quietHoursEnabled && quietHoursVibrate) {
             if (quietHoursStart == quietHoursEnd) {
                 return true;

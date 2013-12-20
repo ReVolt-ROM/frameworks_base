@@ -2405,16 +2405,16 @@ public class NotificationManagerService extends INotificationManager.Stub
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.QUIET_HOURS_ENABLED), false, this);
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.QUIET_HOURS_START), false, this);
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.QUIET_HOURS_END), false, this);
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.QUIET_HOURS_NOTIFICATIONS), false, this);
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.QUIET_HOURS_DIM), false, this);
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.QUIET_HOURS_ENABLED), false, this);
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.QUIET_HOURS_START), false, this);
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.QUIET_HOURS_END), false, this);
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.QUIET_HOURS_NOTIFICATIONS), false, this);
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.QUIET_HOURS_DIM), false, this);
             update();
         }
 
@@ -2425,16 +2425,16 @@ public class NotificationManagerService extends INotificationManager.Stub
 
         public void update() {
             ContentResolver resolver = mContext.getContentResolver();
-            mQuietHoursEnabled = Settings.AOKP.getInt(resolver,
-                    Settings.AOKP.QUIET_HOURS_ENABLED, 0) != 0;
-            mQuietHoursStart = Settings.AOKP.getInt(resolver,
-                    Settings.AOKP.QUIET_HOURS_START, 0);
-            mQuietHoursEnd = Settings.AOKP.getInt(resolver,
-                    Settings.AOKP.QUIET_HOURS_END, 0);
-            mQuietHoursMute = Settings.AOKP.getInt(resolver,
-                    Settings.AOKP.QUIET_HOURS_NOTIFICATIONS, 0) != 0;
-            mQuietHoursDim = Settings.AOKP.getInt(resolver,
-                    Settings.AOKP.QUIET_HOURS_DIM, 0) != 0;
+            mQuietHoursEnabled = Settings.REVOLT.getInt(resolver,
+                    Settings.REVOLT.QUIET_HOURS_ENABLED, 0) != 0;
+            mQuietHoursStart = Settings.REVOLT.getInt(resolver,
+                    Settings.REVOLT.QUIET_HOURS_START, 0);
+            mQuietHoursEnd = Settings.REVOLT.getInt(resolver,
+                    Settings.REVOLT.QUIET_HOURS_END, 0);
+            mQuietHoursMute = Settings.REVOLT.getInt(resolver,
+                    Settings.REVOLT.QUIET_HOURS_NOTIFICATIONS, 0) != 0;
+            mQuietHoursDim = Settings.REVOLT.getInt(resolver,
+                    Settings.REVOLT.QUIET_HOURS_DIM, 0) != 0;
         }
     }
 }

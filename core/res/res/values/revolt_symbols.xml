@@ -35,4 +35,5 @@
 
     <java-symbol type="bool" name="config_wifiApStartInterface" />
 
+    <java-symbol type="string" name="rotation_lock_toggled" />
 </resources>

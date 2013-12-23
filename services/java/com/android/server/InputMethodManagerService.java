@@ -403,8 +403,8 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
                     Settings.Secure.ENABLED_INPUT_METHODS), false, this);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.SELECTED_INPUT_METHOD_SUBTYPE), false, this);
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.SHOW_STATUSBAR_IME_SWITCHER),
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.SHOW_STATUSBAR_IME_SWITCHER),
                     false, new ContentObserver(mHandler) {
                         public void onChange(boolean selfChange) {
                             updateFromSettingsLocked(true);
@@ -1668,8 +1668,8 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             unbindCurrentMethodLocked(true, false);
         }
 
-        mShowOngoingImeSwitcherForPhones = Settings.AOKP.getBoolean(mContext.getContentResolver(),
-                Settings.AOKP.SHOW_STATUSBAR_IME_SWITCHER, true);
+        mShowOngoingImeSwitcherForPhones = Settings.REVOLT.getBoolean(mContext.getContentResolver(),
+                Settings.REVOLT.SHOW_STATUSBAR_IME_SWITCHER, true);
     }
 
     /* package */ void setInputMethodLocked(String id, int subtypeId) {

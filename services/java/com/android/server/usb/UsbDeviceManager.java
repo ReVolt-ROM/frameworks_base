@@ -363,7 +363,7 @@ public class UsbDeviceManager {
                         Settings.Global.getUriFor(Settings.Global.ADB_ENABLED),
                                 false, new AdbSettingsObserver());
                 mContentResolver.registerContentObserver(
-                        Settings.AOKP.getUriFor(Settings.AOKP.ADB_NOTIFY),
+                        Settings.REVOLT.getUriFor(Settings.REVOLT.ADB_NOTIFY),
                                 false, new ContentObserver(null) {
                             public void onChange(boolean selfChange) {
                                 updateAdbNotification();
@@ -721,8 +721,8 @@ public class UsbDeviceManager {
             final int id = com.android.internal.R.string.adb_active_notification_title;
             if (mAdbEnabled && mConnected) {
                 if ("0".equals(SystemProperties.get("persist.adb.notify"))
-                 || Settings.AOKP.getInt(mContext.getContentResolver(),
-                    Settings.AOKP.ADB_NOTIFY, 1) == 0)
+                 || Settings.REVOLT.getInt(mContext.getContentResolver(),
+                    Settings.REVOLT.ADB_NOTIFY, 1) == 0)
                     return;
 
                 if (!mAdbNotificationShown) {

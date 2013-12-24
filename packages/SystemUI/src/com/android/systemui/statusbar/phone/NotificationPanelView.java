@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.EventLog;
 import android.view.MotionEvent;
@@ -43,6 +44,7 @@ public class NotificationPanelView extends PanelView {
     int mFingers;
     PhoneStatusBar mStatusBar;
     boolean mOkToFlip;
+    int mToggleStyle;
 
     private float mGestureStartX;
     private float mGestureStartY;
@@ -53,6 +55,8 @@ public class NotificationPanelView extends PanelView {
 
     public NotificationPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mToggleStyle = Settings.REVOLT.getInt(context.getContentResolver(),
+                Settings.REVOLT.TOGGLES_STYLE, 0);
     }
 
     public void setStatusBar(PhoneStatusBar bar) {
@@ -130,6 +134,11 @@ public class NotificationPanelView extends PanelView {
                     mGestureStartY = event.getY(0);
                     mTrackingSwipe = isFullyExpanded();
                     mOkToFlip = getExpandedHeight() == 0;
+                    if (mToggleStyle != 0) {
+                        // don't allow settings panel with non-tile toggles
+                        mOkToFlip = false;
+                        break;
+                    }
                     break;
                 case MotionEvent.ACTION_MOVE:
                     final float deltaX = Math.abs(event.getX(0) - mGestureStartX);

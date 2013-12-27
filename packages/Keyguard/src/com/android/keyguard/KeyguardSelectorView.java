@@ -20,10 +20,12 @@ import android.app.ActivityManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.app.admin.DevicePolicyManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -58,6 +60,9 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private SecurityMessageDisplay mSecurityMessageDisplay;
     private Drawable mBouncerFrame;
     private float mBatteryLevel;
+
+    private UnlockReceiver mUnlockReceiver;
+    private IntentFilter mUnlockFilter;
 
     OnTriggerListener mOnTriggerListener = new OnTriggerListener() {
 
@@ -109,6 +114,10 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
 
         }
 
+        public void onTargetChange(View v, final int target) {
+
+        }
+
     };
 
     KeyguardUpdateMonitorCallback mUpdateCallback = new KeyguardUpdateMonitorCallback() {
@@ -153,6 +162,11 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     public KeyguardSelectorView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mLockPatternUtils = new LockPatternUtils(getContext());
+        if (mUnlockFilter == null) {
+            mUnlockFilter = new IntentFilter();
+            mUnlockFilter.addAction(UnlockReceiver.ACTION_UNLOCK_RECEIVER);
+        }
+        if (mUnlockReceiver == null) mUnlockReceiver = new UnlockReceiver();
     }
 
     @Override
@@ -295,26 +309,26 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                 hideBouncer(mSecurityMessageDisplay, mFadeView, mBouncerFrame, duration);
     }
 
-    public void updateLockscreenBattery(KeyguardUpdateMonitor.BatteryStatus status) {
-        if (Settings.System.getIntForUser(
-                mContext.getContentResolver(),
-                Settings.System.BATTERY_AROUND_LOCKSCREEN_RING,
-                0 /*default */,
-                UserHandle.USER_CURRENT) == 1) {
-            if (status != null) mBatteryLevel = status.level;
-            float cappedBattery = mBatteryLevel;
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mContext.unregisterReceiver(mUnlockReceiver);
+    }
 
-            if (mBatteryLevel < 15) {
-                cappedBattery = 15;
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mContext.registerReceiver(mUnlockReceiver, mUnlockFilter);
+    }
+    public class UnlockReceiver extends BroadcastReceiver {
+        public static final String ACTION_UNLOCK_RECEIVER = "com.android.lockscreen.ACTION_UNLOCK_RECEIVER";
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ACTION_UNLOCK_RECEIVER)) {
+                mCallback.userActivity(0);
+                mCallback.dismiss(false);
             }
-            else if (mBatteryLevel > 90) {
-                cappedBattery = 90;
-            }
-
-            final float hue = (cappedBattery - 15) * 1.6f;
-            mGlowPadView.setArc(mBatteryLevel * 3.6f, Color.HSVToColor(0x80, new float[]{ hue, 1.f, 1.f }));
-        } else {
-            mGlowPadView.setArc(0, 0);
         }
     }
 }

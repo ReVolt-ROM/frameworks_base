@@ -159,7 +159,7 @@ public class KeyguardPINView extends KeyguardAbsKeyInputView
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         mContext.getContentResolver().registerContentObserver(
-                Settings.AOKP.getUriFor(Settings.AOKP.LOCKSCREEN_QUICK_UNLOCK_CONTROL),
+                Settings.REVOLT.getUriFor(Settings.REVOLT.LOCKSCREEN_QUICK_UNLOCK_CONTROL),
                 false, mContentObserver);
         updateSettings();
     }
@@ -171,7 +171,7 @@ public class KeyguardPINView extends KeyguardAbsKeyInputView
     }
 
     private void updateSettings() {
-        mQuickUnlock = Settings.AOKP.getBoolean(mContext.getContentResolver(),
-                Settings.AOKP.LOCKSCREEN_QUICK_UNLOCK_CONTROL, false);
+        mQuickUnlock = Settings.REVOLT.getBoolean(mContext.getContentResolver(),
+                Settings.REVOLT.LOCKSCREEN_QUICK_UNLOCK_CONTROL, false);
     }
 }

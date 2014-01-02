@@ -626,7 +626,7 @@ public class ExpandHelper implements Gefingerpoken, OnClickListener {
     }
 
     public void onAttachToWindow() {
-        mContext.getContentResolver().registerContentObserver(Settings.AOKP.getUriFor(Settings.AOKP.VIBRATE_NOTIF_EXPAND),
+        mContext.getContentResolver().registerContentObserver(Settings.REVOLT.getUriFor(Settings.REVOLT.VIBRATE_NOTIF_EXPAND),
                 false, mObserver);
         updateSettings();
     }
@@ -636,7 +636,7 @@ public class ExpandHelper implements Gefingerpoken, OnClickListener {
     }
 
     private void updateSettings() {
-        mVibrate = Settings.AOKP.getBoolean(mContext.getContentResolver(),
-                Settings.AOKP.VIBRATE_NOTIF_EXPAND, true);
+        mVibrate = Settings.REVOLT.getBoolean(mContext.getContentResolver(),
+                Settings.REVOLT.VIBRATE_NOTIF_EXPAND, true);
     }
 }

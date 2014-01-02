@@ -80,31 +80,31 @@ public class NotificationPanelView extends PanelView {
         mEnableObserver = new ContentObserver(mHandler) {
             @Override
             public void onChange(boolean selfChange) {
-                mFastToggleEnabled = Settings.AOKP.getBoolean(resolver,
-                        Settings.AOKP.FAST_TOGGLE, false);
+                mFastToggleEnabled = Settings.REVOLT.getBoolean(resolver,
+                        Settings.REVOLT.FAST_TOGGLE, false);
             }
         };
 
         mChangeSideObserver = new ContentObserver(mHandler) {
             @Override
             public void onChange(boolean selfChange) {
-                mFastTogglePos = Settings.AOKP.getInt(resolver,
-                        Settings.AOKP.CHOOSE_FASTTOGGLE_SIDE, 1);
+                mFastTogglePos = Settings.REVOLT.getInt(resolver,
+                        Settings.REVOLT.CHOOSE_FASTTOGGLE_SIDE, 1);
             }
         };
 
         // Initialization
-        mFastToggleEnabled = Settings.AOKP.getBoolean(resolver,
-                Settings.AOKP.FAST_TOGGLE, false);
-        mFastTogglePos = Settings.AOKP.getInt(resolver,
-                Settings.AOKP.CHOOSE_FASTTOGGLE_SIDE, 1);
+        mFastToggleEnabled = Settings.REVOLT.getBoolean(resolver,
+                Settings.REVOLT.FAST_TOGGLE, false);
+        mFastTogglePos = Settings.REVOLT.getInt(resolver,
+                Settings.REVOLT.CHOOSE_FASTTOGGLE_SIDE, 1);
 
         resolver.registerContentObserver(
-                Settings.AOKP.getUriFor(Settings.AOKP.FAST_TOGGLE),
+                Settings.REVOLT.getUriFor(Settings.REVOLT.FAST_TOGGLE),
                 true, mEnableObserver);
 
         resolver.registerContentObserver(
-                Settings.AOKP.getUriFor(Settings.AOKP.CHOOSE_FASTTOGGLE_SIDE),
+                Settings.REVOLT.getUriFor(Settings.REVOLT.CHOOSE_FASTTOGGLE_SIDE),
                 true, mChangeSideObserver);
     }
 

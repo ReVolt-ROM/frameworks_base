@@ -182,7 +182,7 @@ public class FavoriteUserToggle extends BaseToggle {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.REVOLt.QUICK_TOGGLE_FAV_CONTACT),
+                    .getUriFor(Settings.REVOLT.QUICK_TOGGLE_FAV_CONTACT),
                     false, this);
         }
 

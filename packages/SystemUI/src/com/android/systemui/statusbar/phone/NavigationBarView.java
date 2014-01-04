@@ -38,7 +38,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.provider.Settings;
-import android.provider.Settings.AOKP;
+import android.provider.Settings.REVOLT;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Display;
@@ -510,7 +510,7 @@ public class NavigationBarView extends LinearLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        mContext.getContentResolver().registerContentObserver(Settings.AOKP.getUriFor(AOKP.NAVIGATION_BAR_BUTTONS),
+        mContext.getContentResolver().registerContentObserver(Settings.REVOLT.getUriFor(REVOLT.NAVIGATION_BAR_BUTTONS),
                 false, mSettingsObserver);
     }
 
@@ -523,7 +523,7 @@ public class NavigationBarView extends LinearLayout {
 
     private void readUserConfig() {
         mNavButtons.clear();
-        String buttons = Settings.AOKP.getString(getContext().getContentResolver(), Settings.AOKP.NAVIGATION_BAR_BUTTONS);
+        String buttons = Settings.REVOLT.getString(getContext().getContentResolver(), Settings.REVOLT.NAVIGATION_BAR_BUTTONS);
         if (buttons == null || buttons.isEmpty()) {
             // use default buttons
             mNavButtons.add(new AwesomeButtonInfo(

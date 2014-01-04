@@ -112,6 +112,12 @@ public class Build {
         public static final String CODENAME = getString("ro.build.version.codename");
 
         /**
+         * The current version string that defines the version of
+         * revolt build the device is running
+         */
+        public static final String REVOLT = getString("ro.revolt.version");
+
+        /**
          * The SDK version to use when accessing resources.
          * Use the current SDK version code.  If we are a development build,
          * also allow the previous SDK version + 1.

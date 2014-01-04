@@ -59,7 +59,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private LockPatternUtils mLockPatternUtils;
     private SecurityMessageDisplay mSecurityMessageDisplay;
     private Drawable mBouncerFrame;
-    private float mBatteryLevel;
 
     private UnlockReceiver mUnlockReceiver;
     private IntentFilter mUnlockFilter;
@@ -130,11 +129,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         @Override
         public void onSimStateChanged(State simState) {
             updateTargets();
-        }
-
-        @Override
-        public void onRefreshBatteryInfo(KeyguardUpdateMonitor.BatteryStatus batStatus) {
-            updateLockscreenBattery(batStatus);
         }
     };
 
@@ -227,7 +221,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
         mSearchDisabled = disabledBySimState || !searchActionAvailable || !searchTargetPresent
                 || !currentUserSetup;
         updateResources();
-        updateLockscreenBattery(null);
     }
 
     public void updateResources() {

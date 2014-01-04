@@ -467,7 +467,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             mClearRecents.setOnLongClickListener(new OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    clearAllNonLocked();
+                    mRecentsContainer.removeAllViewsInLayout();
                     try {
                         ProcessBuilder pb = new ProcessBuilder("su", "-c", "/system/bin/sh");
                         OutputStreamWriter osw = new OutputStreamWriter(pb.start().getOutputStream());

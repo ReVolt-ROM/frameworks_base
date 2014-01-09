@@ -35,8 +35,8 @@ public class ImmersiveModeToggle extends StatefulToggle {
     @Override
     public void updateView() {
         boolean enabled;
-        mImmersiveModeEnabled = Settings.AOKP.getBoolean(mContext.getContentResolver(),
-                Settings.AOKP.IMMERSIVE_MODE, false);
+        mImmersiveModeEnabled = Settings.REVOLT.getBoolean(mContext.getContentResolver(),
+                Settings.REVOLT.IMMERSIVE_MODE, false);
         enabled = mImmersiveModeEnabled;
         setEnabledState(enabled);
         setIcon(enabled ? R.drawable.ic_navbar_hide_on : R.drawable.ic_navbar_hide_off);
@@ -47,14 +47,14 @@ public class ImmersiveModeToggle extends StatefulToggle {
 
     @Override
     protected void doEnable() {
-        Settings.AOKP.putBoolean(mContext.getContentResolver(),
-                Settings.AOKP.IMMERSIVE_MODE, true);
+        Settings.REVOLT.putBoolean(mContext.getContentResolver(),
+                Settings.REVOLT.IMMERSIVE_MODE, true);
     }
 
     @Override
     protected void doDisable() {
-        Settings.AOKP.putBoolean(mContext.getContentResolver(),
-                Settings.AOKP.IMMERSIVE_MODE, false);
+        Settings.REVOLT.putBoolean(mContext.getContentResolver(),
+                Settings.REVOLT.IMMERSIVE_MODE, false);
     }
 
     @Override

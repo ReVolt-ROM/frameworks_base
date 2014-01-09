@@ -1049,8 +1049,8 @@ public class KeyguardHostView extends KeyguardViewBase {
 
     private void minimizeChallengeIfNeeded() {
         if (mSlidingChallengeLayout != null) {
-            if (Settings.AOKP.getBoolean(getContext().getContentResolver(),
-                Settings.AOKP.LOCKSCREEN_MINIMIZE_LOCKSCREEN_CHALLENGE, false)) {
+            if (Settings.REVOLT.getBoolean(getContext().getContentResolver(),
+                Settings.REVOLT.LOCKSCREEN_MINIMIZE_LOCKSCREEN_CHALLENGE, false)) {
                 mSlidingChallengeLayout.showChallenge(false);
             }
         }

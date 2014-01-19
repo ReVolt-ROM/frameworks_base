@@ -893,8 +893,15 @@ public class InputMethodService extends AbstractInputMethodService {
      * can use {@link #isFullscreenMode()} to determine if the input method
      * is currently running in fullscreen mode.
      */
-    public void updateFullscreenMode() {
-        boolean isFullscreen = false;
+        public void updateFullscreenMode() {
+        boolean fullScreenOverride = Settings.REVOLT.getInt(getContentResolver(),
+                Settings.REVOLT.FULLSCREEN_KEYBOARD, 0) != 0;
+        boolean isFullscreen;
+        if (fullScreenOverride) {
+            isFullscreen = false;
+             } else {
+            isFullscreen = mShowInputRequested && onEvaluateFullscreenMode();
+        }
         boolean changed = mLastShowInputRequested != mShowInputRequested;
         if (mIsFullscreen != isFullscreen || !mFullscreenApplied) {
             changed = true;

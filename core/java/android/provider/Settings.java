@@ -7856,6 +7856,14 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_ROTATION = "lockscreen_rotation";
+
+        /**
+         * Goodbye fullscreen keyboard
+         *
+         * @hide
+         */
+        public static final String FULLSCREEN_KEYBOARD = "fullscreen_keyboard";
+
     }
 
     /**

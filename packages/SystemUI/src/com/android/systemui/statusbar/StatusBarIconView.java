@@ -84,8 +84,8 @@ public class StatusBarIconView extends AnimatedImageView {
         mNumberPain.setTypeface(Typeface.DEFAULT_BOLD);
         mNumberPain.setTextSize(scaledPx);
         mNotification = notification;
-        mShowNotificationCount = Settings.AOKP.getInt(mContext.getContentResolver(),
-                Settings.AOKP.STATUSBAR_NOTIF_COUNT, 0) == 1;
+        mShowNotificationCount = Settings.REVOLT.getInt(mContext.getContentResolver(),
+                Settings.REVOLT.STATUSBAR_NOTIF_COUNT, 0) == 1;
         setContentDescription(notification);
 
         // We do not resize and scale system icons (on the right), only notification icons (on the
@@ -280,8 +280,8 @@ public class StatusBarIconView extends AnimatedImageView {
         if (!mAttached) {
             mAttached = true;
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.AOKP
-                        .getUriFor(Settings.AOKP.STATUSBAR_NOTIF_COUNT),
+            resolver.registerContentObserver(Settings.REVOLT
+                        .getUriFor(Settings.REVOLT.STATUSBAR_NOTIF_COUNT),
                         false, mSettingsObserver);
             updateSettings();
         }
@@ -351,9 +351,9 @@ public class StatusBarIconView extends AnimatedImageView {
     }
 
     protected void updateSettings() {
-        mShowNotificationCount = Settings.AOKP.getInt(
+        mShowNotificationCount = Settings.REVOLT.getInt(
                 mContext.getContentResolver(),
-                Settings.AOKP.STATUSBAR_NOTIF_COUNT, 0) == 1;
+                Settings.REVOLT.STATUSBAR_NOTIF_COUNT, 0) == 1;
     }
 
     protected void apply() {

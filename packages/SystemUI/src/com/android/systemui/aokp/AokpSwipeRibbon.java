@@ -334,7 +334,7 @@ public class AokpSwipeRibbon extends LinearLayout implements OnItemClickListener
         mRibbonColor = Settings.REVOLT.getInt(cr, SETTINGS_REVOLT[AokpRibbonHelper.RIBBON_COLOR], Color.BLACK);
         mAnim = Settings.REVOLT.getInt(cr, SETTINGS_REVOLT[AokpRibbonHelper.RIBBON_ANIMATION_TYPE], 0);
         mAnimDur = Settings.REVOLT.getInt(cr, SETTINGS_REVOLT[AokpRibbonHelper.RIBBON_ANIMATION_DURATION], 50);
-        int size = Settings.REVLT.getInt(mContext.getContentResolver(), SETTINGS_REVOLT[AokpRibbonHelper.RIBBON_SIZE], 30);
+        int size = Settings.REVOLT.getInt(mContext.getContentResolver(), SETTINGS_REVOLT[AokpRibbonHelper.RIBBON_SIZE], 30);
         mWidth = (int) (((size * 0.01f) * 150) + 150);
         int margin = Settings.REVOLT.getInt(mContext.getContentResolver(), SETTINGS_REVOLT[AokpRibbonHelper.RIBBON_MARGIN], 5);
         mMargin = (int) ((margin * 0.01f) * 200);

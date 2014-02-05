@@ -90,7 +90,6 @@ public class AOKPSearchPanelView extends FrameLayout implements
     private int startPosOffset;
 
     private int mNavRingAmount;
-    private boolean mBoolLongPress;
     private boolean mSearchPanelLock;
     private int mTarget;
     private boolean mLongPress = false;
@@ -210,7 +209,7 @@ public class AOKPSearchPanelView extends FrameLayout implements
                 mHandler.removeCallbacks(SetLongPress);
                 mLongPress = false;
             } else {
-                if (mBoolLongPress && !TextUtils.isEmpty(longList.get(target)) && !longList.get(target).equals(AwesomeConstant.ACTION_NULL.value())) {
+                if (!TextUtils.isEmpty(longList.get(target)) && !longList.get(target).equals(AwesomeConstant.ACTION_NULL.value())) {
                     mTarget = target;
                     mHandler.postDelayed(SetLongPress, ViewConfiguration.getLongPressTimeout());
                 }
@@ -285,6 +284,13 @@ public class AOKPSearchPanelView extends FrameLayout implements
     }
 
     private void maybeSkipKeyguard() {
+        try {
+            if (mWm.isKeyguardSecure()) {
+                KeyguardTouchDelegate.getInstance(getContext()).dismiss();
+            }
+        } catch (RemoteException e) {
+
+        }
         Intent u = new Intent();
         u.setAction("com.android.lockscreen.ACTION_UNLOCK_RECEIVER");
         mContext.sendBroadcastAsUser(u, UserHandle.ALL);
@@ -305,7 +311,7 @@ public class AOKPSearchPanelView extends FrameLayout implements
         int endPosOffset = 0;
         int middleBlanks = 0;
 
-        if (isScreenPortrait()) { // NavRing on Bottom
+        if (isScreenPortrait() || NavRingHelpers.isScreenLarge(mResources)) { // NavRing on Bottom
             startPosOffset =  1;
             endPosOffset =  (mNavRingAmount) + 1;
         } else {
@@ -547,8 +553,6 @@ public class AOKPSearchPanelView extends FrameLayout implements
         void observe() {
             mContentResolver.registerContentObserver(Settings.REVOLT.getUriFor(
                     Settings.REVOLT.SYSTEMUI_NAVRING_AMOUNT), false, this);
-            mContentResolver.registerContentObserver(Settings.REVOLT.getUriFor(
-                    Settings.REVOLT.SYSTEMUI_NAVRING_LONG_ENABLE), false, this);
 
             for (int i = 0; i < 5; i++) {
 	            mContentResolver.registerContentObserver(
@@ -577,9 +581,6 @@ public class AOKPSearchPanelView extends FrameLayout implements
             customIcons[i] = Settings.REVOLT.getString(
                     mContentResolver, Settings.REVOLT.SYSTEMUI_NAVRING_ICON[i]);
         }
-
-        mBoolLongPress = (Settings.REVOLT.getBoolean(mContentResolver,
-                Settings.REVOLT.SYSTEMUI_NAVRING_LONG_ENABLE, false));
 
         mNavRingAmount = Settings.REVOLT.getInt(mContentResolver,
                          Settings.REVOLT.SYSTEMUI_NAVRING_AMOUNT, 1);

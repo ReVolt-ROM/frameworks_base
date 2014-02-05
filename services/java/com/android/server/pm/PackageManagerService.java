@@ -1294,8 +1294,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 frameworkDir.getPath(), OBSERVER_EVENTS, true, false);
             mFrameworkInstallObserver.startWatching();
             scanDirLI(frameworkDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR
-                    | PackageParser.PARSE_IS_PRIVILEGED,
+                    | PackageParser.PARSE_IS_SYSTEM_DIR,
                     scanMode | SCAN_NO_DEX, 0);
 
             // Collected privileged system packages.
@@ -3688,6 +3687,12 @@ public class PackageManagerService extends IPackageManager.Stub {
             // An updated system app will not have the PARSE_IS_SYSTEM flag set
             // initially
             parseFlags |= PackageParser.PARSE_IS_SYSTEM;
+
+            // An updated privileged app will not have the PARSE_IS_PRIVILEGED
+            // flag set initially
+            if ((updatedPkg.pkgFlags & ApplicationInfo.FLAG_PRIVILEGED) != 0) {
+                parseFlags |= PackageParser.PARSE_IS_PRIVILEGED;
+            }
         }
         // Verify certificates against what was last scanned
         if (!collectCertificatesLI(pp, ps, pkg, scanFile, parseFlags)) {

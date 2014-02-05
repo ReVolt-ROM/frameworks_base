@@ -6778,6 +6778,68 @@ public final class Settings {
         }
 
         /**
+         * @hide
+         */
+        public static final String[] APP_WINDOW = new String[] {
+            "window_color",
+            "window_animation",
+            "window_animation_duration",
+            "window_size",
+            "window_space",
+        };
+
+        /**
+         * @hide
+         */
+        public static final String[] AOKP_LEFT_RIBBON = new String[] {
+            "left_enabled",
+            "left_ribbon_items",
+            "left_ribbon_size",
+            "left_handle_weight",
+            "left_handle_height",
+            "left_handle_opacity",
+            "left_handle_vibrate",
+            "left_handle_location",
+            "left_handle_long_swipe",
+            "left_handle_long_press",
+            "left_ribbon_auto_hide",
+            "left_ribbon_color",
+            "left_ribbon_animation_type",
+            "left_ribbon_animation_duration",
+            "left_ribbon_margin",
+        };
+
+        /**
+         * @hide
+         */
+        public static final String[] AOKP_RIGHT_RIBBON = new String[] {
+            "right_enabled",
+            "right_ribbon_items",
+            "right_ribbon_size",
+            "right_handle_weight",
+            "right_handle_height",
+            "right_handle_opacity",
+            "right_handle_vibrate",
+            "right_handle_location",
+            "right_handle_long_swipe",
+            "right_handle_long_press",
+            "right_ribbon_auto_hide",
+            "right_ribbon_color",
+            "right_ribbon_animation_type",
+            "right_ribbon_animation_duration",
+            "right_ribbon_margin",
+        };
+
+        /**
+         * @hide
+         */
+        public static final String[] AOKP_LOCKSCREEN_RIBBON = new String[] {
+            "lockscreen_ribbon_items",
+            "lockscreen_ribbon_size",
+            "lockscreen_ribbon_margin",
+        };
+
+        /**
          * Whether to enable quiet hours.
          * @hide
          */
@@ -6840,6 +6902,7 @@ public final class Settings {
           * 3 - Search
           * 4 - Voice search
           * 5 - In-app search
+          * 6 - Kill app
           * @hide
           */
          public static final String KEY_HOME_LONG_PRESS_ACTION = "key_home_long_press_action";
@@ -6850,6 +6913,13 @@ public final class Settings {
           * @hide
           */
          public static final String KEY_HOME_DOUBLE_TAP_ACTION = "key_home_double_tap_action";
+
+         /**
+          * Action to perform when the back key is long-pressed. (Default is 0)
+          * (See KEY_HOME_LONG_PRESS_ACTION for valid values)
+          * @hide
+          */
+         public static final String KEY_BACK_LONG_PRESS_ACTION = "key_back_long_press_action";
 
          /**
           * Action to perform when the menu key is pressed. (Default is 1)
@@ -6989,17 +7059,37 @@ public final class Settings {
          */
         public static final String STATUSBAR_CLOCK_WEEKDAY = "statusbar_clock_weekday";
 
-       /**
-        *
-        * @hide
-        */
-        public static final String SYSTEMUI_NAVRING_AMOUNT = "systemui_navring_amount";
+        /**
+         * Setting for animation controls
+         *
+         * @hide
+         */
+        public static final String[] ACTIVITY_ANIMATION_CONTROLS = new String[] {
+                "activity_open",
+                "activity_close",
+                "task_open",
+                "task_close",
+                "task_to_front",
+                "task_to_back",
+                "wallpaper_open",
+                "wallpaper_close",
+                "wallpaper_intra_open",
+                "wallpaper_intra_close",
+        };
+
+        public static final String ANIMATION_CONTROLS_DURATION = "animation_controls_duration";
+
+        public static final String ANIMATION_CONTROLS_NO_OVERRIDE = "animation_controls_no_override";
+
+        public static final String ANIMATION_CONTROLS_EXIT_ONLY = "animation_controls_exit_only";
+
+        public static final String ANIMATION_CONTROLS_REVERSE_EXIT = "animation_controls_reverse_exit";
 
        /**
         *
         * @hide
         */
-        public static final String SYSTEMUI_NAVRING_LONG_ENABLE = "systemui_navring_long_enable";
+        public static final String SYSTEMUI_NAVRING_AMOUNT = "systemui_navring_amount";
 
         /**
          * Custom navring actions
@@ -7207,6 +7297,35 @@ public final class Settings {
          * @hide
          */
         public static final String DOUBLE_TAP_SLEEP_GESTURE = "double_tap_sleep_gesture";
+
+        /**
+         * Whether to enable the built-in safe media volume for headsets
+         * @hide
+         */
+        public static final String MANUAL_SAFE_MEDIA_VOLUME = "manual_safe_media_volume";
+
+        /**
+         * Screenshot toggle delay
+         * @hide
+         */
+        public static final String SCREENSHOT_TOGGLE_DELAY = "screenshot_toggle_delay";
+
+        /**
+         * The following Settings.REVOLT fields are for use with power menu
+         * 0 : not shown in power menu
+         * 1 : Always shown including keyguard (secure/insecure)
+         * 2 : Always shown except for insecure lockscreen
+         *
+         */
+        /** Airplane Mode Menu Option */
+        public static final String AIRPLANE_MODE_OPTIONS = "airplane_mode_options";
+        /** Immersive Mode Menu Option */
+        public static final String IMMERSIVE_MODE_OPTIONS = "immersive_mode_options";
+        /** Reboot Menu Options */
+        public static final String REBOOT_MODE_OPTIONS = "reboot_mode_options";
+        /** Screenshot Menu Options */
+        public static final String SCREENSHOT_MODE_OPTIONS = "screenshot_mode_options";
+
     }
 
     /**

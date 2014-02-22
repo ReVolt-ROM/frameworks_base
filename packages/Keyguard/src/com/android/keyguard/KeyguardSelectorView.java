@@ -393,9 +393,9 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     }
 
     public void updateLockscreenBattery(KeyguardUpdateMonitor.BatteryStatus status) {
-        if (Settings.AOKP.getIntForUser(
+        if (Settings.REVOLT.getIntForUser(
                 mContext.getContentResolver(),
-                Settings.AOKP.BATTERY_ARC_LOCKSCREEN_HANDLE,
+                Settings.REVOLT.BATTERY_ARC_LOCKSCREEN_HANDLE,
                 0 /*default */,
                 UserHandle.USER_CURRENT) == 1) {
             if (status != null) mBatteryLevel = status.level;

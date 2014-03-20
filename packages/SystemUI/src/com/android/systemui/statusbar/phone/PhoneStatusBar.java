@@ -499,6 +499,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mSearchPanelSwipeView = new SearchPanelSwipeView(mContext, this);
             mWindowManager.addView(mSearchPanelSwipeView, mSearchPanelSwipeView.getGesturePanelLayoutParams());
             updateSearchPanel();
+            addAppCircleSidebar();
         }
 
         // figure out which pixel-format to use for the status bar.

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 /**
- * Copyright (C) 2013, ReVolt ROM Project
+ * Copyright (C) 2014, ReVolt ROM Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,10 @@
     <!-- Description of an application permission, listed so the user can choose whether they want to allow the application to do this. -->
     <string name="permlab_screenrecord">Allows the app to capture a screen recording. This is protected by SystemUI.</string>
 
-        <!-- App Window -->
+    <!-- App Window -->
     <string name="app_window">Application Window</string>
     <string name="close">Close</string>
+
+    <string name="app_stop_item_title">Kill app</string>
 
 </resources>

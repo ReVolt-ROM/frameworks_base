@@ -184,8 +184,8 @@ public final class BatteryService extends Binder {
             // Should never happen.
         }
 
-        mContext.getContentResolver().registerContentObserver(Settings.AOKP.getUriFor(
-                Settings.AOKP.BATTERY_CHARGING_LED_ENABLED), false, mSettingsObserver);
+        mContext.getContentResolver().registerContentObserver(Settings.REVOLT.getUriFor(
+                Settings.REVOLT.BATTERY_CHARGING_LED_ENABLED), false, mSettingsObserver);
         updateSettings();
 
     }
@@ -773,8 +773,8 @@ public final class BatteryService extends Binder {
     }
 
     private void updateSettings() {
-        mEnableChargingLED = Settings.AOKP.getBoolean(mContext.getContentResolver(),
-                Settings.AOKP.BATTERY_CHARGING_LED_ENABLED, true);
+        mEnableChargingLED = Settings.REVOLT.getBoolean(mContext.getContentResolver(),
+                Settings.REVOLT.BATTERY_CHARGING_LED_ENABLED, true);
 
         updateLed();
     }

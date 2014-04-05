@@ -397,12 +397,12 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             if (!noApps && !hasHWbuttons()) {
                 final Configuration config = getResources().getConfiguration();
                 ViewGroup.MarginLayoutParams imgViewParams = (ViewGroup.MarginLayoutParams) mClearRecents.getLayoutParams();
-                int navbarHeight = Settings.AOKP.getInt(mContext.getContentResolver(),
-                                Settings.AOKP.NAVIGATION_BAR_HEIGHT, 0);
-                int navbarHeightT = Settings.AOKP.getInt(mContext.getContentResolver(),
-                                Settings.AOKP.NAVIGATION_BAR_HEIGHT_LANDSCAPE, 0);
-                int navbarWidth = Settings.AOKP.getInt(mContext.getContentResolver(),
-                                Settings.AOKP.NAVIGATION_BAR_WIDTH, 0);
+                int navbarHeight = Settings.REVOLT.getInt(mContext.getContentResolver(),
+                                Settings.REVOLT.NAVIGATION_BAR_HEIGHT, 0);
+                int navbarHeightT = Settings.REVOLT.getInt(mContext.getContentResolver(),
+                                Settings.REVOLT.NAVIGATION_BAR_HEIGHT_LANDSCAPE, 0);
+                int navbarWidth = Settings.REVOLT.getInt(mContext.getContentResolver(),
+                                Settings.REVOLT.NAVIGATION_BAR_WIDTH, 0);
                 int margin = dpToPixels(15, mContext);
                 navbarHeight = (navbarHeight > 0) ?
                         dpToPixels(navbarHeight, mContext) :

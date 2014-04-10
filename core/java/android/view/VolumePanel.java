@@ -332,34 +332,10 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         mToneGenerators = new ToneGenerator[AudioSystem.getNumStreamTypes()];
         mVibrator = (Vibrator)context.getSystemService(Context.VIBRATOR_SERVICE);
 
-        mShowCombinedVolumes = Settings.System.getInt(
-                mContext.getContentResolver(),
-                Settings.System.ENABLE_VOLUME_OPTIONS, 0) == 1
-                || !context.getResources().getBoolean(R.bool.config_voice_capable);
-        toggleMore(mShowCombinedVolumes);
-
-        mHandler = new Handler();
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
-        listenToRingerMode();
-    }
-
-    /** Used by the observer to update the most recent settings */
-    public void updateSettings() {
-        ContentResolver resolver = mContext.getContentResolver();
-        mShowCombinedVolumes = Settings.System.getInt(
-                resolver,
-                Settings.System.ENABLE_VOLUME_OPTIONS, 0) == 1;
-        mRingerAndNotificationStreamsLinked = Settings.System.getInt(
-                resolver,
-                Settings.System.VOLUME_LINK_NOTIFICATION, 1) == 1;
-        toggleMore(mShowCombinedVolumes);
-    }
-
-    private void toggleMore(boolean toggle) {
-        // If we don't want to show multiple volumes, hide the settings button
-        // and divider
-        if (!toggle) {
+        mVoiceCapable = context.getResources().getBoolean(R.bool.config_voice_capable);
+        mShowCombinedVolumes = true;
+        // We always want to show multiple volumes
+        if (!mShowCombinedVolumes) {
             mMoreButton.setVisibility(View.GONE);
             mDivider.setVisibility(View.GONE);
         } else {
@@ -530,8 +506,8 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener, Vie
         for (int i = 0; i < count; i++) {
             mSliderGroup.getChildAt(i).setVisibility(View.VISIBLE);
         }
-        mMoreButton.setVisibility(View.INVISIBLE);
-        mDivider.setVisibility(View.INVISIBLE);
+        mMoreButton.setVisibility(View.GONE);
+        mDivider.setVisibility(View.GONE);
     }
 
     private void collapse() {

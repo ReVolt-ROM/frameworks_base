@@ -45,7 +45,6 @@ import android.service.dreams.IDreamManager;
 import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.SettingConfirmationHelper;
 import android.util.Slog;
 import android.view.Display;
 import android.view.IWindowManager;

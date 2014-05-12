@@ -910,6 +910,6 @@ public class AppTransition implements Dump {
         mNoOverrides = Settings.REVOLT.getBoolean(resolver, Settings.REVOLT.ANIMATION_CONTROLS_NO_OVERRIDE, false);
         mExitOnly = Settings.REVOLT.getBoolean(resolver, Settings.REVOLT.ANIMATION_CONTROLS_EXIT_ONLY, true);
         mReverseExit = Settings.REVOLT.getBoolean(resolver, Settings.REVOLT.ANIMATION_CONTROLS_REVERSE_EXIT, false);
-        mAnimationDuration = Settings.REVOLT.getInt(resolver, Settings.REVOLT.ANIMATION_CONTROLS_DURATION, 25);
+        mAnimationDuration = 15 * Settings.REVOLT.getInt(resolver, Settings.REVOLT.ANIMATION_CONTROLS_DURATION, 25);
     }
 }

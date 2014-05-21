@@ -666,14 +666,14 @@ public class ThemeService extends IThemeService.Stub {
         mContext.enforceCallingOrSelfPermission(
                 Manifest.permission.ACCESS_THEME_MANAGER, null);
         final ContentResolver resolver = mContext.getContentResolver();
-        final String defaultThemePkg = Settings.AOKP.getString(resolver,
-                Settings.AOKP.DEFAULT_THEME_PACKAGE);
+        final String defaultThemePkg = Settings.REVOLT.getString(resolver,
+                Settings.REVOLT.DEFAULT_THEME_PACKAGE);
         final boolean shouldApply = !TextUtils.isEmpty(defaultThemePkg) &&
-                Settings.AOKP.getInt(resolver,
-                        Settings.AOKP.DEFAULT_THEME_APPLIED_ON_FIRST_BOOT, 0) == 0;
+                Settings.REVOLT.getInt(resolver,
+                        Settings.REVOLT.DEFAULT_THEME_APPLIED_ON_FIRST_BOOT, 0) == 0;
         if (shouldApply) {
-            String defaultThemeComponents = Settings.AOKP.getString(resolver,
-                    Settings.AOKP.DEFAULT_THEME_COMPONENTS);
+            String defaultThemeComponents = Settings.REVOLT.getString(resolver,
+                    Settings.REVOLT.DEFAULT_THEME_COMPONENTS);
             List<String> components;
             if (TextUtils.isEmpty(defaultThemeComponents)) {
                 components = new ArrayList<String>(9);
@@ -692,8 +692,8 @@ public class ThemeService extends IThemeService.Stub {
             }
             try {
                 requestThemeChange(defaultThemePkg, components);
-                Settings.AOKP.putInt(resolver,
-                        Settings.AOKP.DEFAULT_THEME_APPLIED_ON_FIRST_BOOT, 1);
+                Settings.REVOLT.putInt(resolver,
+                        Settings.REVOLT.DEFAULT_THEME_APPLIED_ON_FIRST_BOOT, 1);
             } catch (RemoteException e) {
                 Log.w(TAG, "Unable to set default theme", e);
             }

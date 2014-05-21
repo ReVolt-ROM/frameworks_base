@@ -509,8 +509,8 @@ public class ThemeUtils {
     }
 
     public static String getDefaultThemePackageName(Context context) {
-        final String defaultThemePkg = Settings.AOKP.getString(context.getContentResolver(),
-                Settings.AOKP.DEFAULT_THEME_PACKAGE);
+        final String defaultThemePkg = Settings.REVOLT.getString(context.getContentResolver(),
+                Settings.REVOLT.DEFAULT_THEME_PACKAGE);
         if (!TextUtils.isEmpty(defaultThemePkg)) {
             PackageManager pm = context.getPackageManager();
             try {

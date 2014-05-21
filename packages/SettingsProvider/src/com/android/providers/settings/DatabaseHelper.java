@@ -2099,8 +2099,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void loadDefaultThemeSettings(SQLiteStatement stmt) {
-        loadStringSetting(stmt, Settings.AOKP.DEFAULT_THEME_PACKAGE, R.string.def_theme_package);
-        loadStringSetting(stmt, Settings.AOKP.DEFAULT_THEME_COMPONENTS,
+        loadStringSetting(stmt, Settings.REVOLT.DEFAULT_THEME_PACKAGE, R.string.def_theme_package);
+        loadStringSetting(stmt, Settings.REVOLT.DEFAULT_THEME_COMPONENTS,
                 R.string.def_theme_components);
     }
 

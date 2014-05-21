@@ -202,8 +202,7 @@ public class KeyguardViewManager {
 
     private boolean shouldEnableTranslucentDecor() {
         Resources res = mContext.getResources();
-        return res.getBoolean(R.bool.config_enableLockScreenTranslucentDecor)
-            && res.getBoolean(R.bool.config_enableTranslucentDecor);
+        return res.getBoolean(R.bool.config_enableLockScreenTranslucentDecor);
     }
 
     class ViewManagerHost extends FrameLayout {
@@ -245,6 +244,8 @@ public class KeyguardViewManager {
                 return PixelFormat.TRANSLUCENT;
             }
         };
+
+        private TransitionDrawable mTransitionBackground = null;
 
         public ViewManagerHost(Context context) {
             super(context);
@@ -327,12 +328,12 @@ public class KeyguardViewManager {
             invalidate();
         }
 
-        private void computeCustomBackgroundBounds() {
-            if (mCustomBackground == null) return; // Nothing to do
+        private void computeCustomBackgroundBounds(Drawable background) {
+            if (background == null) return; // Nothing to do
             if (!isLaidOut()) return; // We'll do this later
 
-            final int bgWidth = mCustomBackground.getIntrinsicWidth();
-            final int bgHeight = mCustomBackground.getIntrinsicHeight();
+            final int bgWidth = background.getIntrinsicWidth();
+            final int bgHeight = background.getIntrinsicHeight();
             final int vWidth = getWidth();
             final int vHeight = getHeight();
 
@@ -340,16 +341,16 @@ public class KeyguardViewManager {
             final float vAspect = (float) vWidth / vHeight;
 
             if (bgAspect > vAspect) {
-                mCustomBackground.setBounds(0, 0, (int) (vHeight * bgAspect), vHeight);
+                background.setBounds(0, 0, (int) (vHeight * bgAspect), vHeight);
             } else {
-                mCustomBackground.setBounds(0, 0, vWidth, (int) (vWidth / bgAspect));
+                background.setBounds(0, 0, vWidth, (int) (vWidth / bgAspect));
             }
         }
 
         @Override
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
             super.onSizeChanged(w, h, oldw, oldh);
-            computeCustomBackgroundBounds();
+            computeCustomBackgroundBounds(mCustomBackground);
         }
 
         @Override

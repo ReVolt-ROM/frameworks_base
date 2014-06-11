@@ -7818,6 +7818,11 @@ public final class Settings {
          */
         public static final String LISTVIEW_INTERPOLATOR = "listview_interpolator";
 
+        /**
+         * Whether to use the menu key to unlock the screen
+         * @hide
+         */
+        public static final String LOCKSCREEN_MENU_UNLOCK = "lockscreen_menu_unlock";
     }
 
     /**

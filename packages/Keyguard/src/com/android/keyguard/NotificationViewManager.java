@@ -125,7 +125,7 @@ public class NotificationViewManager {
         private void updateSettings() {
             showAlways = Settings.REVOLT.getInt(mContext.getContentResolver(),
                     Settings.REVOLT.LOCKSCREEN_NOTIFICATIONS_SHOW_ALWAYS, showAlways ? 1 : 0) == 1;
-            pocketMode = Settings.REVOLLT.getInt(mContext.getContentResolver(),
+            pocketMode = Settings.REVOLT.getInt(mContext.getContentResolver(),
                     Settings.REVOLT.LOCKSCREEN_NOTIFICATIONS_POCKET_MODE, pocketMode ? 1 : 0) == 1;
             hideLowPriority = Settings.REVOLT.getInt(mContext.getContentResolver(),
                     Settings.REVOLT.LOCKSCREEN_NOTIFICATIONS_HIDE_LOW_PRIORITY, hideLowPriority ? 1 : 0) == 1;

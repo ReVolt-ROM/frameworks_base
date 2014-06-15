@@ -45,7 +45,7 @@ public class ReVoltLogoActivity extends Activity {
     FrameLayout mContent;
     int mCount;
     final Handler mHandler = new Handler();
-    final static int SOLID_BGCOLOR = 0xFF1F1F1F;
+    final static int SOLID_BGCOLOR = 0xffed1d24;
     final static int CLEAR_BGCOLOR = 0xC0000000;
     final static int TEXT_COLOR = 0xFFFFFFFF;
 

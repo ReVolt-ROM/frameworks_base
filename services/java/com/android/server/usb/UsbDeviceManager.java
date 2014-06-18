@@ -748,9 +748,14 @@ public class UsbDeviceManager {
             if (mAdbEnabled && mConnected) {
                 if ("0".equals(SystemProperties.get("persist.adb.notify"))
                  || Settings.REVOLT.getInt(mContext.getContentResolver(),
-                    Settings.REVOLT.ADB_NOTIFY, 1) == 0)
+                    Settings.REVOLT.ADB_NOTIFY, 1) == 0) {
+                    if (mAdbNotificationShown) {
+                        mAdbNotificationShown = false;
+                        mNotificationManager.cancelAsUser(null, id, UserHandle.ALL);
+                    }
                     return;
-
+                }
+ 
                 if (!mAdbNotificationShown) {
                     Resources r = mContext.getResources();
                     CharSequence title = r.getText(id);

@@ -256,7 +256,7 @@
     <string name="permlab_uninstall_shortcut" msgid="4729634524044003699">"მალსახმობების წაშლა"</string>
     <string name="permdesc_uninstall_shortcut" msgid="6745743474265057975">"მთავარ ეკრანზე აპლიკაციისთვის მალსახმობების დამოუკიდებლად წაშლის უფლების მიცემა."</string>
     <string name="permlab_processOutgoingCalls" msgid="3906007831192990946">"გამავალი ზარების გადამისამართება"</string>
-    <string name="permdesc_processOutgoingCalls" msgid="5331318931937402040">"აპს შეეძლება გამავალი ზარების დამუშავება და ასაკრეფი ნომრის შეცვლა. ეს უფლება აპს აძლევს შესაძლებლობას აკონტროლოს, გადაამისამართოს ან აღკვეთოს გამავალი ზარები."</string>
+    <string name="permdesc_processOutgoingCalls" msgid="5156385005547315876">"საშუალებას აძლევს აპს გამავალი ზარის დროს დაინახონ ზარის მიმღების ნომერი, ზარის სხვა მისამართზე გადამისამართებით ან ზარის საერთოდ შეწყვეტის საშუალებით."</string>
     <string name="permlab_receiveSms" msgid="8673471768947895082">"ტექსტური შეტყობინებების (SMS) მიღება"</string>
     <string name="permdesc_receiveSms" msgid="6424387754228766939">"აპს შეეძლება SMS შეტყობინებების მიღება და დამუშავება. ეს ნიშნავს, რომ აპს შეეძლება თქვენ მოწყობილობაზე გამოგზავნილი შეტყობინებების მონიტორინგი და მათი წაშლა თქვენთვის ჩვენების გარეშე."</string>
     <string name="permlab_receiveMms" msgid="1821317344668257098">"ტექსტური შეტყობინებების (MMS) მიღება"</string>
@@ -816,6 +816,7 @@
     <string name="sipAddressTypeHome" msgid="6093598181069359295">"სახლი"</string>
     <string name="sipAddressTypeWork" msgid="6920725730797099047">"სამსახური"</string>
     <string name="sipAddressTypeOther" msgid="4408436162950119849">"სხვა"</string>
+    <string name="quick_contacts_not_available" msgid="746098007828579688">"ამ კონტაქტის მნახველი აპლიკაცია ვერ მოიძებნა."</string>
     <string name="keyguard_password_enter_pin_code" msgid="3037685796058495017">"აკრიფეთ PIN კოდი"</string>
     <string name="keyguard_password_enter_puk_code" msgid="4800725266925845333">"დაბეჭდეთ PUK კოდი და ახალი PIN კოდი."</string>
     <string name="keyguard_password_enter_puk_prompt" msgid="1341112146710087048">"PUK კოდი"</string>
@@ -1119,8 +1120,8 @@
     <string name="no" msgid="5141531044935541497">"გაუქმება"</string>
     <string name="dialog_alert_title" msgid="2049658708609043103">"ყურადღება"</string>
     <string name="loading" msgid="7933681260296021180">"ჩატვირთვა…"</string>
-    <string name="capital_on" msgid="1544682755514494298">"ჩართ."</string>
-    <string name="capital_off" msgid="6815870386972805832">"გამორთ."</string>
+    <string name="capital_on" msgid="1544682755514494298">"\u2759"</string>
+    <string name="capital_off" msgid="6815870386972805832">"\u3007"</string>
     <string name="whichApplication" msgid="4533185947064773386">"რა გამოვიყენოთ?"</string>
     <string name="whichHomeApplication" msgid="4616420172727326782">"აირჩიეთ საშინაო აპი"</string>
     <string name="alwaysUse" msgid="4583018368000610438">"ამ ქმედებისთვის ნაგულისხმევად გამოყენება."</string>

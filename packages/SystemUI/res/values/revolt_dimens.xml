@@ -22,4 +22,15 @@
     <dimen name="notification_text_width">300dp</dimen>
     <dimen name="clock_padding">10dp</dimen>
     <dimen name="clock_size">15dp</dimen>
+
+    <!-- tablet navigation bar constants -->
+    <dimen name="navigation_tablet_key_padding">25dip</dimen>
+    <dimen name="navigation_tablet_key_width">128dip</dimen>
+    <dimen name="navigation_tablet_key_padding_land">42dip</dimen>
+    <dimen name="navigation_tablet_key_width_land">162dip</dimen>
+
+    <!-- Network stats text size -->
+    <dimen name="network_stats_text_size">8dp</dimen>
+
+    <dimen name="wifi_combo_margin_end">-6dp</dimen>
 </resources>

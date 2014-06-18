@@ -457,8 +457,16 @@ public class ActivityManager {
      * @hide
      */
     static public boolean isHighEndGfx() {
-        return !isLowRamDeviceStatic() &&
-                !Resources.getSystem().getBoolean(com.android.internal.R.bool.config_avoidGfxAccel);
+        return (!isLowRamDeviceStatic() &&
+                !Resources.getSystem().getBoolean(com.android.internal.R.bool.config_avoidGfxAccel))
+                || isForcedHighEndGfx();
+    }
+
+    /**
+     * @hide
+     */
+    public static boolean isForcedHighEndGfx() {
+        return SystemProperties.getBoolean("persist.sys.force_highendgfx", false);
     }
 
     /**
@@ -2021,7 +2029,7 @@ public class ActivityManager {
             case DisplayMetrics.DENSITY_XHIGH:
                 return DisplayMetrics.DENSITY_XXHIGH;
             case DisplayMetrics.DENSITY_XXHIGH:
-                return DisplayMetrics.DENSITY_XHIGH * 2;
+                return DisplayMetrics.DENSITY_XXXHIGH;
             default:
                 // The density is some abnormal value.  Return some other
                 // abnormal value that is a reasonable scaling of it.

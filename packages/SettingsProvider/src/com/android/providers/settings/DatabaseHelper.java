@@ -2098,6 +2098,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    private void loadDefaultThemeSettings(SQLiteStatement stmt) {
+        loadStringSetting(stmt, Settings.REVOLT.DEFAULT_THEME_PACKAGE, R.string.def_theme_package);
+        loadStringSetting(stmt, Settings.REVOLT.DEFAULT_THEME_COMPONENTS,
+                R.string.def_theme_components);
+    }
+
     private void loadSecureSettings(SQLiteDatabase db) {
         SQLiteStatement stmt = null;
         try {
@@ -2182,6 +2188,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadBooleanSetting(stmt, Settings.Secure.USER_SETUP_COMPLETE,
                     R.bool.def_user_setup_complete);
+
+            loadDefaultThemeSettings(stmt);
         } finally {
             if (stmt != null) stmt.close();
         }

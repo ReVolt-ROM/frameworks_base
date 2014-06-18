@@ -501,7 +501,7 @@ public class SyncStorageEngine extends Handler {
      * @return amount of seconds before syncTimeSeconds that the sync can occur.
      *      I.e.
      *      earliest_sync_time = syncTimeSeconds - calculateDefaultFlexTime(syncTimeSeconds)
-     * The flex time is capped at a percentage of the {@link DEFAULT_POLL_FREQUENCY_SECONDS}.
+     * The flex time is capped at a percentage of the {@link #DEFAULT_POLL_FREQUENCY_SECONDS}.
      */
     public static long calculateDefaultFlexTime(long syncTimeSeconds) {
         if (syncTimeSeconds < DEFAULT_MIN_FLEX_ALLOWED_SECS) {
@@ -1697,9 +1697,15 @@ public class SyncStorageEngine extends Handler {
             XmlPullParser parser = Xml.newPullParser();
             parser.setInput(fis, null);
             int eventType = parser.getEventType();
-            while (eventType != XmlPullParser.START_TAG) {
+            while (eventType != XmlPullParser.START_TAG &&
+                    eventType != XmlPullParser.END_DOCUMENT) {
                 eventType = parser.next();
             }
+            if (eventType == XmlPullParser.END_DOCUMENT) {
+                Log.i(TAG, "No initial accounts");
+                return;
+            }
+
             String tagName = parser.getName();
             if ("accounts".equals(tagName)) {
                 String listen = parser.getAttributeValue(null, XML_ATTR_LISTEN_FOR_TICKLES);

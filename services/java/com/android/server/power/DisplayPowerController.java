@@ -26,9 +26,11 @@ import com.android.server.display.DisplayManagerService;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.ComponentName;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.ContentObserver;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.hardware.Sensor;
@@ -45,6 +47,7 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.util.FloatMath;
+import android.util.Log;
 import android.util.Slog;
 import android.util.Spline;
 import android.util.TimeUtils;
@@ -182,6 +185,9 @@ final class DisplayPowerController {
     // The display blanker.
     private final DisplayBlanker mDisplayBlanker;
 
+    // Our context
+    private final Context mContext;
+
     // Our handler.
     private final DisplayControllerHandler mHandler;
 
@@ -232,6 +238,9 @@ final class DisplayPowerController {
     // True if we should fade the screen while turning it off, false if we should play
     // a stylish electron beam animation instead.
     private boolean mElectronBeamFadesConfig;
+
+    // Electrobeam settings - override config for ElectronBeam
+    private int mElectronBeamMode;
 
     // The pending power request.
     // Initially null until the first call to requestPowerState.
@@ -359,9 +368,9 @@ final class DisplayPowerController {
     // Twilight changed.  We might recalculate auto-brightness values.
     private boolean mTwilightChanged;
 
-    private Context mContext;
-
     private KeyguardServiceWrapper mKeyguardService;
+    private final int MAX_BLUR_WIDTH = 900;
+    private final int MAX_BLUR_HEIGHT = 1600;
 
     private final ServiceConnection mKeyguardConnection = new ServiceConnection() {
         @Override
@@ -385,13 +394,13 @@ final class DisplayPowerController {
             DisplayManagerService displayManager,
             SuspendBlocker displaySuspendBlocker, DisplayBlanker displayBlanker,
             Callbacks callbacks, Handler callbackHandler) {
+        mContext = context;
         mHandler = new DisplayControllerHandler(looper);
         mNotifier = notifier;
         mDisplaySuspendBlocker = displaySuspendBlocker;
         mDisplayBlanker = displayBlanker;
         mCallbacks = callbacks;
         mCallbackHandler = callbackHandler;
-        mContext = context;
 
         mLights = lights;
         mTwilight = twilight;
@@ -459,8 +468,12 @@ final class DisplayPowerController {
 
         Intent intent = new Intent();
         intent.setClassName("com.android.keyguard", "com.android.keyguard.KeyguardService");
-        context.bindServiceAsUser(intent, mKeyguardConnection,
-                Context.BIND_AUTO_CREATE, UserHandle.OWNER);
+        if (!context.bindServiceAsUser(intent, mKeyguardConnection,
+                Context.BIND_AUTO_CREATE, UserHandle.OWNER)) {
+            Log.e(TAG, "*** Keyguard: can't bind to keyguard");
+        } else {
+            Log.e(TAG, "*** Keyguard started");
+        }
     }
 
     private static Spline createAutoBrightnessSpline(int[] lux, int[] brightness) {
@@ -511,10 +524,6 @@ final class DisplayPowerController {
      */
     public boolean requestPowerState(DisplayPowerRequest request,
             boolean waitForNegativeProximity) {
-
-        final int MAX_BLUR_WIDTH = 900;
-        final int MAX_BLUR_HEIGHT = 1600;
-
         if (DEBUG) {
             Slog.d(TAG, "requestPowerState: "
                     + request + ", waitForNegativeProximity=" + waitForNegativeProximity);
@@ -541,33 +550,8 @@ final class DisplayPowerController {
                 mDisplayReadyLocked = false;
             }
 
-            boolean seeThrough = Settings.REVOLT.getInt(mContext.getContentResolver(),
-                    Settings.REVOLT.LOCKSCREEN_SEE_THROUGH, 0) == 1;
             if (changed && !mPendingRequestChangedLocked) {
-                if ((mKeyguardService == null || !mKeyguardService.isShowing()) &&
-                        request.screenState == DisplayPowerRequest.SCREEN_STATE_OFF) {
-                    if (seeThrough) {
-                        DisplayInfo di = mDisplayManager
-                                .getDisplayInfo(mDisplayManager.getDisplayIds() [0]);
-                        /* Limit max screenshot capture layer to 22000.
-                           Prevents status bar and navigation bar from being captured.*/
-                        Bitmap bmp = SurfaceControl
-                                .screenshot(di.getNaturalWidth(),di.getNaturalHeight(), 0, 22000);
-                        if (bmp != null) {
-                            Bitmap tmpBmp = bmp;
-
-                            // scale image if its too large
-                            if (bmp.getWidth() > MAX_BLUR_WIDTH) {
-                                tmpBmp = bmp.createScaledBitmap(bmp, MAX_BLUR_WIDTH, MAX_BLUR_HEIGHT, true);
-                            }
-
-                            mKeyguardService.setBackgroundBitmap(tmpBmp);
-                            bmp.recycle();
-                            tmpBmp.recycle();
-                        }
-                    } else mKeyguardService.setBackgroundBitmap(null);
-                }
-
+                initSeeThrough(request);
                 mPendingRequestChangedLocked = true;
                 sendUpdatePowerStateLocked();
             }
@@ -593,7 +577,8 @@ final class DisplayPowerController {
 
     private void initialize() {
         mPowerState = new DisplayPowerState(
-                new ElectronBeam(mDisplayManager), mDisplayBlanker,
+                new ElectronBeam(mDisplayManager, mElectronBeamMode),
+                mDisplayBlanker,
                 mLights.getLight(LightsService.LIGHT_ID_BACKLIGHT));
 
         mElectronBeamOnAnimator = ObjectAnimator.ofFloat(
@@ -608,6 +593,12 @@ final class DisplayPowerController {
 
         mScreenBrightnessRampAnimator = new RampAnimator<DisplayPowerState>(
                 mPowerState, DisplayPowerState.SCREEN_BRIGHTNESS);
+
+        if (mPowerState.isScreenOn()) {
+            // If the screen is on then let the notifier know to ensure that
+            // battery stats after a boot are correct.
+            mNotifier.onScreenOn();
+        }
     }
 
     private final Animator.AnimatorListener mAnimatorListener = new Animator.AnimatorListener() {
@@ -662,6 +653,12 @@ final class DisplayPowerController {
             mustNotify = !mDisplayReadyLocked;
         }
 
+        // update crt mode settings and force initialize if value changed
+        if (mElectronBeamMode != mPowerRequest.electronBeamMode) {
+            mElectronBeamMode = mPowerRequest.electronBeamMode;
+            mustInitialize = true;
+        }
+
         // Initialize things the first time the power state is changed.
         if (mustInitialize) {
             initialize();
@@ -676,7 +673,6 @@ final class DisplayPowerController {
                         && mProximity == PROXIMITY_POSITIVE) {
                     mScreenOffBecauseOfProximity = true;
                     sendOnProximityPositiveWithWakelock();
-                    setScreenOn(false);
                 }
             } else if (mWaitingForNegativeProximity
                     && mScreenOffBecauseOfProximity
@@ -736,60 +732,64 @@ final class DisplayPowerController {
             mUsingScreenAutoBrightness = false;
         }
 
-        // Animate the screen on or off.
-        if (!mScreenOffBecauseOfProximity) {
-            if (wantScreenOn(mPowerRequest.screenState)) {
-                // Want screen on.
-                // Wait for previous off animation to complete beforehand.
-                // It is relatively short but if we cancel it and switch to the
-                // on animation immediately then the results are pretty ugly.
-                if (!mElectronBeamOffAnimator.isStarted()) {
-                    // Turn the screen on.  The contents of the screen may not yet
-                    // be visible if the electron beam has not been dismissed because
-                    // its last frame of animation is solid black.
-                    setScreenOn(true);
+        // Animate the screen on or off unless blocked.
+        if (mScreenOffBecauseOfProximity) {
+            // Screen off due to proximity.
+            setScreenOn(false);
+            unblockScreenOn();
+        } else if (wantScreenOn(mPowerRequest.screenState)) {
+            // Want screen on.
+            // Wait for previous off animation to complete beforehand.
+            // It is relatively short but if we cancel it and switch to the
+            // on animation immediately then the results are pretty ugly.
+            if (!mElectronBeamOffAnimator.isStarted()) {
+                // Turn the screen on.  The contents of the screen may not yet
+                // be visible if the electron beam has not been dismissed because
+                // its last frame of animation is solid black.
+                setScreenOn(true);
 
-                    if (mPowerRequest.blockScreenOn
-                            && mPowerState.getElectronBeamLevel() == 0.0f) {
-                        blockScreenOn();
-                    } else {
-                        unblockScreenOn();
-                        if (USE_ELECTRON_BEAM_ON_ANIMATION) {
-                            if (!mElectronBeamOnAnimator.isStarted()) {
-                                if (mPowerState.getElectronBeamLevel() == 1.0f) {
-                                    mPowerState.dismissElectronBeam();
-                                } else if (mPowerState.prepareElectronBeam(
-                                        mElectronBeamFadesConfig ?
-                                                ElectronBeam.MODE_FADE :
-                                                        ElectronBeam.MODE_WARM_UP)) {
-                                    mElectronBeamOnAnimator.start();
-                                } else {
-                                    mElectronBeamOnAnimator.end();
-                                }
+                if (mPowerRequest.blockScreenOn
+                        && mPowerState.getElectronBeamLevel() == 0.0f) {
+                    blockScreenOn();
+                } else {
+                    unblockScreenOn();
+                    if (USE_ELECTRON_BEAM_ON_ANIMATION) {
+                        if (!mElectronBeamOnAnimator.isStarted()) {
+                            if (mPowerState.getElectronBeamLevel() == 1.0f) {
+                                mPowerState.dismissElectronBeam();
+                            } else if (mPowerState.prepareElectronBeam(
+                                    mElectronBeamFadesConfig ?
+                                            ElectronBeam.MODE_FADE :
+                                                    ElectronBeam.MODE_WARM_UP)) {
+                                mElectronBeamOnAnimator.start();
+                            } else {
+                                mElectronBeamOnAnimator.end();
                             }
-                        } else {
-                            mPowerState.setElectronBeamLevel(1.0f);
-                            mPowerState.dismissElectronBeam();
                         }
+                    } else {
+                        mPowerState.setElectronBeamLevel(1.0f);
+                        mPowerState.dismissElectronBeam();
                     }
                 }
-            } else {
-                // Want screen off.
-                // Wait for previous on animation to complete beforehand.
-                if (!mElectronBeamOnAnimator.isStarted()) {
-                    if (!mElectronBeamOffAnimator.isStarted()) {
-                        if (mPowerState.getElectronBeamLevel() == 0.0f) {
-                            setScreenOn(false);
-                            unblockScreenOn();
-                        } else if (mPowerState.prepareElectronBeam(
-                                mElectronBeamFadesConfig ?
-                                        ElectronBeam.MODE_FADE :
-                                                ElectronBeam.MODE_COOL_DOWN)
-                                && mPowerState.isScreenOn()) {
-                            mElectronBeamOffAnimator.start();
-                        } else {
-                            mElectronBeamOffAnimator.end();
-                        }
+            }
+        } else {
+            // Want screen off.
+            // Wait for previous on animation to complete beforehand.
+            unblockScreenOn();
+            if (!mElectronBeamOnAnimator.isStarted()) {
+                if (!mElectronBeamOffAnimator.isStarted()) {
+                    if (mPowerState.getElectronBeamLevel() == 0.0f) {
+                        setScreenOn(false);
+                    } else if (mPowerState.prepareElectronBeam(
+                            mElectronBeamMode == 0 ?
+                                    ElectronBeam.MODE_FADE :
+                                        (mElectronBeamMode == 4
+                                        ? ElectronBeam.MODE_SCALE_DOWN
+                                        : ElectronBeam.MODE_COOL_DOWN))
+                            && mPowerState.isScreenOn()) {
+                        mElectronBeamOffAnimator.start();
+                    } else {
+                        mElectronBeamOffAnimator.end();
                     }
                 }
             }
@@ -829,15 +829,15 @@ final class DisplayPowerController {
     private void unblockScreenOn() {
         if (mScreenOnWasBlocked) {
             mScreenOnWasBlocked = false;
-            if (DEBUG) {
-                Slog.d(TAG, "Unblocked screen on after " +
-                        (SystemClock.elapsedRealtime() - mScreenOnBlockStartRealTime) + " ms");
+            long delay = SystemClock.elapsedRealtime() - mScreenOnBlockStartRealTime;
+            if (delay > 1000 || DEBUG) {
+                Slog.d(TAG, "Unblocked screen on after " + delay + " ms");
             }
         }
     }
 
     private void setScreenOn(boolean on) {
-        if (!mPowerState.isScreenOn() == on) {
+        if (mPowerState.isScreenOn() != on) {
             mPowerState.setScreenOn(on);
             if (on) {
                 mNotifier.onScreenOn();
@@ -1444,4 +1444,30 @@ final class DisplayPowerController {
             updatePowerState();
         }
     };
+
+    private void initSeeThrough(DisplayPowerRequest request) {
+        boolean seeThrough = Settings.REVOLT.getInt(mContext.getContentResolver(),
+                Settings.REVOLT.LOCKSCREEN_SEE_THROUGH, 0) == 1;
+
+        if ((mKeyguardService == null || !mKeyguardService.isShowing()) &&
+                request.screenState == DisplayPowerRequest.SCREEN_STATE_OFF &&
+                seeThrough) {
+            DisplayInfo di = mDisplayManager
+                    .getDisplayInfo(mDisplayManager.getDisplayIds() [0]);
+            /* Limit max screenshot capture layer to 22000.
+               Prevents status bar and navigation bar from being captured.*/
+            Bitmap bmp = SurfaceControl
+                    .screenshot(di.getNaturalWidth(),di.getNaturalHeight(), 0, 22000);
+            if (bmp != null) {
+                Bitmap tmpBmp = bmp;
+                // scale image if its too large
+                if (bmp.getWidth() > MAX_BLUR_WIDTH) {
+                    tmpBmp = Bitmap.createScaledBitmap(bmp, MAX_BLUR_WIDTH, MAX_BLUR_HEIGHT, true);
+                }
+                mKeyguardService.setBackgroundBitmap(tmpBmp);
+                bmp.recycle();
+                tmpBmp.recycle();
+            }
+        }
+    }
 }

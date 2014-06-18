@@ -39,6 +39,7 @@ import android.content.pm.UserInfo;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.hardware.Camera;
 import android.media.RemoteControlClient;
 import android.os.Looper;
 import android.os.Parcel;
@@ -1260,7 +1261,8 @@ public class KeyguardHostView extends KeyguardViewBase {
         // cameras we can't trust.  TODO: plumb safe mode into camera creation code and only
         // inflate system-provided camera?
         if (!mSafeModeEnabled && !cameraDisabledByDpm() && mUserSetupCompleted
-                && mContext.getResources().getBoolean(R.bool.kg_enable_camera_default_widget)) {
+                && mContext.getResources().getBoolean(R.bool.kg_enable_camera_default_widget)
+                && Camera.getNumberOfCameras() > 0) {
             View cameraWidget =
                     CameraWidgetFrame.create(mContext, mCameraWidgetCallbacks, mActivityLauncher);
             if (cameraWidget != null) {
@@ -1693,6 +1695,7 @@ public class KeyguardHostView extends KeyguardViewBase {
             KeyguardWidgetFrame frame = mAppWidgetContainer.getWidgetPageAt(i);
             frame.removeAllViews();
         }
+        mSecurityViewContainer.onPause(); // clean up any actions in progress
     }
 
     /**
@@ -1708,7 +1711,9 @@ public class KeyguardHostView extends KeyguardViewBase {
         final boolean configDisabled = res.getBoolean(R.bool.config_disableMenuKeyInLockScreen);
         final boolean isTestHarness = ActivityManager.isRunningInTestHarness();
         final boolean fileOverride = (new File(ENABLE_MENU_KEY_FILE)).exists();
-        return !configDisabled || isTestHarness || fileOverride;
+        final boolean menuOverride = Settings.REVOLT.getBoolean(getContext().getContentResolver(),
+                Settings.REVOLT.LOCKSCREEN_MENU_UNLOCK, true);
+        return !configDisabled || isTestHarness || fileOverride || menuOverride;
     }
 
     public void goToWidget(int appWidgetId) {

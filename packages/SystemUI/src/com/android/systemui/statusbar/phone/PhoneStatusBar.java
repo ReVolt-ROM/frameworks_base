@@ -346,7 +346,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             boolean wasUsing = mUseHeadsUp;
             mUseHeadsUp = ENABLE_HEADS_UP && Settings.REVOLT.getIntForUser(
                     mContext.getContentResolver(),
-                    Settings.REVOLT.HEADS_UP_NOTIFICATION, 0, UserHandle.USER_CURRENT) == 1;;
+                    Settings.REVOLT.HEADS_UP_NOTIFICATION, 0, UserHandle.USER_CURRENT) == 1;
             Log.d(TAG, "heads up is " + (mUseHeadsUp ? "enabled" : "disabled"));
             if (wasUsing != mUseHeadsUp) {
                 if (!mUseHeadsUp) {

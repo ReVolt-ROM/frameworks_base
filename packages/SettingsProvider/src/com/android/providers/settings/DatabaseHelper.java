@@ -2006,11 +2006,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private void loadHeadsUpSetting(SQLiteStatement stmt) {
-        String headsUpValues = mContext.getResources()
-                .getString(R.string.def_heads_up_notification_values);
-        if (!TextUtils.isEmpty(headsUpValues)) {
+        String dndValues = mContext.getResources()
+                .getString(R.string.def_heads_up_notification_dnd_values);
+        String blackListValues = mContext.getResources()
+                .getString(R.string.def_heads_up_notification_blacklist_values);
+        if (!TextUtils.isEmpty(dndValues)) {
             loadSetting(stmt, Settings.REVOLT.HEADS_UP_NOTIFICATION, "0");
-            loadSetting(stmt, Settings.REVOLT.HEADS_UP_CUSTOM_VALUES, headsUpValues);
+            loadSetting(stmt, Settings.REVOLT.HEADS_UP_CUSTOM_VALUES, dndValues);
+            loadSetting(stmt, Settings.REVOLT.HEADS_UP_BLACKLIST_VALUES, blackListValues);
         }
     }
 

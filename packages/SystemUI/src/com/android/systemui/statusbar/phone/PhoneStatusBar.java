@@ -417,6 +417,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.REVOLT.getUriFor(Settings.REVOLT.HEADS_UP_NOTIFICATION), true,
                     mHeadsUpObserver, mCurrentUserId);
         }
+        mSettingsObserver = new SettingsObserver(new Handler());
+        mSettingsObserver.observe();
+        updateSettings();
     }
 
     // ================================================================================

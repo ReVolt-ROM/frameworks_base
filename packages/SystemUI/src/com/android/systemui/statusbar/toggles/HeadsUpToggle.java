@@ -33,19 +33,19 @@ public class HeadsUpToggle extends StatefulToggle {
     @Override
     protected void doEnable() {
         Settings.System.putInt(mContext.getContentResolver(),
-                Settings.AOKP.HEADS_UP_NOTIFICATION, 1);
+                Settings.REVOLT.HEADS_UP_NOTIFICATION, 1);
     }
 
     @Override
     protected void doDisable() {
         Settings.System.putInt(mContext.getContentResolver(),
-                Settings.AOKP.HEADS_UP_NOTIFICATION, 0);
+                Settings.REVOLT.HEADS_UP_NOTIFICATION, 0);
     }
 
     @Override
     protected void updateView() {
-        boolean enabled = Settings.AOKP.getBoolean(mContext.getContentResolver(),
-                Settings.AOKP.HEADS_UP_NOTIFICATION, false);
+        boolean enabled = Settings.REVOLT.getBoolean(mContext.getContentResolver(),
+                Settings.REVOLT.HEADS_UP_NOTIFICATION, false);
         setIcon(enabled
                 ? R.drawable.ic_qs_headsup_on
                 : R.drawable.ic_qs_headsup_off);
@@ -65,7 +65,7 @@ public class HeadsUpToggle extends StatefulToggle {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.AOKP.HEADS_UP_NOTIFICATION), false, this);
+                    Settings.REVOLT.HEADS_UP_NOTIFICATION), false, this);
             onChange(false);
         }
 

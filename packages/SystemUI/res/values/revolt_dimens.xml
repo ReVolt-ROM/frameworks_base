@@ -33,4 +33,13 @@
     <dimen name="network_stats_text_size">8dp</dimen>
 
     <dimen name="wifi_combo_margin_end">-6dp</dimen>
+
+    <!-- Circle battery view -->
+    <item name="circle_battery_size_percentage" format="float" type="dimen">1.0</item>
+    <item name="circle_battery_thickness_fg_percentage" format="float" type="dimen">1.0</item>
+    <item name="circle_battery_thickness_bg_percentage" format="float" type="dimen">1.0</item>
+    <item name="sb_circle_battery_size_percentage" format="float" type="dimen">1.0</item>
+    <item name="sb_circle_battery_thickness_fg_percentage" format="float" type="dimen">1.0</item>
+    <item name="sb_circle_battery_thickness_bg_percentage" format="float" type="dimen">1.0</item>
+
 </resources>

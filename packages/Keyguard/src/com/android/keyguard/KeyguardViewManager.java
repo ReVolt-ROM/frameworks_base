@@ -141,6 +141,8 @@ public class KeyguardViewManager {
                     Settings.REVOLT.LOCKSCREEN_SEE_THROUGH), false, this);
             resolver.registerContentObserver(Settings.REVOLT.getUriFor(
                     Settings.REVOLT.LOCKSCREEN_BLUR_RADIUS), false, this);
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.LOCKSCREEN_NOTIFICATIONS), false, this);
         }
 
         @Override

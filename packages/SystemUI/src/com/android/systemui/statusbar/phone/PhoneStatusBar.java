@@ -2813,7 +2813,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
             }
         }
+
+        if (mHeadsUpNotificationView != null) {
+            removeHeadsUpView();
+            mHeadsUpNotificationView = null;
+        }
+
         mStatusBarContainer.removeAllViews();
+        mStatusBarContainer.clearDisappearingChildren();
 
         // extract icons from the soon-to-be recreated viewgroup.
         int nIcons = mStatusIcons.getChildCount();

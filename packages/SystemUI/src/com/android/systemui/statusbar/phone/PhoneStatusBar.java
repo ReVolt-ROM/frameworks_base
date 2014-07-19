@@ -285,7 +285,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // last theme that was applied in order to detect theme change (as opposed
     // to some other configuration change).
     ThemeConfig mCurrentTheme;
-    private boolean mRecreating = false;
 
     // for disabling the status bar
     int mDisabled = 0;

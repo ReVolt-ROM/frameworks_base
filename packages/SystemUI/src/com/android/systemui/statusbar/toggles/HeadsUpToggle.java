@@ -32,13 +32,13 @@ public class HeadsUpToggle extends StatefulToggle {
 
     @Override
     protected void doEnable() {
-        Settings.System.putInt(mContext.getContentResolver(),
+        Settings.REVOLT.putInt(mContext.getContentResolver(),
                 Settings.REVOLT.HEADS_UP_NOTIFICATION, 1);
     }
 
     @Override
     protected void doDisable() {
-        Settings.System.putInt(mContext.getContentResolver(),
+        Settings.REVOLT.putInt(mContext.getContentResolver(),
                 Settings.REVOLT.HEADS_UP_NOTIFICATION, 0);
     }
 
@@ -64,7 +64,7 @@ public class HeadsUpToggle extends StatefulToggle {
 
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
                     Settings.REVOLT.HEADS_UP_NOTIFICATION), false, this);
             onChange(false);
         }

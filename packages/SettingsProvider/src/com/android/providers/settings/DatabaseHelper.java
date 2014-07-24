@@ -2108,9 +2108,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             loadIntegerSetting(stmt, Settings.REVOLT.UI_FORCE_OVERFLOW_BUTTON,
                     R.integer.def_force_overflow_button);
-            loadIntegerSetting(stmt, Settings.AOKP.SCREENSHOT_MODE_OPTIONS,
+            loadIntegerSetting(stmt, Settings.REVOLT.SCREENSHOT_MODE_OPTIONS,
                     R.integer.def_screenshot_mode_options);
-            loadIntegerSetting(stmt, Settings.AOKP.IMMERSIVE_MODE_OPTIONS,
+            loadIntegerSetting(stmt, Settings.REVOLT.IMMERSIVE_MODE_OPTIONS,
                     R.integer.def_immersive_mode_options);
         } finally {
             if (stmt != null) stmt.close();

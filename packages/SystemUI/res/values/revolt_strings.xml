@@ -106,4 +106,7 @@
     <!-- Title shown in recents popup for showing app in floating mode -->
     <string name="status_bar_recent_floating_item_title">Floating mode</string>
 
+    <!-- Recents menu -->
+    <string name="status_bar_recent_lock_item_title">Lock app in list</string>
+
 </resources>

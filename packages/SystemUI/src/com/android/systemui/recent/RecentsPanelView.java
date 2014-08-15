@@ -960,6 +960,9 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         dismissAndGoBack();
                         getContext().startActivity(intent);
+                    } else {
+                        throw new IllegalStateException("Oops, no tag on view " + selectedView);
+                    }
                 } else if (item.getItemId() == R.id.recent_lock_item) {
                     item.setChecked(!item.isChecked());
                     if (viewHolder != null) {

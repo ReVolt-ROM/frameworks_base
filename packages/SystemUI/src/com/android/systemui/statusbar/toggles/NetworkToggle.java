@@ -58,8 +58,8 @@ public class NetworkToggle extends StatefulToggle {
             resolver.registerContentObserver(Settings.Global
                     .getUriFor(Settings.Global.PREFERRED_NETWORK_MODE), false,
                     this);
-            resolver.registerContentObserver(Settings.AOKP
-                    .getUriFor(Settings.AOKP.NETWORK_MODES_TOGGLE), false,
+            resolver.registerContentObserver(Settings.REVOLT
+                    .getUriFor(Settings.REVOLT.NETWORK_MODES_TOGGLE), false,
                     this);
             scheduleViewUpdate();
         }
@@ -156,8 +156,8 @@ public class NetworkToggle extends StatefulToggle {
             default_modes = deviceSupportsLTE() ? "8|4|5" : "4|5";
         }
         if (!default_modes.equals("")) {
-            String saved_toggles = Settings.AOKP.getString(mContext.getContentResolver(),
-                Settings.AOKP.NETWORK_MODES_TOGGLE);
+            String saved_toggles = Settings.REVOLT.getString(mContext.getContentResolver(),
+                Settings.REVOLT.NETWORK_MODES_TOGGLE);
             String toggles_string = (saved_toggles != null) ? saved_toggles : default_modes;
             for (String mode : toggles_string.split("\\|")) {
                 mMobileNetworks.add(Integer.parseInt(mode));

@@ -554,8 +554,8 @@ public final class PowerManagerService extends IPowerManager.Stub
             resolver.registerContentObserver(Settings.REVOLT.getUriFor(
                     Settings.REVOLT.SYSTEM_POWER_CRT_MODE),
                     false, mSettingsObserver, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.PROXIMITY_ON_WAKE),
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.PROXIMITY_ON_WAKE),
                     false, mSettingsObserver, UserHandle.USER_ALL);
 
             // Go.
@@ -624,8 +624,8 @@ public final class PowerManagerService extends IPowerManager.Stub
                 Settings.REVOLT.SYSTEM_POWER_CRT_MODE,
                 1, UserHandle.USER_CURRENT);
 
-        mProximityWakeEnabled = Settings.AOKP.getInt(resolver,
-                Settings.AOKP.PROXIMITY_ON_WAKE, 0) == 1;
+        mProximityWakeEnabled = Settings.REVOLT.getInt(resolver,
+                Settings.REVOLT.PROXIMITY_ON_WAKE, 0) == 1;
 
         final int oldScreenBrightnessSetting = mScreenBrightnessSetting;
         mScreenBrightnessSetting = Settings.System.getIntForUser(resolver,

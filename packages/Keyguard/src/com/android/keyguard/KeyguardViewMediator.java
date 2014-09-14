@@ -1197,7 +1197,7 @@ public class KeyguardViewMediator {
             return;
         }
 
-        if (QuietHoursHelper.inQuietHours(mContext, Settings.AOKP.QUIET_HOURS_SYSTEM)) {
+        if (QuietHoursHelper.inQuietHours(mContext, Settings.REVOLT.QUIET_HOURS_SYSTEM)) {
             return;
         }
 

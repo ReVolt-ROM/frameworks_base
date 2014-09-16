@@ -448,13 +448,13 @@ final class DisplayPowerController {
             };
 
             cr.registerContentObserver(
-                    Settings.AOKP.getUriFor(Settings.AOKP.AUTO_BRIGHTNESS_LUX),
+                    Settings.REVOLT.getUriFor(Settings.REVOLT.AUTO_BRIGHTNESS_LUX),
                     false, observer, UserHandle.USER_ALL);
             cr.registerContentObserver(
-                    Settings.AOKP.getUriFor(Settings.AOKP.AUTO_BRIGHTNESS_BACKLIGHT),
+                    Settings.REVOLT.getUriFor(Settings.REVOLT.AUTO_BRIGHTNESS_BACKLIGHT),
                     false, observer, UserHandle.USER_ALL);
             cr.registerContentObserver(
-                    Settings.AOKP.getUriFor(Settings.AOKP.AUTO_BRIGHTNESS_TWILIGHT_ADJUSTMENT),
+                    Settings.REVOLT.getUriFor(Settings.REVOLT.AUTO_BRIGHTNESS_TWILIGHT_ADJUSTMENT),
                     false, observer, UserHandle.USER_ALL);
 
             mLightSensorWarmUpTimeConfig = resources.getInteger(
@@ -493,8 +493,8 @@ final class DisplayPowerController {
     }
 
     private void updateAutomaticBrightnessSettings() {
-        int[] lux = getIntArrayForSetting(Settings.AOKP.AUTO_BRIGHTNESS_LUX);
-        int[] values = getIntArrayForSetting(Settings.AOKP.AUTO_BRIGHTNESS_BACKLIGHT);
+        int[] lux = getIntArrayForSetting(Settings.REVOLT.AUTO_BRIGHTNESS_LUX);
+        int[] values = getIntArrayForSetting(Settings.REVOLT.AUTO_BRIGHTNESS_BACKLIGHT);
         Resources res = mContext.getResources();
 
         mScreenAutoBrightnessSpline = null;
@@ -524,8 +524,8 @@ final class DisplayPowerController {
             return;
         }
 
-        mTwilightAdjustmentEnabled = Settings.AOKP.getIntForUser(
-                mContext.getContentResolver(), Settings.AOKP.AUTO_BRIGHTNESS_TWILIGHT_ADJUSTMENT,
+        mTwilightAdjustmentEnabled = Settings.REVOLT.getIntForUser(
+                mContext.getContentResolver(), Settings.REVOLT.AUTO_BRIGHTNESS_TWILIGHT_ADJUSTMENT,
                 0, UserHandle.USER_CURRENT) != 0;
     }
 

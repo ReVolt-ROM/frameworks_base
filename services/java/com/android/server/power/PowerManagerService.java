@@ -560,8 +560,8 @@ public final class PowerManagerService extends IPowerManager.Stub
             resolver.registerContentObserver(Settings.REVOLT.getUriFor(
                     Settings.REVOLT.PROXIMITY_ON_WAKE),
                     false, mSettingsObserver, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.AUTO_BRIGHTNESS_RESPONSIVENESS),
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.AUTO_BRIGHTNESS_RESPONSIVENESS),
                     false, mSettingsObserver, UserHandle.USER_ALL);
 
             // Go.
@@ -654,8 +654,8 @@ public final class PowerManagerService extends IPowerManager.Stub
                 Settings.System.SCREEN_BRIGHTNESS_MODE,
                 Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL, UserHandle.USER_CURRENT);
 
-        final float newAutoBrightnessResponsitivityFactor = Settings.AOKP.getFloatForUser(resolver,
-                Settings.AOKP.AUTO_BRIGHTNESS_RESPONSIVENESS, 1.0f,
+        final float newAutoBrightnessResponsitivityFactor = Settings.REVOLT.getFloatForUser(resolver,
+                Settings.REVOLT.AUTO_BRIGHTNESS_RESPONSIVENESS, 1.0f,
                 UserHandle.USER_CURRENT);
         mAutoBrightnessResponsitivityFactor =
                 Math.min(Math.max(newAutoBrightnessResponsitivityFactor, 0.2f), 3.0f);

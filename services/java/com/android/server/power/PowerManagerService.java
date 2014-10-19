@@ -572,14 +572,14 @@ public final class PowerManagerService extends IPowerManager.Stub
             resolver.registerContentObserver(Settings.REVOLT.getUriFor(
                     Settings.REVOLT.AUTO_BRIGHTNESS_RESPONSIVENESS),
                     false, mSettingsObserver, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.BUTTON_BRIGHTNESS),
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.BUTTON_BRIGHTNESS),
                     false, mSettingsObserver, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.KEYBOARD_BRIGHTNESS),
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.KEYBOARD_BRIGHTNESS),
                     false, mSettingsObserver, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.AOKP.getUriFor(
-                    Settings.AOKP.BUTTON_BACKLIGHT_TIMEOUT),
+            resolver.registerContentObserver(Settings.REVOLT.getUriFor(
+                    Settings.REVOLT.BUTTON_BACKLIGHT_TIMEOUT),
                     false, mSettingsObserver, UserHandle.USER_ALL);
 
             // Go.

@@ -678,15 +678,15 @@ public final class PowerManagerService extends IPowerManager.Stub
         mAutoBrightnessResponsitivityFactor =
                 Math.min(Math.max(newAutoBrightnessResponsitivityFactor, 0.2f), 3.0f);
 
-        mButtonTimeout = Settings.AOKP.getIntForUser(resolver,
-                Settings.AOKP.BUTTON_BACKLIGHT_TIMEOUT,
+        mButtonTimeout = Settings.REVOLT.getIntForUser(resolver,
+                Settings.REVOLT.BUTTON_BACKLIGHT_TIMEOUT,
                 DEFAULT_BUTTON_ON_DURATION, UserHandle.USER_CURRENT) * 1000;
 
-        mButtonBrightness = Settings.AOKP.getIntForUser(resolver,
-                Settings.AOKP.BUTTON_BRIGHTNESS, mButtonBrightnessSettingDefault,
+        mButtonBrightness = Settings.REVOLT.getIntForUser(resolver,
+                Settings.REVOLT.BUTTON_BRIGHTNESS, mButtonBrightnessSettingDefault,
                 UserHandle.USER_CURRENT);
-        mKeyboardBrightness = Settings.AOKP.getIntForUser(resolver,
-                Settings.AOKP.KEYBOARD_BRIGHTNESS, mKeyboardBrightnessSettingDefault,
+        mKeyboardBrightness = Settings.REVOLT.getIntForUser(resolver,
+                Settings.REVOLT.KEYBOARD_BRIGHTNESS, mKeyboardBrightnessSettingDefault,
                 UserHandle.USER_CURRENT);
 
         mDirty |= DIRTY_SETTINGS;
